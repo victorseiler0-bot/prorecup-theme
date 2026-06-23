@@ -7,27 +7,18 @@
   <meta name="theme-color" content="#000000">
   <title>{{ page_title }} — ProRecup</title>
   <meta name="description" content="{{ page_description | escape }}">
-
   {{ content_for_header }}
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Helvetica+Neue:wght@300;400&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
   {{ 'prorecup.css' | asset_url | stylesheet_tag }}
 </head>
-
 <body class="{% if template == 'index' %}home{% endif %}">
   <div id="cursor"></div>
-
+  <div id="cursor-ring"></div>
   {% section 'header' %}
-
-  <main id="main-content">
-    {{ content_for_layout }}
-  </main>
-
+  <main id="main-content">{{ content_for_layout }}</main>
   {% section 'footer' %}
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   {{ 'prorecup.js' | asset_url | script_tag }}
 </body>

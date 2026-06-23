@@ -1,17 +1,9 @@
 {
   "sections": {
-    "hero": {
-      "type": "hero",
-      "settings": {}
-    },
-    "features": {
-      "type": "features",
-      "settings": {}
-    },
-    "product-buy": {
-      "type": "product-buy",
-      "settings": {}
-    }
+    "hero": { "type": "hero", "settings": {} },
+    "numbers": { "type": "numbers", "settings": {} },
+    "features": { "type": "features", "settings": {} },
+    "product-buy": { "type": "product-buy", "settings": {} }
   },
-  "order": ["hero", "features", "product-buy"]
+  "order": ["hero", "numbers", "features", "product-buy"]
 }
