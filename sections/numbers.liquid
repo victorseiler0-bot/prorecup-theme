@@ -1,23 +1,75 @@
-<div class="section-strip"></div>
-<div class="numbers-band">
-  <div class="number-item reveal">
-    <span class="number-value" style="color: rgba(245,245,247,0.9)">4.9<span style="font-size:1.5rem">/5</span></span>
-    <span class="number-label">Note client</span>
+<section class="stats-section">
+  <div class="stats-inner">
+
+    <div class="stats-label reveal">
+      <span class="stats-eyebrow">Pourquoi ProRecup ?</span>
+    </div>
+
+    <div class="stats-grid">
+
+      <div class="stat-block reveal">
+        <div class="stat-bg-glow" style="background: radial-gradient(ellipse 60% 60% at 50% 80%, rgba(68,136,255,0.12), transparent);"></div>
+        <div class="stat-top">
+          <span class="stat-big" data-count="4" data-suffix=".9">0</span>
+          <span class="stat-unit">/5</span>
+        </div>
+        <div class="stat-bar">
+          <div class="stat-bar-fill" style="--fill: 98%"></div>
+        </div>
+        <p class="stat-desc">Note client moyenne<br><span>sur 504 avis vérifiés</span></p>
+      </div>
+
+      <div class="stat-block reveal">
+        <div class="stat-bg-glow" style="background: radial-gradient(ellipse 60% 60% at 50% 80%, rgba(255,100,0,0.08), transparent);"></div>
+        <div class="stat-top">
+          <span class="stat-big" data-count="3000" data-suffix="">0</span>
+          <span class="stat-unit">+</span>
+        </div>
+        <div class="stat-bar">
+          <div class="stat-bar-fill" style="--fill: 75%"></div>
+        </div>
+        <p class="stat-desc">Unités vendues<br><span>à travers le monde</span></p>
+      </div>
+
+      <div class="stat-block reveal">
+        <div class="stat-bg-glow" style="background: radial-gradient(ellipse 60% 60% at 50% 80%, rgba(116,198,157,0.1), transparent);"></div>
+        <div class="stat-top">
+          <span class="stat-big" data-count="0" data-suffix="">0</span>
+          <span class="stat-unit">★</span>
+        </div>
+        <div class="stat-bar">
+          <div class="stat-bar-fill" style="--fill: 100%; background: linear-gradient(90deg, #74c69d, #52b788);"></div>
+        </div>
+        <p class="stat-desc">Avis 1 étoile<br><span>Zéro mauvaise surprise</span></p>
+      </div>
+
+      <div class="stat-block reveal">
+        <div class="stat-bg-glow" style="background: radial-gradient(ellipse 60% 60% at 50% 80%, rgba(255,255,255,0.05), transparent);"></div>
+        <div class="stat-top">
+          <span class="stat-big" data-count="8" data-suffix="">0</span>
+          <span class="stat-unit">×</span>
+        </div>
+        <div class="stat-bar">
+          <div class="stat-bar-fill" style="--fill: 88%"></div>
+        </div>
+        <p class="stat-desc">Têtes interchangeables<br><span>pour chaque zone du corps</span></p>
+      </div>
+
+    </div>
+
+    <div class="stats-cta-line reveal">
+      <span class="stats-quote">
+        "Plus efficace qu'une séance chez le kiné — et disponible 24h/24."
+      </span>
+      <a href="#buy" class="stats-cta-btn">Commander maintenant →</a>
+    </div>
+
   </div>
-  <div class="number-item reveal">
-    <span class="number-value">3 000<span style="font-size:1.5rem">+</span></span>
-    <span class="number-label">Unités vendues</span>
-  </div>
-  <div class="number-item reveal">
-    <span class="number-value">0</span>
-    <span class="number-label">Mauvais avis (sur 504)</span>
-  </div>
-</div>
-<div class="section-strip"></div>
+</section>
 
 {% schema %}
 {
-  "name": "Numbers",
+  "name": "Stats",
   "settings": []
 }
 {% endschema %}
