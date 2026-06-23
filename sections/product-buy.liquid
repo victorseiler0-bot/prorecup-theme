@@ -1,3 +1,4 @@
+{% assign product = section.settings.product %}
 <div class="section-connector"><div class="connector-dot"></div></div>
 <section class="product-buy" id="buy">
   <div class="buy-inner">
@@ -70,6 +71,12 @@
 {% schema %}
 {
   "name": "Product Buy",
-  "settings": []
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Produit à afficher"
+    }
+  ]
 }
 {% endschema %}
