@@ -2,16 +2,32 @@
    PRORECUP — Main JS
    ============================================================ */
 
+// Toujours revenir en haut au chargement/rechargement
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.addEventListener('beforeunload', () => window.scrollTo(0, 0));
+
 document.addEventListener('DOMContentLoaded', () => {
+  window.scrollTo(0, 0);
   initScrollProgress();
   initCursor();
   initNav();
+  initLogoScroll();
   initReveal();
   initParallax();
   initCounters();
   initGallery();
   initStickyBar();
 });
+
+/* ── Logo = retour en haut (smooth) ── */
+function initLogoScroll() {
+  const logo = document.getElementById('nav-logo');
+  if (!logo) return;
+  logo.addEventListener('click', e => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
 
 /* ── Gallery carousel ── */
 function initGallery() {
