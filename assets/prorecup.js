@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   initParallax();
   initCounters();
+});
+
+window.addEventListener('load', () => {
   initHero3D();
 });
 
@@ -124,10 +127,12 @@ function initHero3D() {
   if (!canvas || typeof THREE === 'undefined') return;
 
   const wrap = canvas.parentElement;
-  let W = wrap.clientWidth, H = wrap.clientHeight;
+  let W = wrap.clientWidth  || Math.round(window.innerWidth * 0.5);
+  let H = wrap.clientHeight || window.innerHeight;
 
   /* Renderer */
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setClearColor(0x060608, 1);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(W, H);
   renderer.shadowMap.enabled = true;

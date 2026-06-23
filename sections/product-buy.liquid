@@ -37,11 +37,16 @@
 
       <div class="reveal" style="display:flex;flex-direction:column;gap:12px;">
         {% if product.variants.first %}
-          <a href="/cart/add?id={{ product.variants.first.id }}&quantity=1" class="buy-cta">
-            Ajouter au panier
+          <form action="/cart/add" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="buy-cta" style="width:100%;border:none;cursor:pointer;">Ajouter au panier</button>
+          </form>
+          <a href="/checkout?variant={{ product.variants.first.id }}&quantity=1" class="buy-cta" style="background:transparent;border:1px solid rgba(255,255,255,0.8);color:var(--white);text-align:center;display:block;padding:18px 40px;border-radius:100px;font-size:0.82rem;letter-spacing:0.06em;text-transform:uppercase;">
+            Acheter maintenant
           </a>
         {% else %}
-          <a href="#" class="buy-cta">Commander maintenant</a>
+          <a href="#" class="buy-cta">Produit bientôt disponible</a>
         {% endif %}
         <a href="#features" class="buy-secondary">Voir toutes les caractéristiques</a>
       </div>

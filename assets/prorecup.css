@@ -135,6 +135,30 @@ img { display: block; max-width: 100%; }
 
 .nav-cta:hover { background: rgba(255,255,255,0.18) !important; }
 
+.nav-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: rgba(245,245,247,0.7);
+  transition: color 0.2s;
+  margin-left: 8px;
+}
+.nav-cart:hover { color: var(--white); }
+.cart-badge {
+  position: absolute;
+  top: -6px; right: -8px;
+  background: var(--white);
+  color: var(--black);
+  font-size: 0.6rem;
+  font-weight: 800;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
 /* ============================================================
    HERO
    ============================================================ */
