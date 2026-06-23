@@ -2,12 +2,16 @@
    PRORECUP — Main JS
    ============================================================ */
 
-// Toujours revenir en haut au chargement/rechargement
+// Désactive la restauration de scroll du navigateur (et de Shopify)
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-window.addEventListener('beforeunload', () => window.scrollTo(0, 0));
+
+// Force le scroll en haut après que tout soit chargé
+// (setTimeout override Shopify qui restaure après load)
+window.addEventListener('load', () => {
+  setTimeout(() => window.scrollTo(0, 0), 0);
+});
 
 document.addEventListener('DOMContentLoaded', () => {
-  window.scrollTo(0, 0);
   initScrollProgress();
   initCursor();
   initNav();
