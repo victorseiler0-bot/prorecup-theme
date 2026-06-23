@@ -9,29 +9,10 @@
  */
 {
   "sections": {
-    "hero": {
-      "type": "hero",
-      "settings": {}
-    },
-    "numbers": {
-      "type": "numbers",
-      "settings": {}
-    },
-    "features": {
-      "type": "features",
-      "settings": {}
-    },
-    "product-buy": {
-      "type": "product-buy",
-      "settings": {
-        "product": "pistolet-de-massage-electrique-8-tetes-interchangeables"
-      }
-    }
+    "hero": { "type": "hero", "settings": {} },
+    "numbers": { "type": "numbers", "settings": {} },
+    "features": { "type": "features", "settings": {} },
+    "product-buy": { "type": "product-buy", "settings": {} }
   },
-  "order": [
-    "hero",
-    "numbers",
-    "features",
-    "product-buy"
-  ]
+  "order": ["hero", "numbers", "features", "product-buy"]
 }

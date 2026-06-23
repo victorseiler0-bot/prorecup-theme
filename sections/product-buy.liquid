@@ -42,17 +42,21 @@
       </div>
 
       <div class="reveal" style="display:flex;flex-direction:column;gap:12px;">
-        {% if product.variants.first %}
+        {% if product and product.variants.first %}
           <form action="/cart/add" method="post" enctype="multipart/form-data">
             <input type="hidden" name="id" value="{{ product.variants.first.id }}">
             <input type="hidden" name="quantity" value="1">
+            <input type="hidden" name="return_to" value="/cart">
             <button type="submit" class="buy-cta" style="width:100%;border:none;cursor:pointer;">Ajouter au panier</button>
           </form>
-          <a href="/checkout?variant={{ product.variants.first.id }}&quantity=1" class="buy-cta" style="background:transparent;border:1px solid rgba(255,255,255,0.8);color:var(--white);text-align:center;display:block;padding:18px 40px;border-radius:100px;font-size:0.82rem;letter-spacing:0.06em;text-transform:uppercase;">
-            Acheter maintenant
-          </a>
+          <form action="/cart/add" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+            <input type="hidden" name="quantity" value="1">
+            <input type="hidden" name="return_to" value="/checkout">
+            <button type="submit" class="buy-secondary" style="width:100%;border:none;cursor:pointer;">Acheter maintenant</button>
+          </form>
         {% else %}
-          <a href="#" class="buy-cta">Produit bientôt disponible</a>
+          <p style="color:var(--grey);font-size:0.8rem;text-align:center;">Sélectionne le produit dans le customizer Shopify</p>
         {% endif %}
         <a href="#features" class="buy-secondary">Voir toutes les caractéristiques</a>
       </div>
