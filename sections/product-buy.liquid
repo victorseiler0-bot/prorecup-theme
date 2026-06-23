@@ -1,0 +1,45 @@
+<section class="product-buy" id="buy">
+  <div class="buy-inner">
+    <div class="buy-visual reveal">
+      {% assign product = all_products['pistolet-de-massage-electrique-8-tetes-interchangeables'] %}
+      {% if product.featured_image %}
+        <img src="{{ product.featured_image | img_url: '800x800' }}" alt="{{ product.title }}" class="buy-product-img">
+      {% else %}
+        <div class="buy-placeholder">
+          <canvas id="buy-canvas"></canvas>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="buy-info reveal">
+      <p class="buy-eyebrow">ProRecup — Édition Premium</p>
+      <h2 class="buy-title">Pistolet de Massage<br>Électrique</h2>
+
+      <ul class="buy-specs">
+        <li><span>Têtes</span><span>8 interchangeables</span></li>
+        <li><span>Charge</span><span>USB-C</span></li>
+        <li><span>Livraison</span><span>Offerte — 7 à 15 jours</span></li>
+        <li><span>Garantie</span><span>Satisfait ou remboursé</span></li>
+      </ul>
+
+      <div class="buy-price">
+        <span class="price-current">49,99€</span>
+        <span class="price-old">69,99€</span>
+        <span class="price-badge">–29%</span>
+      </div>
+
+      <a href="/cart/add?id={{ product.variants.first.id }}&quantity=1" class="buy-cta">
+        Ajouter au panier
+      </a>
+
+      <p class="buy-note">📦 Livraison internationale offerte · Suivi inclus</p>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product Buy",
+  "settings": []
+}
+{% endschema %}

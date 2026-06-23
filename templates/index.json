@@ -1,0 +1,17 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {}
+    },
+    "features": {
+      "type": "features",
+      "settings": {}
+    },
+    "product-buy": {
+      "type": "product-buy",
+      "settings": {}
+    }
+  },
+  "order": ["hero", "features", "product-buy"]
+}
