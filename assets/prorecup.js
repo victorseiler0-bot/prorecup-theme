@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initParallax();
   initCounters();
   initGallery();
+  initStickyBar();
 });
 
 /* ── Gallery carousel ── */
@@ -54,6 +55,31 @@ function initGallery() {
   }, { passive: true });
 
   autoPlay();
+}
+
+/* ── Sticky Buy Bar ── */
+function initStickyBar() {
+  const bar = document.getElementById('sticky-buy-bar');
+  if (!bar) return;
+  if (!window.matchMedia('(max-width: 600px)').matches) return;
+
+  const hero     = document.querySelector('.hero');
+  const buySection = document.getElementById('buy');
+
+  function update() {
+    if (!hero) return;
+    const heroBottom = hero.getBoundingClientRect().bottom;
+    const atBuy = buySection
+      ? buySection.getBoundingClientRect().top < window.innerHeight * 0.5
+      : false;
+
+    const show = heroBottom < 0 && !atBuy;
+    bar.classList.toggle('visible', show);
+    bar.setAttribute('aria-hidden', String(!show));
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  update();
 }
 
 window.addEventListener('load', () => {

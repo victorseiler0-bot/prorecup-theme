@@ -18,6 +18,14 @@
   {% section 'header' %}
   <main id="main-content">{{ content_for_layout }}</main>
   {% section 'footer' %}
+  {% if template == 'index' %}
+  <div class="sticky-buy-bar" id="sticky-buy-bar" aria-hidden="true">
+    <div class="sticky-buy-inner">
+      <span class="sticky-price">49,99€</span>
+      <a href="#buy" class="sticky-cta-btn">Commander</a>
+    </div>
+  </div>
+  {% endif %}
   {{ 'prorecup.js' | asset_url | script_tag }}
 </body>
 </html>
