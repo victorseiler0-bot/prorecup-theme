@@ -1161,3 +1161,155 @@ img { display: block; max-width: 100%; }
   .nav-inner { padding: 0 24px; }
   .nav-links a:not(.nav-cta) { display: none; }
 }
+
+/* ============================================================
+   TOUCH — désactiver le curseur custom sur écran tactile
+   ============================================================ */
+
+@media (hover: none), (pointer: coarse) {
+  body { cursor: auto; }
+  #cursor { display: none; }
+}
+
+/* ============================================================
+   TÉLÉPHONE (≤ 600px) — optimisations complètes
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+  /* ── Nav ── */
+  .nav-inner { padding: 0 16px; }
+  .nav-cta {
+    padding: 7px 14px !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Hero ── */
+  .hero-content {
+    padding: calc(var(--nav-h) + 28px) 20px 28px;
+    gap: 16px;
+  }
+
+  /* Gradient text — peut s'afficher transparent sur certains Android */
+  .hero-title em {
+    background: none;
+    -webkit-text-fill-color: rgba(245,245,247,0.55);
+    color: rgba(245,245,247,0.55);
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .hero-btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 52px;
+    padding: 14px 24px;
+  }
+
+  .hero-btn-ghost {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .hero-stats { gap: 20px; }
+
+  .hero-3d { height: 56vw; min-height: 220px; }
+
+  /* Désactiver animations lourdes — GPU + batterie */
+  .aurora-orb       { animation: none !important; }
+  .hero-ring        { animation: none !important; }
+  .hero-product-img { animation: none; }
+
+  /* ── Section connectors ── */
+  .section-connector { height: 36px; padding: 0 20px; }
+
+  /* ── Stats ── */
+  .stats-section  { padding: 52px 0; }
+  .stats-inner    { padding: 0 20px; }
+  .stats-grid     { grid-template-columns: repeat(2, 1fr); gap: 36px 0; }
+  .stat-block     { padding: 0 16px; }
+  .stat-block:first-child { padding-left: 0; }
+
+  /* ── Features ── */
+  .features         { padding: 56px 0; }
+  .features-inner   { padding: 0 20px; }
+  .features-header  { margin-bottom: 32px; }
+  .feature-card     { padding: 28px 20px; gap: 12px; }
+  .feature-bg-num   { font-size: 4.5rem; }
+
+  /* ── Product Buy ── */
+  .product-buy { padding: 56px 0; }
+  .buy-inner   { padding: 0 20px; gap: 28px; }
+  .buy-info    { gap: 24px; }
+
+  /* Flèches masquées — swipe tactile activé via JS */
+  .gallery-prev,
+  .gallery-next { display: none !important; }
+
+  /* Dots plus facilement tapables */
+  .gallery-dot { width: 8px; height: 8px; }
+
+  /* ── Boutons — cibles tactiles min 48px ── */
+  .buy-cta {
+    padding: 16px 24px;
+    min-height: 52px;
+    font-size: 0.88rem;
+  }
+
+  .buy-secondary {
+    padding: 14px 24px;
+    min-height: 48px;
+    font-size: 0.84rem;
+  }
+
+  /* Trust badges en colonne */
+  .buy-trust {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── Footer ── */
+  .site-footer  { padding: 36px 20px 24px; }
+  .footer-links { gap: 10px 20px; }
+  .footer-links a { min-height: 44px; display: inline-flex; align-items: center; }
+
+  /* ── Transitions allégées ── */
+  .reveal {
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal-left {
+    transform: translateX(-20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal-right {
+    transform: translateX(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal-scale {
+    transform: scale(0.97);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .reveal.visible,
+  .reveal-left.visible,
+  .reveal-right.visible,
+  .reveal-scale.visible { transform: none; }
+}
+
+/* ── Très petits écrans (< 375px) ── */
+@media (max-width: 374px) {
+  .hero-title    { font-size: 2.8rem; }
+  .buy-title     { font-size: 1.9rem; }
+  .stat-big      { font-size: 2.8rem; }
+  .section-title { font-size: 2rem; }
+  .features-inner,
+  .buy-inner     { padding: 0 16px; }
+}

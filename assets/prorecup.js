@@ -34,9 +34,24 @@ function initGallery() {
     timer = setInterval(() => goTo(current + 1), 4000);
   }
 
-  gallery.querySelector('.gallery-prev').addEventListener('click', () => { clearInterval(timer); goTo(current - 1); autoPlay(); });
-  gallery.querySelector('.gallery-next').addEventListener('click', () => { clearInterval(timer); goTo(current + 1); autoPlay(); });
+  const prevBtn = gallery.querySelector('.gallery-prev');
+  const nextBtn = gallery.querySelector('.gallery-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => { clearInterval(timer); goTo(current - 1); autoPlay(); });
+  if (nextBtn) nextBtn.addEventListener('click', () => { clearInterval(timer); goTo(current + 1); autoPlay(); });
   dots.forEach(d => d.addEventListener('click', () => { clearInterval(timer); goTo(parseInt(d.dataset.index)); autoPlay(); }));
+
+  // Swipe tactile
+  let swipeStartX = 0;
+  gallery.addEventListener('touchstart', e => {
+    swipeStartX = e.touches[0].clientX;
+  }, { passive: true });
+  gallery.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - swipeStartX;
+    if (Math.abs(dx) < 44) return;
+    clearInterval(timer);
+    goTo(dx < 0 ? current + 1 : current - 1);
+    autoPlay();
+  }, { passive: true });
 
   autoPlay();
 }
@@ -58,6 +73,9 @@ function initScrollProgress() {
 
 /* ── Cursor ── */
 function initCursor() {
+  // Pas de curseur custom sur écrans tactiles
+  if (window.matchMedia('(hover: none)').matches) return;
+
   const dot = document.getElementById('cursor');
   if (!dot) return;
 
@@ -98,6 +116,9 @@ function initReveal() {
 
 /* ── Parallax ── */
 function initParallax() {
+  // Désactivé sur mobile — cause du jank et décharge la batterie
+  if (window.matchMedia('(hover: none)').matches) return;
+
   const content = document.querySelector('.hero-content');
   if (!content) return;
   window.addEventListener('scroll', () => {
