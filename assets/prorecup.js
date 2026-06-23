@@ -1,6 +1,5 @@
 /* ============================================================
    PRORECUP — Main JS
-   Three.js 3D Pro + Scroll FX + Cursor + Parallax
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,127 +7,114 @@ document.addEventListener('DOMContentLoaded', () => {
   initNav();
   initReveal();
   initParallax();
-  initHero3D();
   initCounters();
+  initHero3D();
 });
 
-/* ── Custom Cursor ── */
+/* ── Cursor ── */
 function initCursor() {
-  const cursor = document.getElementById('cursor');
-  const cursorRing = document.getElementById('cursor-ring');
-  if (!cursor) return;
-
+  const dot = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot) return;
   let mx = 0, my = 0, rx = 0, ry = 0;
 
-  document.addEventListener('mousemove', (e) => {
-    mx = e.clientX;
-    my = e.clientY;
-    cursor.style.left = mx + 'px';
-    cursor.style.top = my + 'px';
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx + 'px';
+    dot.style.top  = my + 'px';
   });
 
-  if (cursorRing) {
-    function lerp(a, b, t) { return a + (b - a) * t; }
-    function animRing() {
-      rx = lerp(rx, mx, 0.12);
-      ry = lerp(ry, my, 0.12);
-      cursorRing.style.left = rx + 'px';
-      cursorRing.style.top = ry + 'px';
-      requestAnimationFrame(animRing);
-    }
-    animRing();
+  if (ring) {
+    (function tick() {
+      rx += (mx - rx) * 0.1;
+      ry += (my - ry) * 0.1;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(tick);
+    })();
   }
 
-  document.querySelectorAll('a, button, .feature-card, .buy-cta').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cursor.classList.add('hover');
-      if (cursorRing) cursorRing.classList.add('hover');
-    });
-    el.addEventListener('mouseleave', () => {
-      cursor.classList.remove('hover');
-      if (cursorRing) cursorRing.classList.remove('hover');
-    });
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => { dot.classList.add('hover'); ring && ring.classList.add('hover'); });
+    el.addEventListener('mouseleave', () => { dot.classList.remove('hover'); ring && ring.classList.remove('hover'); });
   });
 }
 
 /* ── Nav ── */
 function initNav() {
-  const header = document.getElementById('site-header');
-  if (!header) return;
-  window.addEventListener('scroll', () => {
-    header.classList.toggle('scrolled', window.scrollY > 60);
-  }, { passive: true });
+  const h = document.getElementById('site-header');
+  if (!h) return;
+  window.addEventListener('scroll', () => h.classList.toggle('scrolled', window.scrollY > 60), { passive: true });
 }
 
-/* ── Reveal on scroll ── */
+/* ── Reveal ── */
 function initReveal() {
-  const items = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+  const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
   const io = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), entry.target.dataset.delay || 0);
-        io.unobserve(entry.target);
-      }
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const delay = parseInt(e.target.dataset.delay || 0);
+      setTimeout(() => e.target.classList.add('visible'), delay);
+      io.unobserve(e.target);
     });
-  }, { threshold: 0.12 });
-  items.forEach((el, i) => {
-    el.dataset.delay = (i % 4) * 80;
+  }, { threshold: 0.1 });
+  els.forEach((el, i) => {
+    el.dataset.delay = (i % 4) * 90;
     io.observe(el);
   });
 }
 
-/* ── Parallax hero ── */
+/* ── Parallax ── */
 function initParallax() {
-  const heroContent = document.querySelector('.hero-content');
-  const heroBg = document.querySelector('.hero-bg-gradient');
-  if (!heroContent) return;
-
+  const content = document.querySelector('.hero-content');
+  if (!content) return;
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
-    heroContent.style.transform = `translateY(${y * 0.25}px)`;
-    heroContent.style.opacity = 1 - y / 500;
-    if (heroBg) heroBg.style.transform = `translateY(${y * 0.1}px)`;
+    content.style.transform = `translateY(${y * 0.22}px)`;
+    content.style.opacity = Math.max(0, 1 - y / 480);
   }, { passive: true });
 }
 
-/* ── Animated counters ── */
+/* ── Counters ── */
 function initCounters() {
-  const counters = document.querySelectorAll('[data-count]');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const el = entry.target;
-      const target = +el.dataset.count;
+  const els = document.querySelectorAll('[data-count]');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseFloat(el.dataset.count);
+      const decimals = el.dataset.decimals ? parseInt(el.dataset.decimals) : 0;
       const suffix = el.dataset.suffix || '';
-      let start = 0;
-      const dur = 1800;
-      const step = timestamp => {
-        if (!start) start = timestamp;
-        const p = Math.min((timestamp - start) / dur, 1);
+      const prefix = el.dataset.prefix || '';
+      let start = null;
+      const dur = 1600;
+      (function step(ts) {
+        if (!start) start = ts;
+        const p = Math.min((ts - start) / dur, 1);
         const ease = 1 - Math.pow(1 - p, 3);
-        el.textContent = Math.floor(ease * target) + suffix;
+        const val = ease * target;
+        el.textContent = prefix + val.toFixed(decimals) + suffix;
         if (p < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
+      })(performance.now());
       io.unobserve(el);
     });
-  }, { threshold: 0.5 });
-  counters.forEach(c => io.observe(c));
+  }, { threshold: 0.4 });
+  els.forEach(el => io.observe(el));
 }
 
 /* ================================================================
-   THREE.JS — Professional Massage Gun 3D Model
+   THREE.JS — Massage Gun 3D (basé sur photo produit)
+   Forme exacte : corps horizontal + manche vertical + tête ball
    ================================================================ */
 
 function initHero3D() {
   const canvas = document.getElementById('three-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
 
-  const container = canvas.parentElement;
-  let W = container.clientWidth;
-  let H = container.clientHeight;
+  const wrap = canvas.parentElement;
+  let W = wrap.clientWidth, H = wrap.clientHeight;
 
-  /* ── Renderer ── */
+  /* Renderer */
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(W, H);
@@ -136,357 +122,287 @@ function initHero3D() {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.2;
+  renderer.toneMappingExposure = 1.4;
 
-  /* ── Scene & Camera ── */
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
-  camera.position.set(0, 0.6, 6.5);
+  const camera = new THREE.PerspectiveCamera(32, W / H, 0.1, 50);
+  camera.position.set(0, 0.3, 7);
 
-  /* ── Lights ── */
-  // Key light — warm top left
-  const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.2);
-  keyLight.position.set(4, 6, 4);
-  keyLight.castShadow = true;
-  keyLight.shadow.mapSize.set(2048, 2048);
-  keyLight.shadow.camera.near = 0.5;
-  keyLight.shadow.camera.far = 30;
-  scene.add(keyLight);
+  /* ── Éclairage ── */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.18));
 
-  // Fill light — cool blue left
-  const fillLight = new THREE.DirectionalLight(0x7090ff, 0.6);
-  fillLight.position.set(-5, 1, 3);
-  scene.add(fillLight);
+  // Key light haut-gauche chaud
+  const key = new THREE.DirectionalLight(0xfff4e0, 2.8);
+  key.position.set(-4, 5, 4);
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  scene.add(key);
 
-  // Rim light — bright back right
-  const rimLight = new THREE.DirectionalLight(0xffffff, 1.4);
-  rimLight.position.set(2, -2, -5);
-  scene.add(rimLight);
+  // Fill bleu froid droite
+  const fill = new THREE.DirectionalLight(0x8ab0ff, 0.5);
+  fill.position.set(5, 0, 3);
+  scene.add(fill);
 
-  // Ambient
-  scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+  // Rim arrière
+  const rim = new THREE.DirectionalLight(0xffffff, 1.6);
+  rim.position.set(1, -1, -6);
+  scene.add(rim);
 
-  // Ground bounce
-  const bounceLight = new THREE.PointLight(0x4040ff, 0.3, 10);
-  bounceLight.position.set(0, -3, 2);
-  scene.add(bounceLight);
+  // Bounce sol
+  scene.add(Object.assign(new THREE.PointLight(0x2040aa, 0.4, 12), { position: new THREE.Vector3(0, -4, 1) }));
 
-  /* ── Materials ── */
-  const matBlackMatte = new THREE.MeshStandardMaterial({
-    color: 0x0a0a0a, metalness: 0.7, roughness: 0.25
-  });
-  const matBlackGloss = new THREE.MeshStandardMaterial({
-    color: 0x080808, metalness: 0.9, roughness: 0.05
-  });
-  const matDarkGrey = new THREE.MeshStandardMaterial({
-    color: 0x1a1a1a, metalness: 0.5, roughness: 0.5
-  });
-  const matMidGrey = new THREE.MeshStandardMaterial({
-    color: 0x2a2a2a, metalness: 0.4, roughness: 0.6
-  });
-  const matWhite = new THREE.MeshStandardMaterial({
-    color: 0xf0f0f0, metalness: 0.1, roughness: 0.4
-  });
-  const matOrange = new THREE.MeshStandardMaterial({
-    color: 0xff6600, metalness: 0.2, roughness: 0.4,
-    emissive: 0xff4400, emissiveIntensity: 0.3
-  });
-  const matScreen = new THREE.MeshStandardMaterial({
-    color: 0x001122, metalness: 0.0, roughness: 0.0,
-    emissive: 0x003366, emissiveIntensity: 0.8
-  });
-  const matLED = new THREE.MeshStandardMaterial({
-    color: 0xffffff, emissive: 0x88aaff, emissiveIntensity: 1.5,
-    metalness: 0, roughness: 0.3
-  });
-  const matRubber = new THREE.MeshStandardMaterial({
-    color: 0x151515, metalness: 0.0, roughness: 0.9
-  });
+  /* ── Matériaux ── */
+  const matte   = new THREE.MeshStandardMaterial({ color: 0x0c0c0c, metalness: 0.6, roughness: 0.3 });
+  const satin   = new THREE.MeshStandardMaterial({ color: 0x141414, metalness: 0.7, roughness: 0.18 });
+  const dark    = new THREE.MeshStandardMaterial({ color: 0x080808, metalness: 0.5, roughness: 0.45 });
+  const rubber  = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.0, roughness: 0.95 });
+  const gloss   = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, metalness: 0.9, roughness: 0.04 });
+  const screen  = new THREE.MeshStandardMaterial({ color: 0x001830, metalness: 0, roughness: 0, emissive: 0x002244, emissiveIntensity: 1.2 });
+  const ledGreen= new THREE.MeshStandardMaterial({ color: 0x22ff88, emissive: 0x22ff88, emissiveIntensity: 2, metalness: 0, roughness: 0.2 });
+  const accent  = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.5, roughness: 0.5 });
 
-  /* ── Gun Group ── */
   const gun = new THREE.Group();
 
-  // ── MAIN BODY (horizontal arm) ──
-  // Front cylinder (motor housing)
-  const motorGeo = new THREE.CylinderGeometry(0.32, 0.30, 1.6, 48);
-  const motor = new THREE.Mesh(motorGeo, matBlackMatte);
+  /* ── CORPS PRINCIPAL (cylindre horizontal) ── */
+  // Corps central
+  const bodyGeo = new THREE.CylinderGeometry(0.30, 0.30, 1.55, 64);
+  const body = new THREE.Mesh(bodyGeo, satin);
+  body.rotation.z = Math.PI / 2;
+  body.position.set(0.1, 0, 0);
+  body.castShadow = true;
+  gun.add(body);
+
+  // Tête avant (légèrement évasée — zone moteur)
+  const motorGeo = new THREE.CylinderGeometry(0.305, 0.28, 0.45, 64);
+  const motor = new THREE.Mesh(motorGeo, matte);
   motor.rotation.z = Math.PI / 2;
-  motor.position.set(0.3, 0, 0);
+  motor.position.set(0.985, 0, 0);
   gun.add(motor);
 
-  // Front cone (nose)
-  const noseGeo = new THREE.CylinderGeometry(0.20, 0.32, 0.25, 48);
-  const nose = new THREE.Mesh(noseGeo, matDarkGrey);
+  // Nez avant (cône)
+  const noseGeo = new THREE.CylinderGeometry(0.19, 0.305, 0.22, 64);
+  const nose = new THREE.Mesh(noseGeo, dark);
   nose.rotation.z = Math.PI / 2;
-  nose.position.set(1.2, 0, 0);
+  nose.position.set(1.315, 0, 0);
   gun.add(nose);
 
-  // Front cap (flat)
-  const frontCapGeo = new THREE.CylinderGeometry(0.20, 0.20, 0.06, 48);
-  const frontCap = new THREE.Mesh(frontCapGeo, matDarkGrey);
-  frontCap.rotation.z = Math.PI / 2;
-  frontCap.position.set(1.35, 0, 0);
-  gun.add(frontCap);
+  // Collerette avant
+  const collarGeo = new THREE.CylinderGeometry(0.19, 0.19, 0.055, 48);
+  const collar = new THREE.Mesh(collarGeo, accent);
+  collar.rotation.z = Math.PI / 2;
+  collar.position.set(1.44, 0, 0);
+  gun.add(collar);
 
-  // Attachment socket (inner ring)
-  const socketGeo = new THREE.TorusGeometry(0.12, 0.025, 16, 48);
-  const socket = new THREE.Mesh(socketGeo, matMidGrey);
-  socket.rotation.y = Math.PI / 2;
-  socket.position.set(1.42, 0, 0);
-  gun.add(socket);
+  // Queue arrière (légèrement plus petite)
+  const tailGeo = new THREE.CylinderGeometry(0.27, 0.265, 0.4, 64);
+  const tail = new THREE.Mesh(tailGeo, dark);
+  tail.rotation.z = Math.PI / 2;
+  tail.position.set(-0.88, 0, 0);
+  gun.add(tail);
 
-  // Back body (slightly wider — battery area)
-  const backGeo = new THREE.CylinderGeometry(0.30, 0.28, 0.5, 48);
-  const back = new THREE.Mesh(backGeo, matBlackMatte);
-  back.rotation.z = Math.PI / 2;
-  back.position.set(-0.85, 0, 0);
-  gun.add(back);
+  // Capuchon arrière arrondi
+  const backDomeGeo = new THREE.SphereGeometry(0.265, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2);
+  const backDome = new THREE.Mesh(backDomeGeo, gloss);
+  backDome.rotation.z = Math.PI / 2;
+  backDome.position.set(-1.08, 0, 0);
+  gun.add(backDome);
 
-  // Back cap
-  const backCapGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.08, 48);
-  const backCap = new THREE.Mesh(backCapGeo, matDarkGrey);
-  backCap.rotation.z = Math.PI / 2;
-  backCap.position.set(-1.14, 0, 0);
-  gun.add(backCap);
+  // Jointure corps/queue (groove)
+  const groove1 = new THREE.Mesh(new THREE.TorusGeometry(0.305, 0.009, 8, 64), accent);
+  groove1.rotation.y = Math.PI / 2;
+  groove1.position.set(-0.64, 0, 0);
+  gun.add(groove1);
 
-  // Seam ring between body and back
-  const seamGeo = new THREE.TorusGeometry(0.305, 0.012, 12, 64);
-  const seam = new THREE.Mesh(seamGeo, matDarkGrey);
-  seam.rotation.y = Math.PI / 2;
-  seam.position.set(-0.58, 0, 0);
-  gun.add(seam);
+  /* ── ÉCRAN LCD (sur dessus du corps) ── */
+  const screenBzl = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.185, 0.038), dark);
+  screenBzl.position.set(0.05, 0.31, 0);
+  screenBzl.rotation.z = -0.04;
+  gun.add(screenBzl);
 
-  // ── HANDLE ──
-  // Handle upper (connects to body)
-  const handleTopGeo = new THREE.CylinderGeometry(0.22, 0.20, 0.35, 32);
-  const handleTop = new THREE.Mesh(handleTopGeo, matBlackMatte);
-  handleTop.position.set(-0.15, -0.47, 0);
-  gun.add(handleTop);
+  const screenMesh = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.13, 0.022), screen);
+  screenMesh.position.set(0.05, 0.31, 0.022);
+  screenMesh.rotation.z = -0.04;
+  gun.add(screenMesh);
 
-  // Handle main grip
-  const handleGeo = new THREE.CylinderGeometry(0.19, 0.17, 0.9, 32);
-  const handle = new THREE.Mesh(handleGeo, matRubber);
-  handle.position.set(-0.15, -1.07, 0);
-  gun.add(handle);
-
-  // Handle bottom (tapered)
-  const handleBotGeo = new THREE.CylinderGeometry(0.17, 0.15, 0.2, 32);
-  const handleBot = new THREE.Mesh(handleBotGeo, matDarkGrey);
-  handleBot.position.set(-0.15, -1.62, 0);
-  gun.add(handleBot);
-
-  // Handle end cap (rounded)
-  const endCapGeo = new THREE.SphereGeometry(0.15, 32, 16, 0, Math.PI * 2, 0, Math.PI);
-  const endCap = new THREE.Mesh(endCapGeo, matBlackGloss);
-  endCap.position.set(-0.15, -1.72, 0);
-  gun.add(endCap);
-
-  // ── GRIP TEXTURE RINGS ──
-  for (let i = 0; i < 8; i++) {
-    const gripGeo = new THREE.TorusGeometry(0.195, 0.007, 8, 48);
-    const grip = new THREE.Mesh(gripGeo, matDarkGrey);
-    grip.position.set(-0.15, -0.68 + i * 0.1, 0);
-    gun.add(grip);
+  // Chiffres LCD simulés (3 rectangles lumineux)
+  for (let i = 0; i < 3; i++) {
+    const digit = new THREE.Mesh(
+      new THREE.BoxGeometry(0.052, 0.09, 0.005),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xaaccff, emissiveIntensity: 1.5, metalness: 0, roughness: 0.2 })
+    );
+    digit.position.set(-0.04 + i * 0.07, 0.315, 0.036);
+    digit.rotation.z = -0.04;
+    gun.add(digit);
   }
 
-  // ── LCD SCREEN ──
-  const screenBezelGeo = new THREE.BoxGeometry(0.28, 0.18, 0.04);
-  const screenBezel = new THREE.Mesh(screenBezelGeo, matDarkGrey);
-  screenBezel.position.set(0.2, 0.33, 0);
-  screenBezel.rotation.z = -0.08;
-  gun.add(screenBezel);
-
-  const screenGeo = new THREE.BoxGeometry(0.22, 0.12, 0.02);
-  const screen = new THREE.Mesh(screenGeo, matScreen);
-  screen.position.set(0.2, 0.33, 0.022);
-  screen.rotation.z = -0.08;
-  gun.add(screen);
-
-  // Screen glow plane (fake bloom)
-  const glowGeo = new THREE.PlaneGeometry(0.3, 0.2);
-  const glowMat = new THREE.MeshStandardMaterial({
-    color: 0x0044ff, transparent: true, opacity: 0.08,
-    emissive: 0x0044ff, emissiveIntensity: 1, side: THREE.DoubleSide
-  });
-  const glow = new THREE.Mesh(glowGeo, glowMat);
-  glow.position.set(0.2, 0.33, 0.06);
-  glow.rotation.z = -0.08;
-  gun.add(glow);
-
-  // ── POWER BUTTON ──
-  const btnGeo = new THREE.CylinderGeometry(0.055, 0.055, 0.04, 24);
-  const btn = new THREE.Mesh(btnGeo, matBlackGloss);
+  /* ── BOUTON POWER ── */
+  const btnGeo = new THREE.CylinderGeometry(0.052, 0.052, 0.032, 32);
+  const btn = new THREE.Mesh(btnGeo, gloss);
   btn.rotation.x = Math.PI / 2;
-  btn.position.set(0.2, 0.33, -0.325);
+  btn.position.set(0.05, 0.31, -0.312);
   gun.add(btn);
 
-  // Button ring LED
-  const btnRingGeo = new THREE.TorusGeometry(0.06, 0.008, 8, 32);
-  const btnRing = new THREE.Mesh(btnRingGeo, matOrange);
+  const btnRingGeo = new THREE.TorusGeometry(0.058, 0.006, 8, 32);
+  const btnRing = new THREE.Mesh(btnRingGeo, ledGreen);
   btnRing.rotation.x = Math.PI / 2;
-  btnRing.position.set(0.2, 0.33, -0.31);
+  btnRing.position.set(0.05, 0.31, -0.298);
   gun.add(btnRing);
 
-  // ── SPEED INDICATOR DOTS (side) ──
-  const dotColors = [0x00ff88, 0x00ff88, 0xffaa00, 0xffaa00, 0xff4400];
-  for (let i = 0; i < 5; i++) {
-    const dotGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.02, 16);
-    const dotMat = new THREE.MeshStandardMaterial({
-      color: dotColors[i], emissive: dotColors[i], emissiveIntensity: 1.2,
-      metalness: 0, roughness: 0.3
+  /* ── INDICATEURS DE VITESSE (3 points LED) ── */
+  const ledColors = [0x22ff88, 0x22ff88, 0xffaa22];
+  for (let i = 0; i < 3; i++) {
+    const ledMat = new THREE.MeshStandardMaterial({
+      color: ledColors[i], emissive: ledColors[i], emissiveIntensity: 2.0, metalness: 0, roughness: 0.2
     });
-    const dot = new THREE.Mesh(dotGeo, dotMat);
-    dot.rotation.x = Math.PI / 2;
-    dot.position.set(-0.35 + i * 0.18, 0.34, -0.315);
-    gun.add(dot);
+    const led = new THREE.Mesh(new THREE.SphereGeometry(0.014, 16, 16), ledMat);
+    led.position.set(-0.1 + i * 0.1, 0.315, -0.308);
+    gun.add(led);
   }
 
-  // ── VENTILATION SLOTS ──
-  for (let i = 0; i < 8; i++) {
-    const slotGeo = new THREE.BoxGeometry(0.06, 0.008, 0.04);
-    const slot = new THREE.Mesh(slotGeo, matMidGrey);
-    const angle = (i / 8) * Math.PI * 2 + 0.4;
-    slot.position.set(
-      -0.85,
-      Math.sin(angle) * 0.28,
-      Math.cos(angle) * 0.28
+  /* ── FENTES DE VENTILATION (corps arrière) ── */
+  for (let i = 0; i < 7; i++) {
+    const angle = (i / 7) * Math.PI * 2;
+    const slot = new THREE.Mesh(
+      new THREE.BoxGeometry(0.055, 0.01, 0.032),
+      new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 1 })
     );
+    slot.position.set(-0.7, Math.sin(angle) * 0.265, Math.cos(angle) * 0.265);
     slot.rotation.z = angle;
     gun.add(slot);
   }
 
-  // ── USB-C PORT ──
-  const usbGeo = new THREE.BoxGeometry(0.1, 0.035, 0.025);
-  const usb = new THREE.Mesh(usbGeo, new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 1 }));
-  usb.position.set(-0.15, -1.61, 0.17);
-  gun.add(usb);
+  /* ── MANCHE (cylindre vertical) ── */
+  // Jonction corps-manche
+  const junctionGeo = new THREE.CylinderGeometry(0.225, 0.21, 0.32, 32);
+  const junction = new THREE.Mesh(junctionGeo, matte);
+  junction.position.set(-0.08, -0.43, 0);
+  gun.add(junction);
 
-  // USB port rim
-  const usbRimGeo = new THREE.BoxGeometry(0.115, 0.05, 0.015);
-  const usbRim = new THREE.Mesh(usbRimGeo, matMidGrey);
-  usbRim.position.set(-0.15, -1.61, 0.183);
-  gun.add(usbRim);
+  // Corps manche (grip rubber)
+  const gripGeo = new THREE.CylinderGeometry(0.185, 0.165, 0.92, 32);
+  const grip = new THREE.Mesh(gripGeo, rubber);
+  grip.position.set(-0.08, -1.03, 0);
+  gun.add(grip);
 
-  // ── ATTACHMENT HEAD — Professional ball ──
-  // Stem
-  const stemGeo = new THREE.CylinderGeometry(0.055, 0.055, 0.22, 24);
-  const stem = new THREE.Mesh(stemGeo, matDarkGrey);
-  stem.rotation.z = Math.PI / 2;
-  stem.position.set(1.565, 0, 0);
-  gun.add(stem);
+  // Rainures de grip
+  for (let i = 0; i < 9; i++) {
+    const rg = new THREE.Mesh(new THREE.TorusGeometry(0.188, 0.006, 8, 48), accent);
+    rg.position.set(-0.08, -0.62 + i * 0.09, 0);
+    gun.add(rg);
+  }
 
-  // Ball head
-  const ballGeo = new THREE.SphereGeometry(0.195, 48, 48);
-  const ball = new THREE.Mesh(ballGeo, matWhite);
-  ball.position.set(1.78, 0, 0);
+  // Bas du manche (évasé)
+  const baseGeo = new THREE.CylinderGeometry(0.165, 0.155, 0.14, 32);
+  const base = new THREE.Mesh(baseGeo, dark);
+  base.position.set(-0.08, -1.55, 0);
+  gun.add(base);
+
+  // Capuchon bas arrondi
+  const baseDome = new THREE.Mesh(new THREE.SphereGeometry(0.155, 32, 16, 0, Math.PI * 2, 0, Math.PI), gloss);
+  baseDome.position.set(-0.08, -1.62, 0);
+  gun.add(baseDome);
+
+  // Port USB-C
+  const usbHole = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.03, 0.018), new THREE.MeshStandardMaterial({ color: 0x010101, roughness: 1 }));
+  usbHole.position.set(-0.08, -1.5, 0.168);
+  gun.add(usbHole);
+
+  const usbFrame = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.042, 0.012), accent);
+  usbFrame.position.set(-0.08, -1.5, 0.178);
+  gun.add(usbFrame);
+
+  /* ── TIGE DE L'ACCESSOIRE ── */
+  const stemGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.20, 24);
+  const stemMesh = new THREE.Mesh(stemGeo, accent);
+  stemMesh.rotation.z = Math.PI / 2;
+  stemMesh.position.set(1.57, 0, 0);
+  gun.add(stemMesh);
+
+  /* ── TÊTE BALL (sphère — identique à la photo) ── */
+  const ballGeo = new THREE.SphereGeometry(0.215, 64, 64);
+  const ballMat = new THREE.MeshStandardMaterial({ color: 0x0f0f0f, metalness: 0.4, roughness: 0.35 });
+  const ball = new THREE.Mesh(ballGeo, ballMat);
+  ball.position.set(1.82, 0, 0);
+  ball.castShadow = true;
   gun.add(ball);
 
-  // Ball equator seam
-  const ballSeamGeo = new THREE.TorusGeometry(0.195, 0.006, 8, 64);
-  const ballSeam = new THREE.Mesh(ballSeamGeo, matDarkGrey);
+  // Équateur de la balle
+  const ballSeam = new THREE.Mesh(new THREE.TorusGeometry(0.215, 0.005, 8, 64), accent);
   ballSeam.rotation.y = Math.PI / 2;
-  ballSeam.position.set(1.78, 0, 0);
+  ballSeam.position.set(1.82, 0, 0);
   gun.add(ballSeam);
 
-  // ── LOGO ENGRAVING ──
-  const logoPlaneGeo = new THREE.PlaneGeometry(0.38, 0.07);
-  const logoMat = new THREE.MeshStandardMaterial({
-    color: 0x222222, metalness: 0.3, roughness: 0.8
-  });
-  const logoPlane = new THREE.Mesh(logoPlaneGeo, logoMat);
-  logoPlane.position.set(0.1, 0, 0.325);
-  gun.add(logoPlane);
+  // Flat au fond de la balle (socket)
+  const socketGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.025, 24);
+  const socket = new THREE.Mesh(socketGeo, dark);
+  socket.rotation.z = Math.PI / 2;
+  socket.position.set(1.605, 0, 0);
+  gun.add(socket);
 
-  // ── CABLE GROOVE (decorative line on handle junction) ──
-  const grooveGeo = new THREE.TorusGeometry(0.225, 0.01, 8, 48);
-  const groove = new THREE.Mesh(grooveGeo, matDarkGrey);
-  groove.position.set(-0.15, -0.285, 0);
-  gun.add(groove);
+  /* ── OMBRE AU SOL ── */
+  const shadow = new THREE.Mesh(
+    new THREE.PlaneGeometry(10, 10),
+    new THREE.ShadowMaterial({ opacity: 0.3 })
+  );
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.y = -2.4;
+  shadow.receiveShadow = true;
+  scene.add(shadow);
 
-  // Position entire gun
-  gun.position.set(-0.2, 0.15, 0);
-  gun.rotation.y = 0.3;
-  gun.rotation.x = 0.1;
+  /* Orientation initiale */
+  gun.rotation.y = 0.45;
+  gun.rotation.x = 0.08;
+  gun.position.set(-0.15, 0.1, 0);
   scene.add(gun);
 
-  /* ── Shadow plane ── */
-  const shadowGeo = new THREE.PlaneGeometry(8, 8);
-  const shadowMat = new THREE.ShadowMaterial({ opacity: 0.25 });
-  const shadowPlane = new THREE.Mesh(shadowGeo, shadowMat);
-  shadowPlane.rotation.x = -Math.PI / 2;
-  shadowPlane.position.y = -2.2;
-  shadowPlane.receiveShadow = true;
-  scene.add(shadowPlane);
+  /* ── Drag & auto-rotation ── */
+  let drag = false, px = 0, py = 0, vy = 0.005, vx = 0, autoRot = true;
 
-  /* ── Drag & rotation ── */
-  let isDragging = false;
-  let prevX = 0, prevY = 0;
-  let rotY = 0.3, rotX = 0.1;
-  let velY = 0.004, velX = 0;
-  let autoRotate = true;
-
-  canvas.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    autoRotate = false;
-    prevX = e.clientX; prevY = e.clientY;
-    velY = 0; velX = 0;
+  canvas.addEventListener('mousedown', e => { drag = true; autoRot = false; px = e.clientX; py = e.clientY; vy = vx = 0; });
+  window.addEventListener('mouseup',   () => { drag = false; });
+  window.addEventListener('mousemove', e => {
+    if (!drag) return;
+    const dx = (e.clientX - px) * 0.007, dy = (e.clientY - py) * 0.003;
+    vy = dx * 0.6; vx = dy * 0.4;
+    gun.rotation.y += dx;
+    gun.rotation.x = Math.max(-0.55, Math.min(0.55, gun.rotation.x + dy));
+    px = e.clientX; py = e.clientY;
   });
-  window.addEventListener('mouseup', () => { isDragging = false; });
-  window.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    const dx = (e.clientX - prevX) * 0.007;
-    const dy = (e.clientY - prevY) * 0.003;
-    velY = dx * 0.5; velX = dy * 0.5;
-    rotY += dx; rotX += dy;
-    rotX = Math.max(-0.6, Math.min(0.6, rotX));
-    prevX = e.clientX; prevY = e.clientY;
-  });
-
-  canvas.addEventListener('touchstart', e => {
-    isDragging = true; autoRotate = false;
-    prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
-  }, { passive: true });
-  window.addEventListener('touchend', () => { isDragging = false; });
-  window.addEventListener('touchmove', e => {
-    if (!isDragging) return;
-    const dx = (e.touches[0].clientX - prevX) * 0.007;
-    const dy = (e.touches[0].clientY - prevY) * 0.003;
-    velY = dx * 0.5; rotY += dx; rotX += dy;
-    rotX = Math.max(-0.6, Math.min(0.6, rotX));
-    prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
+  canvas.addEventListener('touchstart', e => { drag = true; autoRot = false; px = e.touches[0].clientX; py = e.touches[0].clientY; }, { passive: true });
+  window.addEventListener('touchend',   () => { drag = false; });
+  window.addEventListener('touchmove',  e => {
+    if (!drag) return;
+    const dx = (e.touches[0].clientX - px) * 0.007;
+    vy = dx * 0.6;
+    gun.rotation.y += dx;
+    px = e.touches[0].clientX;
   }, { passive: true });
 
-  /* ── Animate ── */
+  /* ── Animation loop ── */
   let t = 0;
   function animate() {
     requestAnimationFrame(animate);
-    t += 0.016;
+    t += 0.015;
 
-    if (!isDragging) {
-      if (autoRotate) velY = 0.006;
-      velY *= 0.94;
-      velX *= 0.92;
-      rotY += velY;
-      rotX += velX;
+    if (!drag) {
+      if (autoRot) vy = 0.005;
+      vy *= 0.93; vx *= 0.90;
+      gun.rotation.y += vy;
+      gun.rotation.x += vx;
     }
 
-    gun.rotation.y = rotY;
-    gun.rotation.x = rotX;
-    gun.position.y = 0.15 + Math.sin(t * 0.7) * 0.07;
+    // Float subtil
+    gun.position.y = 0.1 + Math.sin(t * 0.65) * 0.07;
 
-    // Pulse LED glow
-    const pulse = 0.3 + Math.sin(t * 2.5) * 0.15;
-    if (btnRing.material) btnRing.material.emissiveIntensity = pulse + 0.1;
-    if (glow.material) glow.material.opacity = 0.05 + pulse * 0.06;
+    // Pulse LED
+    if (btnRing.material) btnRing.material.emissiveIntensity = 1.8 + Math.sin(t * 2.2) * 0.7;
 
     renderer.render(scene, camera);
   }
   animate();
 
-  /* ── Resize ── */
   window.addEventListener('resize', () => {
-    W = container.clientWidth;
-    H = container.clientHeight;
+    W = wrap.clientWidth; H = wrap.clientHeight;
     camera.aspect = W / H;
     camera.updateProjectionMatrix();
     renderer.setSize(W, H);
