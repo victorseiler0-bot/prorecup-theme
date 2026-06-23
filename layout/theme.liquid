@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
   {{ 'prorecup.css' | asset_url | stylesheet_tag }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  {{ 'three.min.js' | asset_url | script_tag }}
 </head>
 <body class="{% if template == 'index' %}home{% endif %}">
   <div id="cursor"></div>

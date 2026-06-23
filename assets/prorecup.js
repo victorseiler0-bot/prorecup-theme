@@ -9,7 +9,37 @@ document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   initParallax();
   initCounters();
+  initGallery();
 });
+
+/* ── Gallery carousel ── */
+function initGallery() {
+  const gallery = document.querySelector('.product-gallery');
+  if (!gallery) return;
+
+  const slides = gallery.querySelectorAll('.gallery-slide');
+  const dots   = gallery.querySelectorAll('.gallery-dot');
+  let current  = 0;
+  let timer;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function autoPlay() {
+    timer = setInterval(() => goTo(current + 1), 4000);
+  }
+
+  gallery.querySelector('.gallery-prev').addEventListener('click', () => { clearInterval(timer); goTo(current - 1); autoPlay(); });
+  gallery.querySelector('.gallery-next').addEventListener('click', () => { clearInterval(timer); goTo(current + 1); autoPlay(); });
+  dots.forEach(d => d.addEventListener('click', () => { clearInterval(timer); goTo(parseInt(d.dataset.index)); autoPlay(); }));
+
+  autoPlay();
+}
 
 window.addEventListener('load', () => {
   initHero3D();
