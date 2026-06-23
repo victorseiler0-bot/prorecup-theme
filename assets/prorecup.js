@@ -69,9 +69,9 @@ function initReveal() {
       setTimeout(() => e.target.classList.add('visible'), delay);
       io.unobserve(e.target);
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0.18, rootMargin: '0px 0px -60px 0px' });
   els.forEach((el, i) => {
-    el.dataset.delay = (i % 4) * 90;
+    el.dataset.delay = (i % 4) * 160;
     io.observe(el);
   });
 }
@@ -82,8 +82,8 @@ function initParallax() {
   if (!content) return;
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
-    content.style.transform = `translateY(${y * 0.22}px)`;
-    content.style.opacity = Math.max(0, 1 - y / 480);
+    content.style.transform = `translateY(${y * 0.07}px)`;
+    content.style.opacity = Math.max(0, 1 - y / 1100);
   }, { passive: true });
 }
 
@@ -134,7 +134,7 @@ function initHero3D() {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.4;
+  renderer.toneMappingExposure = 2.2;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(32, W / H, 0.1, 50);
@@ -163,15 +163,20 @@ function initHero3D() {
   // Bounce sol
   scene.add(Object.assign(new THREE.PointLight(0x2040aa, 0.4, 12), { position: new THREE.Vector3(0, -4, 1) }));
 
+  // Lumière frontale (caméra) — garantit la visibilité sans env map
+  const front = new THREE.PointLight(0xffffff, 2.5, 25);
+  front.position.set(0, 0.3, 8);
+  scene.add(front);
+
   /* ── Matériaux ── */
-  const matte   = new THREE.MeshStandardMaterial({ color: 0x2e2e2e, metalness: 0.6, roughness: 0.3 });
-  const satin   = new THREE.MeshStandardMaterial({ color: 0x383838, metalness: 0.75, roughness: 0.16 });
-  const dark    = new THREE.MeshStandardMaterial({ color: 0x1e1e1e, metalness: 0.5, roughness: 0.45 });
-  const rubber  = new THREE.MeshStandardMaterial({ color: 0x282828, metalness: 0.0, roughness: 0.95 });
-  const gloss   = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.92, roughness: 0.03 });
-  const screen  = new THREE.MeshStandardMaterial({ color: 0x001830, metalness: 0, roughness: 0, emissive: 0x002244, emissiveIntensity: 1.5 });
-  const ledGreen= new THREE.MeshStandardMaterial({ color: 0x22ff88, emissive: 0x22ff88, emissiveIntensity: 2.5, metalness: 0, roughness: 0.2 });
-  const accent  = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, metalness: 0.55, roughness: 0.45 });
+  const matte   = new THREE.MeshStandardMaterial({ color: 0x555555, metalness: 0.12, roughness: 0.55 });
+  const satin   = new THREE.MeshStandardMaterial({ color: 0x636363, metalness: 0.22, roughness: 0.22 });
+  const dark    = new THREE.MeshStandardMaterial({ color: 0x3a3a3a, metalness: 0.08, roughness: 0.65 });
+  const rubber  = new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.0,  roughness: 0.96 });
+  const gloss   = new THREE.MeshStandardMaterial({ color: 0x585858, metalness: 0.28, roughness: 0.04 });
+  const screen  = new THREE.MeshStandardMaterial({ color: 0x001830, metalness: 0, roughness: 0, emissive: 0x0033aa, emissiveIntensity: 2.0 });
+  const ledGreen= new THREE.MeshStandardMaterial({ color: 0x22ff88, emissive: 0x22ff88, emissiveIntensity: 3.0, metalness: 0, roughness: 0.2 });
+  const accent  = new THREE.MeshStandardMaterial({ color: 0x424242, metalness: 0.15, roughness: 0.5 });
 
   const gun = new THREE.Group();
 
@@ -332,7 +337,7 @@ function initHero3D() {
 
   /* ── TÊTE BALL (sphère — identique à la photo) ── */
   const ballGeo = new THREE.SphereGeometry(0.215, 64, 64);
-  const ballMat = new THREE.MeshStandardMaterial({ color: 0x2c2c2c, metalness: 0.4, roughness: 0.35 });
+  const ballMat = new THREE.MeshStandardMaterial({ color: 0x505050, metalness: 0.15, roughness: 0.4 });
   const ball = new THREE.Mesh(ballGeo, ballMat);
   ball.position.set(1.82, 0, 0);
   ball.castShadow = true;
