@@ -3,6 +3,7 @@
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initScrollProgress();
   initCursor();
   initNav();
   initReveal();
@@ -10,6 +11,17 @@ document.addEventListener('DOMContentLoaded', () => {
   initCounters();
   initHero3D();
 });
+
+/* ── Scroll Progress ── */
+function initScrollProgress() {
+  const bar = document.createElement('div');
+  bar.id = 'scroll-progress';
+  document.body.prepend(bar);
+  window.addEventListener('scroll', () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = `scaleX(${window.scrollY / max})`;
+  }, { passive: true });
+}
 
 /* ── Cursor ── */
 function initCursor() {
@@ -129,22 +141,22 @@ function initHero3D() {
   camera.position.set(0, 0.3, 7);
 
   /* ── Éclairage ── */
-  scene.add(new THREE.AmbientLight(0xffffff, 0.18));
+  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
   // Key light haut-gauche chaud
-  const key = new THREE.DirectionalLight(0xfff4e0, 2.8);
+  const key = new THREE.DirectionalLight(0xfff4e0, 3.5);
   key.position.set(-4, 5, 4);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   scene.add(key);
 
   // Fill bleu froid droite
-  const fill = new THREE.DirectionalLight(0x8ab0ff, 0.5);
+  const fill = new THREE.DirectionalLight(0x8ab0ff, 1.2);
   fill.position.set(5, 0, 3);
   scene.add(fill);
 
   // Rim arrière
-  const rim = new THREE.DirectionalLight(0xffffff, 1.6);
+  const rim = new THREE.DirectionalLight(0xffffff, 2.2);
   rim.position.set(1, -1, -6);
   scene.add(rim);
 
@@ -152,14 +164,14 @@ function initHero3D() {
   scene.add(Object.assign(new THREE.PointLight(0x2040aa, 0.4, 12), { position: new THREE.Vector3(0, -4, 1) }));
 
   /* ── Matériaux ── */
-  const matte   = new THREE.MeshStandardMaterial({ color: 0x0c0c0c, metalness: 0.6, roughness: 0.3 });
-  const satin   = new THREE.MeshStandardMaterial({ color: 0x141414, metalness: 0.7, roughness: 0.18 });
-  const dark    = new THREE.MeshStandardMaterial({ color: 0x080808, metalness: 0.5, roughness: 0.45 });
-  const rubber  = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.0, roughness: 0.95 });
-  const gloss   = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, metalness: 0.9, roughness: 0.04 });
-  const screen  = new THREE.MeshStandardMaterial({ color: 0x001830, metalness: 0, roughness: 0, emissive: 0x002244, emissiveIntensity: 1.2 });
-  const ledGreen= new THREE.MeshStandardMaterial({ color: 0x22ff88, emissive: 0x22ff88, emissiveIntensity: 2, metalness: 0, roughness: 0.2 });
-  const accent  = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.5, roughness: 0.5 });
+  const matte   = new THREE.MeshStandardMaterial({ color: 0x2e2e2e, metalness: 0.6, roughness: 0.3 });
+  const satin   = new THREE.MeshStandardMaterial({ color: 0x383838, metalness: 0.75, roughness: 0.16 });
+  const dark    = new THREE.MeshStandardMaterial({ color: 0x1e1e1e, metalness: 0.5, roughness: 0.45 });
+  const rubber  = new THREE.MeshStandardMaterial({ color: 0x282828, metalness: 0.0, roughness: 0.95 });
+  const gloss   = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.92, roughness: 0.03 });
+  const screen  = new THREE.MeshStandardMaterial({ color: 0x001830, metalness: 0, roughness: 0, emissive: 0x002244, emissiveIntensity: 1.5 });
+  const ledGreen= new THREE.MeshStandardMaterial({ color: 0x22ff88, emissive: 0x22ff88, emissiveIntensity: 2.5, metalness: 0, roughness: 0.2 });
+  const accent  = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, metalness: 0.55, roughness: 0.45 });
 
   const gun = new THREE.Group();
 
@@ -320,7 +332,7 @@ function initHero3D() {
 
   /* ── TÊTE BALL (sphère — identique à la photo) ── */
   const ballGeo = new THREE.SphereGeometry(0.215, 64, 64);
-  const ballMat = new THREE.MeshStandardMaterial({ color: 0x0f0f0f, metalness: 0.4, roughness: 0.35 });
+  const ballMat = new THREE.MeshStandardMaterial({ color: 0x2c2c2c, metalness: 0.4, roughness: 0.35 });
   const ball = new THREE.Mesh(ballGeo, ballMat);
   ball.position.set(1.82, 0, 0);
   ball.castShadow = true;
