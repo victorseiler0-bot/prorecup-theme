@@ -1,9 +1,37 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
-    "hero": { "type": "hero", "settings": {} },
-    "numbers": { "type": "numbers", "settings": {} },
-    "features": { "type": "features", "settings": {} },
-    "product-buy": { "type": "product-buy", "settings": {} }
+    "hero": {
+      "type": "hero",
+      "settings": {}
+    },
+    "numbers": {
+      "type": "numbers",
+      "settings": {}
+    },
+    "features": {
+      "type": "features",
+      "settings": {}
+    },
+    "product-buy": {
+      "type": "product-buy",
+      "settings": {
+        "product": "pistolet-de-massage-electrique-8-tetes-interchangeables"
+      }
+    }
   },
-  "order": ["hero", "numbers", "features", "product-buy"]
+  "order": [
+    "hero",
+    "numbers",
+    "features",
+    "product-buy"
+  ]
 }
