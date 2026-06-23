@@ -38,8 +38,8 @@ img { display: block; max-width: 100%; }
    ============================================================ */
 
 #cursor {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: var(--white);
   border-radius: 50%;
   position: fixed;
@@ -48,28 +48,12 @@ img { display: block; max-width: 100%; }
   z-index: 9999;
   mix-blend-mode: difference;
   transform: translate(-50%, -50%);
-  transition: width 0.2s var(--ease-out), height 0.2s var(--ease-out);
+  transition: width 0.15s var(--ease-out), height 0.15s var(--ease-out), opacity 0.15s;
 }
 
-#cursor.hover { width: 28px; height: 28px; }
+#cursor.hover { width: 22px; height: 22px; }
 
-#cursor-ring {
-  width: 36px;
-  height: 36px;
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 50%;
-  position: fixed;
-  top: 0; left: 0;
-  pointer-events: none;
-  z-index: 9998;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s, border-color 0.3s, opacity 0.3s;
-}
-
-#cursor-ring.hover {
-  width: 56px; height: 56px;
-  border-color: rgba(255,255,255,0.1);
-}
+#cursor-ring { display: none; }
 
 /* ============================================================
    HEADER
@@ -376,6 +360,22 @@ img { display: block; max-width: 100%; }
   width: 100%;
   height: 100%;
   display: block;
+}
+
+.hero-product-img {
+  width: 85%;
+  max-width: 560px;
+  height: auto;
+  object-fit: contain;
+  position: relative;
+  z-index: 2;
+  animation: heroFloat 6s ease-in-out infinite;
+  filter: drop-shadow(0 40px 80px rgba(0,0,0,0.6));
+}
+
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
 }
 
 .canvas-hint {
