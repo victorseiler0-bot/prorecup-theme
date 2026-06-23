@@ -182,70 +182,78 @@ function initCounters() {
 }
 
 /* ================================================================
-   THREE.JS — Massage Gun 3D (basé sur photo produit)
-   Forme exacte : corps horizontal + manche vertical + tête ball
+   THREE.JS — ProRecup Massage Gun 3D
+   Matières noires mat, rotation broche, fond transparent
    ================================================================ */
 
 function initHero3D() {
   const canvas = document.getElementById('three-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
+  if (window.innerWidth <= 600) return; // fallback image sur mobile
+
+  // Montrer le canvas, cacher l'image fallback
+  canvas.style.display = 'block';
+  const fallback = document.querySelector('.hero-product-img');
+  if (fallback) fallback.style.display = 'none';
 
   const wrap = canvas.parentElement;
   let W = wrap.clientWidth  || Math.round(window.innerWidth * 0.5);
   let H = wrap.clientHeight || window.innerHeight;
 
-  /* Renderer */
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-  renderer.setClearColor(0x060608, 1);
+  /* Renderer — fond transparent pour fusion avec la page */
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(W, H);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 2.2;
+  renderer.toneMappingExposure = 2.0;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(32, W / H, 0.1, 50);
   camera.position.set(0, 0.3, 7);
 
-  /* ── Éclairage ── */
-  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+  /* ── Éclairage studio — produit noir mat ── */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.14));
 
-  // Key light haut-gauche chaud
-  const key = new THREE.DirectionalLight(0xfff4e0, 3.5);
-  key.position.set(-4, 5, 4);
+  // Key — chaud haut-gauche
+  const key = new THREE.DirectionalLight(0xfff4e0, 5.5);
+  key.position.set(-3, 4, 3);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   scene.add(key);
 
-  // Fill bleu froid droite
-  const fill = new THREE.DirectionalLight(0x8ab0ff, 1.2);
-  fill.position.set(5, 0, 3);
+  // Fill — bleu froid droite
+  const fill = new THREE.DirectionalLight(0x5878ff, 2.0);
+  fill.position.set(5, 0, 2);
   scene.add(fill);
 
-  // Rim arrière
-  const rim = new THREE.DirectionalLight(0xffffff, 2.2);
-  rim.position.set(1, -1, -6);
+  // Rim — blanc pur derrière (contour lumineux)
+  const rim = new THREE.DirectionalLight(0xffffff, 4.8);
+  rim.position.set(0.5, -0.5, -6);
   scene.add(rim);
 
-  // Bounce sol
-  scene.add(Object.assign(new THREE.PointLight(0x2040aa, 0.4, 12), { position: new THREE.Vector3(0, -4, 1) }));
+  // Top — définition des surfaces horizontales
+  const top = new THREE.DirectionalLight(0xffffff, 1.8);
+  top.position.set(0, 6, 2);
+  scene.add(top);
 
-  // Lumière frontale (caméra) — garantit la visibilité sans env map
-  const front = new THREE.PointLight(0xffffff, 2.5, 25);
-  front.position.set(0, 0.3, 8);
+  // Front point — avant-scène
+  const front = new THREE.PointLight(0xffffff, 3.0, 22);
+  front.position.set(0, 0.5, 7);
   scene.add(front);
 
-  /* ── Matériaux ── */
-  const matte   = new THREE.MeshStandardMaterial({ color: 0x555555, metalness: 0.12, roughness: 0.55 });
-  const satin   = new THREE.MeshStandardMaterial({ color: 0x636363, metalness: 0.22, roughness: 0.22 });
-  const dark    = new THREE.MeshStandardMaterial({ color: 0x3a3a3a, metalness: 0.08, roughness: 0.65 });
-  const rubber  = new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.0,  roughness: 0.96 });
-  const gloss   = new THREE.MeshStandardMaterial({ color: 0x585858, metalness: 0.28, roughness: 0.04 });
-  const screen  = new THREE.MeshStandardMaterial({ color: 0x001830, metalness: 0, roughness: 0, emissive: 0x0033aa, emissiveIntensity: 2.0 });
-  const ledGreen= new THREE.MeshStandardMaterial({ color: 0x22ff88, emissive: 0x22ff88, emissiveIntensity: 3.0, metalness: 0, roughness: 0.2 });
-  const accent  = new THREE.MeshStandardMaterial({ color: 0x424242, metalness: 0.15, roughness: 0.5 });
+  /* ── Matériaux — noir premium mat (produit réel) ── */
+  const matte   = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.28, roughness: 0.70 });
+  const satin   = new THREE.MeshStandardMaterial({ color: 0x212121, metalness: 0.52, roughness: 0.28 });
+  const dark    = new THREE.MeshStandardMaterial({ color: 0x0c0c0c, metalness: 0.10, roughness: 0.80 });
+  const rubber  = new THREE.MeshStandardMaterial({ color: 0x080808, metalness: 0.00, roughness: 0.98 });
+  const gloss   = new THREE.MeshStandardMaterial({ color: 0x262626, metalness: 0.68, roughness: 0.05 });
+  const screen  = new THREE.MeshStandardMaterial({ color: 0x000d1a, metalness: 0, roughness: 0, emissive: 0x0033cc, emissiveIntensity: 3.0 });
+  const ledGreen= new THREE.MeshStandardMaterial({ color: 0x22ff88, emissive: 0x22ff88, emissiveIntensity: 5.0, metalness: 0, roughness: 0.2 });
+  const accent  = new THREE.MeshStandardMaterial({ color: 0x141414, metalness: 0.20, roughness: 0.60 });
 
   const gun = new THREE.Group();
 
@@ -436,52 +444,22 @@ function initHero3D() {
   scene.add(shadow);
 
   /* Orientation initiale */
-  gun.rotation.y = 0.45;
   gun.rotation.x = 0.08;
   gun.position.set(-0.15, 0.1, 0);
   scene.add(gun);
 
-  /* ── Drag & auto-rotation ── */
-  let drag = false, px = 0, py = 0, vy = 0.005, vx = 0, autoRot = true;
-
-  canvas.addEventListener('mousedown', e => { drag = true; autoRot = false; px = e.clientX; py = e.clientY; vy = vx = 0; });
-  window.addEventListener('mouseup',   () => { drag = false; });
-  window.addEventListener('mousemove', e => {
-    if (!drag) return;
-    const dx = (e.clientX - px) * 0.007, dy = (e.clientY - py) * 0.003;
-    vy = dx * 0.6; vx = dy * 0.4;
-    gun.rotation.y += dx;
-    gun.rotation.x = Math.max(-0.55, Math.min(0.55, gun.rotation.x + dy));
-    px = e.clientX; py = e.clientY;
-  });
-  canvas.addEventListener('touchstart', e => { drag = true; autoRot = false; px = e.touches[0].clientX; py = e.touches[0].clientY; }, { passive: true });
-  window.addEventListener('touchend',   () => { drag = false; });
-  window.addEventListener('touchmove',  e => {
-    if (!drag) return;
-    const dx = (e.touches[0].clientX - px) * 0.007;
-    vy = dx * 0.6;
-    gun.rotation.y += dx;
-    px = e.touches[0].clientX;
-  }, { passive: true });
-
-  /* ── Animation loop ── */
+  /* ── Rotation broche — constante sur Y ── */
+  const SPEED = 0.011; // ~9 secondes par tour complet
   let t = 0;
+
   function animate() {
     requestAnimationFrame(animate);
-    t += 0.015;
+    t += SPEED;
 
-    if (!drag) {
-      if (autoRot) vy = 0.005;
-      vy *= 0.93; vx *= 0.90;
-      gun.rotation.y += vy;
-      gun.rotation.x += vx;
-    }
+    gun.rotation.y = t;
+    gun.position.y = 0.1 + Math.sin(t * 0.5) * 0.05;
 
-    // Float subtil
-    gun.position.y = 0.1 + Math.sin(t * 0.65) * 0.07;
-
-    // Pulse LED
-    if (btnRing.material) btnRing.material.emissiveIntensity = 1.8 + Math.sin(t * 2.2) * 0.7;
+    if (btnRing.material) btnRing.material.emissiveIntensity = 2.5 + Math.sin(t * 2.5) * 1.0;
 
     renderer.render(scene, camera);
   }

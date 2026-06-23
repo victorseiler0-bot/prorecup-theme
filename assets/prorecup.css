@@ -356,21 +356,56 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
 }
 
+/* Canvas 3D — caché jusqu'à init Three.js */
 #three-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 2;
+}
+
+/* Glow mystérieux derrière le produit */
+.hero-glow {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse,
+    rgba(68,136,255,0.18) 0%,
+    rgba(88,30,220,0.10) 40%,
+    transparent 72%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  animation: glowPulse 5s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.8; transform: translate(-50%,-50%) scale(1); }
+  50%       { opacity: 1.0; transform: translate(-50%,-50%) scale(1.12); }
 }
 
 .hero-product-img {
-  width: 85%;
-  max-width: 560px;
+  width: 88%;
+  max-width: 580px;
   height: auto;
   object-fit: contain;
   position: relative;
   z-index: 2;
   animation: heroFloat 6s ease-in-out infinite;
-  filter: drop-shadow(0 40px 80px rgba(0,0,0,0.6));
+  /* Détourage CSS — fusionne fond sombre avec la page noire */
+  mix-blend-mode: screen;
+  filter:
+    drop-shadow(0 0 32px rgba(68,136,255,0.22))
+    drop-shadow(0 0 80px rgba(80,20,200,0.14))
+    drop-shadow(0 40px 70px rgba(0,0,0,0.75));
+  -webkit-mask-image: radial-gradient(ellipse 78% 78% at center, black 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 78% 78% at center, black 45%, transparent 100%);
 }
 
 @keyframes heroFloat {
@@ -1217,15 +1252,25 @@ img { display: block; max-width: 100%; }
     min-height: 100svh;
   }
 
+  /* Canvas 3D désactivé sur mobile — image à la place */
+  #three-canvas { display: none !important; }
+  .hero-product-img { display: block !important; }
+
   /* Image remonte en premier */
   .hero-3d {
     order: -1;
     width: 100%;
-    height: 42svh;
-    min-height: 230px;
-    max-height: 360px;
+    height: 44svh;
+    min-height: 240px;
+    max-height: 380px;
     flex-shrink: 0;
     position: relative;
+  }
+
+  /* Glow mobile réduit */
+  .hero-glow {
+    width: 260px;
+    height: 260px;
   }
 
   /* Dégradé latéral sans objet en colonne */
