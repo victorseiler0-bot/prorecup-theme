@@ -1,5 +1,19 @@
 <section class="hero" id="hero">
-  <div class="hero-bg-gradient">
+
+  {%- comment -%} Produit en fond — couvre tout le hero, bords clippés {%- endcomment -%}
+  <img
+    src="{{ 'product-2.png' | asset_url }}"
+    alt=""
+    class="hero-bg-img"
+    aria-hidden="true"
+    loading="eager"
+  >
+
+  {%- comment -%} Dégradé qui rend le texte lisible {%- endcomment -%}
+  <div class="hero-overlay"></div>
+
+  {%- comment -%} Orbes aurora (z-index au-dessus de l'image) {%- endcomment -%}
+  <div class="hero-bg-gradient" aria-hidden="true">
     <div class="aurora-orb aurora-orb-1"></div>
     <div class="aurora-orb aurora-orb-2"></div>
     <div class="aurora-orb aurora-orb-3"></div>
@@ -39,14 +53,6 @@
     </div>
   </div>
 
-  <div class="hero-3d" id="hero-canvas-container">
-    <div class="hero-ring hero-ring-1"></div>
-    <div class="hero-ring hero-ring-2"></div>
-    <div class="hero-ring hero-ring-3"></div>
-    <div class="hero-glow"></div>
-    <canvas id="three-canvas"></canvas>
-    <img src="{{ 'product-2.png' | asset_url }}" alt="ProRecup pistolet de massage" class="hero-product-img">
-  </div>
 </section>
 
 {% schema %}
