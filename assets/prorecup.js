@@ -200,16 +200,41 @@ function initLogoAnimation() {
   }, 500);
 }
 
-/* ── Logo = retour en haut (smooth) ── */
+/* ── Logo : rejoue l'intro sur homepage, navigation normale ailleurs ── */
 function initLogoScroll() {
   const logo = document.getElementById('nav-logo');
   if (!logo) return;
+
   logo.addEventListener('click', e => {
-    if (window.location.pathname === '/') {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    // Sur les autres pages (panier etc.) → navigation normale vers /
+    if (window.location.pathname !== '/') return; // autres pages → lien normal
+
+    e.preventDefault();
+
+    // Ne rejoue pas si intro déjà en cours
+    if (document.getElementById('intro-overlay')) return;
+
+    // Scroll en haut instantanément
+    window.scrollTo(0, 0);
+
+    // Recrée l'overlay
+    sessionStorage.removeItem('intro-done');
+    const overlay = document.createElement('div');
+    overlay.id = 'intro-overlay';
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.innerHTML = `
+      <div class="intro-logo" id="intro-logo">
+        <span class="intro-p">P</span><span class="intro-wrap"><span class="intro-slide">ro</span></span><span class="intro-r">R</span><span class="intro-wrap"><span class="intro-slide">ecup</span></span>
+      </div>`;
+    overlay.style.opacity = '1';
+    document.body.prepend(overlay);
+
+    // Remet le nav logo en position fermée (PR)
+    document.querySelectorAll('.logo-slide-wrap').forEach(wrap => {
+      wrap.style.transition = 'none';
+      wrap.style.width      = '0px';
+    });
+
+    initIntroAnimation();
   });
 }
 
