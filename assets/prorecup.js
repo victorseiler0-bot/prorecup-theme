@@ -28,8 +28,11 @@ function initLogoScroll() {
   const logo = document.getElementById('nav-logo');
   if (!logo) return;
   logo.addEventListener('click', e => {
-    e.preventDefault();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (window.location.pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    // Sur les autres pages (panier etc.) → navigation normale vers /
   });
 }
 

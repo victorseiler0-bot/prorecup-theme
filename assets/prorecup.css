@@ -65,6 +65,7 @@ img { display: block; max-width: 100%; }
   height: var(--nav-h);
   z-index: 100;
   transition: background 0.5s, backdrop-filter 0.5s;
+  background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, transparent 100%);
 }
 
 .site-header.scrolled {
