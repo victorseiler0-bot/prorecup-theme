@@ -137,15 +137,15 @@ function initIntroAnimation() {
           varying float vZ;
           void main() {
             vec3 p = position;
-            float w1 = sin(p.x * 0.55 + uTime * 0.36) * cos(p.y * 0.48 + uTime * 0.26);
-            float w2 = sin(p.x * 0.92 - uTime * 0.42 + p.y * 0.60) * 0.50;
-            float w3 = cos(p.x * 0.38 + p.y * 0.82 - uTime * 0.22) * 0.34;
-            float w = (w1 + w2 + w3) * 0.26;
+            float w1 = sin(p.x * 0.45 + uTime * 0.13) * cos(p.y * 0.38 + uTime * 0.09);
+            float w2 = sin(p.x * 0.70 - uTime * 0.15 + p.y * 0.50) * 0.50;
+            float w3 = cos(p.x * 0.30 + p.y * 0.65 - uTime * 0.08) * 0.34;
+            float w = (w1 + w2 + w3) * 0.30;
             if (uClickTime >= 0.0) {
               float t  = uTime - uClickTime;
               float d  = length(p.xy);
-              float rp = exp(-pow(d - t * 2.1, 2.0) * 2.6) * max(0.0, 1.0 - t * 0.50);
-              w += rp * 0.70;
+              float rp = exp(-pow(d - t * 1.1, 2.0) * 1.8) * max(0.0, 1.0 - t * 0.22);
+              w += rp * 0.80;
             }
             p.z = w;
             vZ  = w;
@@ -223,16 +223,17 @@ function initIntroAnimation() {
       const scale = parseFloat(getComputedStyle(navLogo).fontSize)
                   / parseFloat(getComputedStyle(logo).fontSize);
 
-      logo.style.transition      = 'transform 0.75s cubic-bezier(0.76, 0, 0.24, 1)';
+      logo.style.transition      = 'transform 0.8s cubic-bezier(0.76, 0, 0.24, 1), text-shadow 0.3s ease, opacity 0.3s ease';
       logo.style.transformOrigin = 'center center';
       logo.style.transform       = `translate(${tx}px, ${ty}px) scale(${scale})`;
+      logo.style.textShadow      = 'none';
 
-      overlay.style.transition = 'opacity 0.7s ease';
+      overlay.style.transition = 'opacity 1.0s ease 0.15s';
       overlay.style.opacity    = '0';
 
       requestAnimationFrame(() => {
         if (header) {
-          header.style.transition = 'opacity 0.5s ease 0.2s';
+          header.style.transition = 'opacity 0.6s ease 0.5s';
           header.style.opacity    = '1';
         }
       });
@@ -245,7 +246,7 @@ function initIntroAnimation() {
       overlay.remove();
       if (header) { header.style.transition = ''; header.style.opacity = ''; }
       bootSite();
-    }, 1100);
+    }, 1400);
   }
 
   startClothBackground();
@@ -260,12 +261,18 @@ function initIntroAnimation() {
       playIntroClick();
       if (clothUniforms) clothUniforms.uClickTime.value = clothUniforms.uTime.value;
       wraps.forEach((wrap, i) => {
-        wrap.style.transition = 'width 1s cubic-bezier(0.16, 1, 0.3, 1)';
+        wrap.style.transition = 'width 1.1s cubic-bezier(0.16, 1, 0.3, 1)';
         wrap.style.width      = widths[i] + 'px';
       });
 
-      // — Phase 3 : fermeture
-      setTimeout(closeIntro, 1400);
+      // Glow progressif une fois ProRecup pleinement révélé
+      setTimeout(() => {
+        logo.style.transition  = 'text-shadow 1.6s ease, opacity 0.4s ease';
+        logo.style.textShadow  = '0 0 30px rgba(255,255,255,0.35), 0 0 70px rgba(255,255,255,0.12)';
+      }, 1200);
+
+      // — Phase 3 : fermeture (logo fade-out léger puis fly)
+      setTimeout(closeIntro, 2500);
     }, 1400);
 
   }, 400);
