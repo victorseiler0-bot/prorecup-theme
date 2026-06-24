@@ -98,29 +98,47 @@ function initIntroAnimation() {
   });
 
   function closeIntro() {
-    // Clignement d'yeux : overlay s'assombrit, logo se place, overlay s'efface
-    overlay.style.transition = 'opacity 0.18s ease';
-    overlay.style.opacity    = '0';
+    const navLogo = document.getElementById('nav-logo');
+    const header  = document.getElementById('site-header');
+
+    // Mesure les positions pendant que l'intro est encore visible
+    const logoRect = logo.getBoundingClientRect();
+    const navRect  = navLogo.getBoundingClientRect();
+
+    const tx    = (navRect.left + navRect.width  / 2) - (logoRect.left + logoRect.width  / 2);
+    const ty    = (navRect.top  + navRect.height / 2) - (logoRect.top  + logoRect.height / 2);
+    const scale = parseFloat(getComputedStyle(navLogo).fontSize)
+                / parseFloat(getComputedStyle(logo).fontSize);
+
+    // Garde le header invisible via inline style avant de retirer la classe CSS
+    if (header) header.style.opacity = '0';
+    document.body.classList.remove('intro-running');
+
+    // Le logo vole vers la nav
+    logo.style.transition      = 'transform 0.8s cubic-bezier(0.76, 0, 0.24, 1)';
+    logo.style.transformOrigin = 'center center';
+    logo.style.transform       = `translate(${tx}px, ${ty}px) scale(${scale})`;
+
+    // Le header apparaît en même temps que le logo arrive
+    if (header) {
+      requestAnimationFrame(() => {
+        header.style.transition = 'opacity 0.5s ease 0.35s';
+        header.style.opacity    = '1';
+      });
+    }
+
+    // Fade out overlay quand le logo est en place
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 0.35s ease';
+      overlay.style.opacity    = '0';
+      sessionStorage.setItem('intro-done', '1');
+    }, 750);
 
     setTimeout(() => {
-      // Pendant le noir : téléporte le nav logo à sa place (pas d'animation nav)
-      document.body.classList.remove('intro-running');
-      sessionStorage.setItem('intro-done', '1');
-
-      // Petit rebond d'ouverture (comme un clignement)
-      overlay.style.opacity    = '1';
-      overlay.style.transition = 'opacity 0.22s ease';
-
-      setTimeout(() => {
-        overlay.style.transition = 'opacity 0.4s ease';
-        overlay.style.opacity    = '0';
-        setTimeout(() => {
-          overlay.remove();
-          bootSite();
-        }, 420);
-      }, 80);
-
-    }, 180);
+      overlay.remove();
+      if (header) header.style.transition = '';
+      bootSite();
+    }, 1120);
   }
 
   // — Phase 1 : PR apparaît lentement (clignement d'œil)
