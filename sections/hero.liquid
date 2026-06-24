@@ -30,14 +30,11 @@
       Le pistolet de massage professionnel qui transforme votre récupération en 10 minutes par jour.
     </p>
 
+    {% assign hero_variant = section.settings.variant_id | default: '53855172985175' %}
     <div class="hero-actions reveal">
-      {% if section.settings.variant_id != blank %}
-        <button type="button" class="hero-btn" id="hero-add-cart" data-variant="{{ section.settings.variant_id }}">
-          Ajouter au panier — 89,99€
-        </button>
-      {% else %}
-        <a href="#buy" class="hero-btn">Commander — 89,99€</a>
-      {% endif %}
+      <button type="button" class="hero-btn" id="hero-add-cart" data-variant="{{ hero_variant }}">
+        Ajouter au panier — 89,99€
+      </button>
       <a href="#features" class="hero-btn-ghost">En savoir plus →</a>
     </div>
 

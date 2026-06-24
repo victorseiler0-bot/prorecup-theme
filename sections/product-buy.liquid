@@ -1,5 +1,5 @@
 {% assign product = section.settings.product %}
-{% assign variant_id = product.selected_or_first_available_variant.id | default: product.variants.first.id | default: section.settings.variant_id %}
+{% assign variant_id = product.selected_or_first_available_variant.id | default: product.variants.first.id | default: section.settings.variant_id | default: '53855172985175' %}
 <div class="section-connector"><div class="connector-dot"></div></div>
 <section class="product-buy" id="buy">
   <div class="buy-inner">
