@@ -9,8 +9,8 @@
       </div>
 
     {% else %}
-      <form action="/cart" method="post" class="cart-form">
-        <input type="hidden" name="_method" value="put">
+      <form action="/cart/update" method="post" class="cart-form">
+        <input type="hidden" name="return_to" value="/cart">
 
         <div class="cart-items">
           {% for item in cart.items %}
@@ -33,7 +33,7 @@
                 <button type="button" class="qty-btn qty-minus" data-line="{{ forloop.index }}">−</button>
                 <input
                   type="number"
-                  name="updates[]"
+                  name="updates[{{ item.variant_id }}]"
                   value="{{ item.quantity }}"
                   min="0"
                   max="99"
