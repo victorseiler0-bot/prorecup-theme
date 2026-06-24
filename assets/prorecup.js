@@ -12,6 +12,20 @@ window.addEventListener('load', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+  const hasIntro = !!document.getElementById('intro-overlay');
+
+  if (hasIntro && !sessionStorage.getItem('intro-done')) {
+    initIntroAnimation();
+  } else {
+    // Pas d'intro : supprime l'overlay s'il existe et lance direct
+    const overlay = document.getElementById('intro-overlay');
+    if (overlay) overlay.remove();
+    document.body.classList.remove('intro-running');
+    bootSite();
+  }
+});
+
+function bootSite() {
   initScrollProgress();
   initCursor();
   initNav();
@@ -22,9 +36,91 @@ document.addEventListener('DOMContentLoaded', () => {
   initCounters();
   initGallery();
   initStickyBar();
-});
+}
 
-/* ── Logo animation : PR → ProRecup ── */
+/* ── Intro plein écran PR → ProRecup → nav ── */
+function initIntroAnimation() {
+  const overlay  = document.getElementById('intro-overlay');
+  const logo     = document.getElementById('intro-logo');
+  const wraps    = logo.querySelectorAll('.intro-wrap');
+  const hint     = overlay.querySelector('.intro-hint');
+
+  document.body.classList.add('intro-running');
+
+  // Mesure les largeurs naturelles avant de coller à 0
+  const widths = [];
+  wraps.forEach(wrap => {
+    const slide = wrap.querySelector('.intro-slide');
+    wrap.style.transition = 'none';
+    wrap.style.width = 'auto';
+    widths.push(slide.offsetWidth);
+    wrap.style.width = '0px';
+  });
+
+  let phase = 0; // 0=PR visible, 1=ProRecup ouvert, 2=volé vers nav
+
+  function advance() {
+    if (phase === 0) {
+      // Phase 1 : ouvre les lettres
+      phase = 1;
+      hint.classList.remove('visible');
+      wraps.forEach((wrap, i) => {
+        wrap.style.transition = 'width 0.7s cubic-bezier(0.16, 1, 0.3, 1)';
+        wrap.style.width = widths[i] + 'px';
+      });
+      // Après ouverture : phase 2 auto
+      setTimeout(advance, 1000);
+
+    } else if (phase === 1) {
+      // Phase 2 : logo vole vers la nav
+      phase = 2;
+
+      const navLogo  = document.getElementById('nav-logo');
+      const logoRect = logo.getBoundingClientRect();
+      const navRect  = navLogo.getBoundingClientRect();
+
+      // Centre du logo intro vs centre du nav logo
+      const logoCx = logoRect.left + logoRect.width  / 2;
+      const logoCy = logoRect.top  + logoRect.height / 2;
+      const navCx  = navRect.left  + navRect.width   / 2;
+      const navCy  = navRect.top   + navRect.height  / 2;
+
+      const tx    = navCx - logoCx;
+      const ty    = navCy - logoCy;
+      const scale = parseFloat(getComputedStyle(navLogo).fontSize)
+                  / parseFloat(getComputedStyle(logo).fontSize);
+
+      logo.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+      logo.style.transformOrigin = 'center center';
+
+      // Fade out overlay quand le logo est arrivé
+      setTimeout(() => {
+        overlay.classList.add('fade-out');
+        document.body.classList.remove('intro-running');
+        sessionStorage.setItem('intro-done', '1');
+        // Lance le site après disparition de l'overlay
+        setTimeout(() => {
+          overlay.remove();
+          bootSite();
+        }, 500);
+      }, 700);
+    }
+  }
+
+  // Phase 0 : PR apparaît
+  setTimeout(() => {
+    logo.classList.add('visible');
+    // Montre le hint "appuie pour continuer" après 600ms
+    setTimeout(() => hint.classList.add('visible'), 600);
+    // Auto-advance après 2.5s si pas de clic
+    setTimeout(() => { if (phase === 0) advance(); }, 2500);
+  }, 300);
+
+  // Clic / tap pour avancer manuellement
+  overlay.addEventListener('click', advance);
+}
+
+/* ── Logo animation nav : PR → ProRecup ── */
 function initLogoAnimation() {
   const wraps = document.querySelectorAll('.logo-slide-wrap');
   if (!wraps.length) return;

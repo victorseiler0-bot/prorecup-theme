@@ -1602,3 +1602,71 @@ img { display: block; max-width: 100%; }
   .features-inner { padding-left: 16px; padding-right: 16px; }
   .nav-inner      { padding: 0 16px; }
 }
+
+/* ════════════════════════════════════════
+   INTRO ANIMATION
+════════════════════════════════════════ */
+
+#intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+#intro-overlay.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.intro-logo {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 14vw, 9rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--white);
+  display: inline-flex;
+  align-items: baseline;
+  opacity: 0;
+  transform-origin: center center;
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.4s ease;
+}
+
+.intro-logo.visible { opacity: 1; }
+
+.intro-wrap {
+  display: inline-block;
+  overflow: hidden;
+  width: 0;
+  vertical-align: baseline;
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-slide {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.intro-hint {
+  position: absolute;
+  bottom: 48px;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.intro-hint.visible { opacity: 1; }
+
+/* Pendant l'intro : nav logo invisible */
+body.intro-running #site-header { opacity: 0; pointer-events: none; }
+body.intro-running { overflow: hidden; }

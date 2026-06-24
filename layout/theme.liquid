@@ -15,6 +15,16 @@
 </head>
 <body class="{% if template == 'index' %}home{% endif %}">
   <div id="cursor" aria-hidden="true"></div>
+
+  {% if template == 'index' %}
+  <div id="intro-overlay" aria-hidden="true">
+    <div class="intro-logo" id="intro-logo">
+      <span class="intro-p">P</span><span class="intro-wrap"><span class="intro-slide">ro</span></span><span class="intro-r">R</span><span class="intro-wrap"><span class="intro-slide">ecup</span></span>
+    </div>
+    <p class="intro-hint">Appuie pour continuer</p>
+  </div>
+  {% endif %}
+
   {% section 'header' %}
   <main id="main-content">{{ content_for_layout }}</main>
   {% section 'footer' %}
