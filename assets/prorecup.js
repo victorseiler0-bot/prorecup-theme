@@ -16,12 +16,40 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   initNav();
   initLogoScroll();
+  initLogoAnimation();
   initReveal();
   initParallax();
   initCounters();
   initGallery();
   initStickyBar();
 });
+
+/* ── Logo animation : PR → ProRecup ── */
+function initLogoAnimation() {
+  const wraps = document.querySelectorAll('.logo-slide-wrap');
+  if (!wraps.length) return;
+
+  // Mesure la largeur naturelle de chaque groupe de lettres
+  wraps.forEach(wrap => {
+    const slide = wrap.querySelector('.logo-slide');
+    wrap.style.transition = 'none';
+    wrap.style.width = 'auto';
+    const w = slide.offsetWidth;
+    wrap.style.width = '0px';
+    // Double RAF pour que le navigateur enregistre width=0 avant de remettre la transition
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      wrap.style.transition = '';
+    }));
+    wrap.dataset.w = w;
+  });
+
+  // Déclenche l'ouverture après 500ms (page quasi chargée)
+  setTimeout(() => {
+    wraps.forEach(wrap => {
+      wrap.style.width = wrap.dataset.w + 'px';
+    });
+  }, 500);
+}
 
 /* ── Logo = retour en haut (smooth) ── */
 function initLogoScroll() {

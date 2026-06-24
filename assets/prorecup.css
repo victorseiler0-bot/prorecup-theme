@@ -91,6 +91,21 @@ img { display: block; max-width: 100%; }
   font-weight: 600;
   letter-spacing: 0.06em;
   color: var(--white);
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.logo-slide-wrap {
+  display: inline-block;
+  overflow: hidden;
+  width: 0;
+  vertical-align: baseline;
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.logo-slide {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .nav-links {
