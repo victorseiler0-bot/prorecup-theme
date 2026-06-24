@@ -426,13 +426,75 @@ function initGallery() {
 }
 
 /* ── Sticky Buy Bar ── */
+window.showCartToast = function() {
+  const toast = document.getElementById('cart-toast');
+  if (!toast) return;
+  toast.classList.add('visible');
+  toast.setAttribute('aria-hidden', 'false');
+  clearTimeout(window._cartToastTimer);
+  window._cartToastTimer = setTimeout(() => {
+    toast.classList.remove('visible');
+    toast.setAttribute('aria-hidden', 'true');
+  }, 3000);
+  // Rafraîchit le badge panier dans le nav
+  fetch('/cart.js')
+    .then(r => r.json())
+    .then(cart => {
+      let badge = document.querySelector('.cart-badge');
+      const navCart = document.querySelector('.nav-cart');
+      if (!badge && cart.item_count > 0 && navCart) {
+        badge = document.createElement('span');
+        badge.className = 'cart-badge';
+        navCart.appendChild(badge);
+      }
+      if (badge) badge.textContent = cart.item_count;
+    })
+    .catch(() => {});
+};
+
 function initStickyBar() {
   const bar = document.getElementById('sticky-buy-bar');
   if (!bar) return;
   if (!window.matchMedia('(max-width: 600px)').matches) return;
 
-  const hero     = document.querySelector('.hero');
+  const btn        = document.getElementById('sticky-add-cart');
+  const hero       = document.querySelector('.hero');
   const buySection = document.getElementById('buy');
+
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const anyBtn = document.querySelector('[data-variant]');
+      const variantId = anyBtn ? anyBtn.dataset.variant : null;
+      if (!variantId) { window.location.href = '/cart'; return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Ajout…';
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: variantId, quantity: 1 })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status) {
+          btn.disabled = false;
+          btn.textContent = 'Ajouter au panier';
+        } else {
+          btn.textContent = 'Ajouté ✓';
+          window.showCartToast();
+          setTimeout(() => {
+            btn.disabled = false;
+            btn.textContent = 'Ajouter au panier';
+          }, 2200);
+        }
+      })
+      .catch(() => {
+        btn.disabled = false;
+        btn.textContent = 'Ajouter au panier';
+      });
+    });
+  }
 
   function update() {
     if (!hero) return;
@@ -440,7 +502,6 @@ function initStickyBar() {
     const atBuy = buySection
       ? buySection.getBoundingClientRect().top < window.innerHeight * 0.5
       : false;
-
     const show = heroBottom < 0 && !atBuy;
     bar.classList.toggle('visible', show);
     bar.setAttribute('aria-hidden', String(!show));

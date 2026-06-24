@@ -1136,6 +1136,50 @@ img { display: block; max-width: 100%; }
 
 .sticky-buy-bar { display: none; }
 
+/* ── Cart toast ── */
+#cart-toast {
+  position: fixed;
+  top: 72px;
+  right: 16px;
+  z-index: 9000;
+  background: rgba(8,8,10,0.96);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 11px 15px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transform: translateX(calc(100% + 28px));
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+#cart-toast.visible {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+.cart-toast-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+.cart-toast-icon { color: #5cb85c; flex-shrink: 0; }
+.cart-toast-text {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--white);
+}
+.cart-toast-link {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.45);
+  text-decoration: none;
+  margin-left: 4px;
+  transition: color 0.2s;
+}
+.cart-toast-link:hover { color: var(--white); }
+
 /* ============================================================
    TABLETTE étroite (≤ 960px) — déjà géré au-dessus
    + ajustements intermédiaires

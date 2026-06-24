@@ -102,7 +102,8 @@
         btn.style.background = '#1a5c1a';
         feedback.style.color = '#4488ff';
         feedback.textContent = 'Produit ajouté !';
-        setTimeout(() => window.location.href = '/cart', 800);
+        if (window.showCartToast) window.showCartToast();
+        setTimeout(() => window.location.href = '/cart', 900);
       }
       feedback.style.display = 'block';
     })

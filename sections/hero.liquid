@@ -80,7 +80,8 @@
       } else {
         btn.textContent = 'Ajouté ✓';
         btn.style.background = '#1a5c1a';
-        setTimeout(() => window.location.href = '/cart', 700);
+        if (window.showCartToast) window.showCartToast();
+        setTimeout(() => window.location.href = '/cart', 900);
       }
     })
     .catch(() => {

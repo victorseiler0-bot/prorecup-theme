@@ -31,10 +31,19 @@
   <div class="sticky-buy-bar" id="sticky-buy-bar" aria-hidden="true">
     <div class="sticky-buy-inner">
       <span class="sticky-price">49,99€</span>
-      <a href="#buy" class="sticky-cta-btn">Commander</a>
+      <button type="button" id="sticky-add-cart" class="sticky-cta-btn">Ajouter au panier</button>
     </div>
   </div>
   {% endif %}
+
+  <div id="cart-toast" aria-hidden="true" role="status">
+    <div class="cart-toast-inner">
+      <svg class="cart-toast-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      <span class="cart-toast-text">Ajouté au panier</span>
+      <a href="/cart" class="cart-toast-link">Voir →</a>
+    </div>
+  </div>
+
   <script>window.__threeUrl = "{{ 'three.min.js' | asset_url }}";</script>
   {{ 'prorecup.js' | asset_url | script_tag }}
 </body>
