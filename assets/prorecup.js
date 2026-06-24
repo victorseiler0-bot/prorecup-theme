@@ -115,8 +115,8 @@ function initIntroAnimation() {
       camera.position.set(0, 5, 3.5);
       camera.lookAt(0, 0, 0);
 
-      const seg = W > 600 ? 80 : 44;
-      const geo = new THREE.PlaneGeometry(12, 12, seg, seg);
+      const seg = W > 600 ? 96 : 56;
+      const geo = new THREE.PlaneGeometry(14, 14, seg, seg);
       geo.rotateX(-Math.PI / 2);
 
       const mat = new THREE.ShaderMaterial({
@@ -133,15 +133,18 @@ function initIntroAnimation() {
             vec3 p = position;
             float d = length(p.xz);
             float w = 0.0;
-            for (float i = 0.0; i < 6.0; i++) {
-              float delay = i * 0.13;
+            for (float i = 0.0; i < 8.0; i++) {
+              float delay = i * 0.10;
               float t = max(0.0, uTime - delay);
-              float r = t * 2.6;
-              float ring = exp(-pow(d - r, 2.0) * 5.5);
-              float decay = max(0.0, 1.0 - t * 0.38) * exp(-d * 0.18);
+              float r = t * 2.8;
+              float ring = exp(-pow(d - r, 2.0) * 7.0);
+              float decay = max(0.0, 1.0 - t * 0.30) * exp(-d * 0.13);
               w += ring * decay;
             }
-            p.y = w * 0.38;
+            float cap = sin(d * 9.0 - uTime * 14.0) * 0.018
+                        * max(0.0, 1.0 - uTime * 0.55) * exp(-d * 0.35);
+            w += cap;
+            p.y = w * 0.44;
             vH = p.y;
             gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
           }
@@ -150,11 +153,19 @@ function initIntroAnimation() {
           uniform float uAlpha;
           varying float vH;
           void main() {
-            vec3 deep  = vec3(0.01, 0.03, 0.07);
-            vec3 crest = vec3(0.80, 0.93, 1.00);
-            float h = clamp(vH * 3.8 + 0.12, 0.0, 1.0);
-            vec3 col = mix(deep, crest, h);
-            float a = uAlpha * clamp(0.25 + vH * 4.0, 0.0, 1.0);
+            vec3 deep  = vec3(0.00, 0.03, 0.10);
+            vec3 mid   = vec3(0.04, 0.22, 0.52);
+            vec3 crest = vec3(0.60, 0.88, 1.00);
+            vec3 foam  = vec3(0.93, 0.97, 1.00);
+            float h = clamp(vH * 5.0 + 0.08, 0.0, 1.0);
+            vec3 col;
+            if (h < 0.5) {
+              col = mix(deep, mid, h * 2.0);
+            } else {
+              col = mix(mid, crest, (h - 0.5) * 2.0);
+            }
+            col = mix(col, foam, smoothstep(0.82, 1.0, h));
+            float a = uAlpha * clamp(0.18 + vH * 5.5, 0.0, 0.94);
             gl_FragColor = vec4(col, a);
           }
         `
@@ -162,7 +173,7 @@ function initIntroAnimation() {
 
       scene.add(new THREE.Mesh(geo, mat));
 
-      const DURATION = 2.4;
+      const DURATION = 3.0;
       let t0 = null;
       (function tick(ts) {
         if (!t0) t0 = ts;
@@ -256,8 +267,8 @@ function initIntroAnimation() {
         wrap.style.width      = widths[i] + 'px';
       });
 
-      // — Phase 3 : clignement + fermeture
-      setTimeout(closeIntro, 1400);
+      // — Phase 3 : clignement + fermeture (laisser ProRecup visible ~1.8s)
+      setTimeout(closeIntro, 2800);
     }, 1400);
 
   }, 400);
