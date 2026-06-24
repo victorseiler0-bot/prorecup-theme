@@ -110,7 +110,7 @@ function initIntroAnimation() {
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
       renderer.setSize(W, H);
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+      renderer.setPixelRatio(1);
       renderer.setClearColor(0x000000, 0);
 
       const scene  = new THREE.Scene();
@@ -118,7 +118,7 @@ function initIntroAnimation() {
       camera.position.set(0, 0.8, 5);
       camera.lookAt(0, 0, 0);
 
-      const seg = W > 600 ? 90 : 52;
+      const seg = W > 600 ? 60 : 36;
       const geo = new THREE.PlaneGeometry(13, 9, seg, Math.round(seg * 0.7));
 
       clothUniforms = {
@@ -197,24 +197,26 @@ function initIntroAnimation() {
     const navLogo = document.getElementById('nav-logo');
     const header  = document.getElementById('site-header');
 
-    // 1. Tap + son
-    logo.style.transition = 'transform 0.12s ease-out';
-    logo.style.transform  = 'scale(0.91)';
+    // 1. Tap press
+    logo.style.transition = 'transform 0.14s ease-out';
+    logo.style.transform  = 'scale(0.92)';
     playIntroClick();
 
-    // 2. Vol vers nav + disparition overlay
+    // 2. Spring-back
     setTimeout(() => {
-      logo.style.transition = '';
-      logo.style.transform  = '';
+      logo.style.transition = 'transform 0.22s ease-out';
+      logo.style.transform  = 'scale(1)';
+    }, 140);
 
-      if (header) header.style.opacity = '0';
-      document.body.classList.remove('intro-running');
+    // 3. Mesure + vol (après que le spring soit fini)
+    setTimeout(() => {
+      logo.style.textShadow = '';
 
       document.querySelectorAll('.logo-slide-wrap').forEach(wrap => {
         wrap.style.transition = 'none';
         wrap.style.width      = 'auto';
       });
-      void navLogo.getBoundingClientRect();
+      void navLogo.offsetWidth;
 
       const navRect   = navLogo.getBoundingClientRect();
       const introRect = logo.getBoundingClientRect();
@@ -223,30 +225,33 @@ function initIntroAnimation() {
       const scale = parseFloat(getComputedStyle(navLogo).fontSize)
                   / parseFloat(getComputedStyle(logo).fontSize);
 
-      logo.style.transition      = 'transform 0.8s cubic-bezier(0.76, 0, 0.24, 1), text-shadow 0.3s ease, opacity 0.3s ease';
-      logo.style.transformOrigin = 'center center';
-      logo.style.transform       = `translate(${tx}px, ${ty}px) scale(${scale})`;
-      logo.style.textShadow      = 'none';
-
-      overlay.style.transition = 'opacity 1.0s ease 0.15s';
-      overlay.style.opacity    = '0';
-
       requestAnimationFrame(() => {
-        if (header) {
-          header.style.transition = 'opacity 0.6s ease 0.5s';
-          header.style.opacity    = '1';
-        }
-      });
+        logo.style.transition      = 'transform 0.9s cubic-bezier(0.76, 0, 0.24, 1)';
+        logo.style.transformOrigin = 'center center';
+        logo.style.transform       = `translate(${tx}px, ${ty}px) scale(${scale})`;
 
-      sessionStorage.setItem('intro-done', '1');
-    }, 80);
+        overlay.style.transition   = 'opacity 1.1s ease';
+        overlay.style.opacity      = '0';
+
+        // Page + header apparaissent une fois l'overlay bien avancé
+        setTimeout(() => {
+          document.body.classList.remove('intro-running');
+          if (header) {
+            header.style.transition = 'opacity 0.7s ease';
+            header.style.opacity    = '1';
+          }
+        }, 650);
+
+        sessionStorage.setItem('intro-done', '1');
+      });
+    }, 400);
 
     setTimeout(() => {
       clothActive = false;
       overlay.remove();
       if (header) { header.style.transition = ''; header.style.opacity = ''; }
       bootSite();
-    }, 1400);
+    }, 1700);
   }
 
   startClothBackground();
