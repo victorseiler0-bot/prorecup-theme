@@ -101,51 +101,76 @@ function initIntroAnimation() {
     const navLogo = document.getElementById('nav-logo');
     const header  = document.getElementById('site-header');
 
-    // 1. Garde le header invisible avant de retirer la classe CSS
-    if (header) header.style.opacity = '0';
-    document.body.classList.remove('intro-running');
-
-    // 2. Expand le nav logo SANS animation, puis force un reflow pour avoir ses vraies dimensions
-    document.querySelectorAll('.logo-slide-wrap').forEach(wrap => {
-      wrap.style.transition = 'none';
-      wrap.style.width      = 'auto';
-    });
-    void navLogo.getBoundingClientRect(); // force reflow
-
-    // 3. Mesure APRÈS expansion (nav logo a sa taille réelle)
+    // Centre du logo pour les ripples
     const logoRect = logo.getBoundingClientRect();
-    const navRect  = navLogo.getBoundingClientRect();
+    const cx = logoRect.left + logoRect.width  / 2;
+    const cy = logoRect.top  + logoRect.height / 2;
 
-    const tx    = (navRect.left + navRect.width  / 2) - (logoRect.left + logoRect.width  / 2);
-    const ty    = (navRect.top  + navRect.height / 2) - (logoRect.top  + logoRect.height / 2);
-    const scale = parseFloat(getComputedStyle(navLogo).fontSize)
-                / parseFloat(getComputedStyle(logo).fontSize);
+    // 1. Tap animation + son
+    logo.style.transition = 'transform 0.1s ease-out';
+    logo.style.transform  = 'scale(0.91)';
+    playIntroClick();
 
-    // 4. Le logo vole vers la nav
-    logo.style.transition      = 'transform 0.8s cubic-bezier(0.76, 0, 0.24, 1)';
-    logo.style.transformOrigin = 'center center';
-    logo.style.transform       = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    // 2. Rings de ripple depuis le centre du logo
+    for (let i = 0; i < 5; i++) {
+      const ring = document.createElement('div');
+      ring.className = 'intro-ripple';
+      ring.style.left           = cx + 'px';
+      ring.style.top            = cy + 'px';
+      ring.style.animationDelay = (i * 100) + 'ms';
+      document.body.appendChild(ring);
+    }
 
-    // 5. Header apparaît pendant le vol
-    requestAnimationFrame(() => {
-      if (header) {
-        header.style.transition = 'opacity 0.5s ease 0.3s';
-        header.style.opacity    = '1';
-      }
-    });
-
-    // 6. Fade out overlay quand le logo est arrivé
+    // 3. Après le rebond du tap : vol + transition site
     setTimeout(() => {
-      overlay.style.transition = 'opacity 0.35s ease';
-      overlay.style.opacity    = '0';
-      sessionStorage.setItem('intro-done', '1');
-    }, 750);
+      logo.style.transition = '';
+      logo.style.transform  = '';
 
+      // Header invisible via inline avant retrait classe CSS
+      if (header) header.style.opacity = '0';
+      document.body.classList.remove('intro-running');
+
+      // Expand nav logo sans animation + mesure
+      document.querySelectorAll('.logo-slide-wrap').forEach(wrap => {
+        wrap.style.transition = 'none';
+        wrap.style.width      = 'auto';
+      });
+      void navLogo.getBoundingClientRect();
+
+      const navRect   = navLogo.getBoundingClientRect();
+      const introRect = logo.getBoundingClientRect();
+      const tx    = (navRect.left + navRect.width  / 2) - (introRect.left + introRect.width  / 2);
+      const ty    = (navRect.top  + navRect.height / 2) - (introRect.top  + introRect.height / 2);
+      const scale = parseFloat(getComputedStyle(navLogo).fontSize)
+                  / parseFloat(getComputedStyle(logo).fontSize);
+
+      // Logo vole vers la nav
+      logo.style.transition      = 'transform 0.75s cubic-bezier(0.76, 0, 0.24, 1)';
+      logo.style.transformOrigin = 'center center';
+      logo.style.transform       = `translate(${tx}px, ${ty}px) scale(${scale})`;
+
+      // Overlay disparaît pendant le vol
+      overlay.style.transition = 'opacity 0.75s ease 0.05s';
+      overlay.style.opacity    = '0';
+
+      // Header réapparaît
+      requestAnimationFrame(() => {
+        if (header) {
+          header.style.transition = 'opacity 0.5s ease 0.25s';
+          header.style.opacity    = '1';
+        }
+      });
+
+      sessionStorage.setItem('intro-done', '1');
+    }, 80);
+
+    // 4. Nettoyage
     setTimeout(() => {
       overlay.remove();
+      document.querySelectorAll('.intro-ripple').forEach(r => r.remove());
       if (header) { header.style.transition = ''; header.style.opacity = ''; }
       bootSite();
-    }, 1120);
+    }, 1200);
   }
 
   // — Phase 1 : PR apparaît lentement (clignement d'œil)
