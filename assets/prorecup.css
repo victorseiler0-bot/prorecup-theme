@@ -253,7 +253,7 @@ img { display: block; max-width: 100%; }
 }
 
 .hero-content {
-  padding: calc(var(--nav-h) + 72px) 80px 80px;
+  padding: calc(var(--nav-h) + 120px) 80px 80px;
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -1082,7 +1082,7 @@ img { display: block; max-width: 100%; }
   .hero-bg-img { width: 75%; }
 
   .hero-content {
-    padding: calc(var(--nav-h) + 60px) 32px 48px;
+    padding: calc(var(--nav-h) + 100px) 32px 48px;
     max-width: 480px;
   }
 
@@ -1213,7 +1213,7 @@ img { display: block; max-width: 100%; }
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    padding: calc(var(--nav-h) + 20px) 24px 108px;
+    padding: calc(var(--nav-h) + 48px) 24px 108px;
     max-width: 100%;
     text-align: center;
     gap: 18px;
