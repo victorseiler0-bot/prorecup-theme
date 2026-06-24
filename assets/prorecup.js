@@ -38,112 +38,140 @@ function bootSite() {
   initStickyBar();
 }
 
-/* ── Intro plein écran PR → ProRecup → nav ── */
+/* ── Son "clic" Apple (Web Audio) ── */
+function playIntroClick() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+
+    // Corps du clic — sine freq descendante
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1100, now);
+    osc.frequency.exponentialRampToValueAtTime(320, now + 0.055);
+    oscGain.gain.setValueAtTime(0.22, now);
+    oscGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
+    osc.connect(oscGain);
+    oscGain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.06);
+
+    // Crack haute fréquence (attaque)
+    const bufLen = Math.floor(ctx.sampleRate * 0.018);
+    const buf    = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+    const data   = buf.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1);
+    const noise      = ctx.createBufferSource();
+    noise.buffer     = buf;
+    const hpf        = ctx.createBiquadFilter();
+    hpf.type         = 'highpass';
+    hpf.frequency.value = 5500;
+    const noiseGain  = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.18, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
+    noise.connect(hpf);
+    hpf.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noise.start(now);
+
+    setTimeout(() => ctx.close(), 300);
+  } catch(e) {}
+}
+
+/* ── Intro plein écran PR → ProRecup → nav (auto-play) ── */
 function initIntroAnimation() {
-  const overlay  = document.getElementById('intro-overlay');
-  const logo     = document.getElementById('intro-logo');
-  const wraps    = logo.querySelectorAll('.intro-wrap');
-  const hint     = overlay.querySelector('.intro-hint');
+  const overlay = document.getElementById('intro-overlay');
+  const logo    = document.getElementById('intro-logo');
+  const wraps   = logo.querySelectorAll('.intro-wrap');
 
   document.body.classList.add('intro-running');
 
-  // Mesure les largeurs naturelles avant de coller à 0
+  // Mesure les largeurs naturelles AVANT de mettre width:0
   const widths = [];
   wraps.forEach(wrap => {
     const slide = wrap.querySelector('.intro-slide');
     wrap.style.transition = 'none';
-    wrap.style.width = 'auto';
+    wrap.style.width      = 'auto';
     widths.push(slide.offsetWidth);
     wrap.style.width = '0px';
   });
 
-  let phase = 0; // 0=PR visible, 1=ProRecup ouvert, 2=volé vers nav
+  function closeIntro() {
+    // Clignement d'yeux : overlay s'assombrit, logo se place, overlay s'efface
+    overlay.style.transition = 'opacity 0.18s ease';
+    overlay.style.opacity    = '0';
 
-  function advance() {
-    if (phase === 0) {
-      // Phase 1 : ouvre les lettres
-      phase = 1;
-      hint.classList.remove('visible');
-      wraps.forEach((wrap, i) => {
-        wrap.style.transition = 'width 0.7s cubic-bezier(0.16, 1, 0.3, 1)';
-        wrap.style.width = widths[i] + 'px';
-      });
-      // Après ouverture : phase 2 auto
-      setTimeout(advance, 1000);
+    setTimeout(() => {
+      // Pendant le noir : téléporte le nav logo à sa place (pas d'animation nav)
+      document.body.classList.remove('intro-running');
+      sessionStorage.setItem('intro-done', '1');
 
-    } else if (phase === 1) {
-      // Phase 2 : logo vole vers la nav
-      phase = 2;
+      // Petit rebond d'ouverture (comme un clignement)
+      overlay.style.opacity    = '1';
+      overlay.style.transition = 'opacity 0.22s ease';
 
-      const navLogo  = document.getElementById('nav-logo');
-      const logoRect = logo.getBoundingClientRect();
-      const navRect  = navLogo.getBoundingClientRect();
-
-      // Centre du logo intro vs centre du nav logo
-      const logoCx = logoRect.left + logoRect.width  / 2;
-      const logoCy = logoRect.top  + logoRect.height / 2;
-      const navCx  = navRect.left  + navRect.width   / 2;
-      const navCy  = navRect.top   + navRect.height  / 2;
-
-      const tx    = navCx - logoCx;
-      const ty    = navCy - logoCy;
-      const scale = parseFloat(getComputedStyle(navLogo).fontSize)
-                  / parseFloat(getComputedStyle(logo).fontSize);
-
-      logo.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
-      logo.style.transformOrigin = 'center center';
-
-      // Fade out overlay quand le logo est arrivé
       setTimeout(() => {
-        overlay.classList.add('fade-out');
-        document.body.classList.remove('intro-running');
-        sessionStorage.setItem('intro-done', '1');
-        // Lance le site après disparition de l'overlay
+        overlay.style.transition = 'opacity 0.4s ease';
+        overlay.style.opacity    = '0';
         setTimeout(() => {
           overlay.remove();
           bootSite();
-        }, 500);
-      }, 700);
-    }
+        }, 420);
+      }, 80);
+
+    }, 180);
   }
 
-  // Phase 0 : PR apparaît
+  // — Phase 1 : PR apparaît lentement (clignement d'œil)
   setTimeout(() => {
+    logo.style.transition = 'opacity 0.9s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)';
     logo.classList.add('visible');
-    // Montre le hint "appuie pour continuer" après 600ms
-    setTimeout(() => hint.classList.add('visible'), 600);
-    // Auto-advance après 2.5s si pas de clic
-    setTimeout(() => { if (phase === 0) advance(); }, 2500);
-  }, 300);
 
-  // Clic / tap pour avancer manuellement
-  overlay.addEventListener('click', advance);
+    // — Phase 2 : lettres s'écartent (plus lent)
+    setTimeout(() => {
+      playIntroClick();
+      wraps.forEach((wrap, i) => {
+        wrap.style.transition = 'width 1s cubic-bezier(0.16, 1, 0.3, 1)';
+        wrap.style.width      = widths[i] + 'px';
+      });
+
+      // — Phase 3 : clignement + fermeture
+      setTimeout(closeIntro, 1400);
+    }, 1400);
+
+  }, 400);
 }
 
-/* ── Logo animation nav : PR → ProRecup ── */
+/* ── Logo animation nav : PR → ProRecup (seulement sans intro) ── */
 function initLogoAnimation() {
+  // Si l'intro vient de jouer : logo nav déjà en place, on skip l'animation
+  if (sessionStorage.getItem('intro-done')) {
+    const wraps = document.querySelectorAll('.logo-slide-wrap');
+    wraps.forEach(wrap => {
+      wrap.style.transition = 'none';
+      wrap.style.width = 'auto';
+    });
+    return;
+  }
+
   const wraps = document.querySelectorAll('.logo-slide-wrap');
   if (!wraps.length) return;
 
-  // Mesure la largeur naturelle de chaque groupe de lettres
   wraps.forEach(wrap => {
     const slide = wrap.querySelector('.logo-slide');
     wrap.style.transition = 'none';
     wrap.style.width = 'auto';
     const w = slide.offsetWidth;
     wrap.style.width = '0px';
-    // Double RAF pour que le navigateur enregistre width=0 avant de remettre la transition
     requestAnimationFrame(() => requestAnimationFrame(() => {
       wrap.style.transition = '';
     }));
     wrap.dataset.w = w;
   });
 
-  // Déclenche l'ouverture après 500ms (page quasi chargée)
   setTimeout(() => {
-    wraps.forEach(wrap => {
-      wrap.style.width = wrap.dataset.w + 'px';
-    });
+    wraps.forEach(wrap => { wrap.style.width = wrap.dataset.w + 'px'; });
   }, 500);
 }
 
