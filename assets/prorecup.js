@@ -97,75 +97,73 @@ function initIntroAnimation() {
     wrap.style.width = '0px';
   });
 
-  function waterRipple3D(cx, cy) {
+  let clothUniforms = null;
+  let clothActive   = true;
+
+  function startClothBackground() {
     function run() {
       const W = window.innerWidth, H = window.innerHeight;
       const canvas = document.createElement('canvas');
       canvas.width = W; canvas.height = H;
-      canvas.style.cssText = 'position:fixed;inset:0;z-index:10002;pointer-events:none;';
-      document.body.appendChild(canvas);
+      canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;';
+      overlay.insertBefore(canvas, overlay.firstChild);
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
       renderer.setSize(W, H);
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
       renderer.setClearColor(0x000000, 0);
 
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(48, W / H, 0.1, 100);
-      camera.position.set(0, 5, 3.5);
+      const scene  = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(78, W / H, 0.1, 50);
+      camera.position.set(0, 0.8, 5);
       camera.lookAt(0, 0, 0);
 
-      const seg = W > 600 ? 96 : 56;
-      const geo = new THREE.PlaneGeometry(14, 14, seg, seg);
-      geo.rotateX(-Math.PI / 2);
+      const seg = W > 600 ? 90 : 52;
+      const geo = new THREE.PlaneGeometry(13, 9, seg, Math.round(seg * 0.7));
+
+      clothUniforms = {
+        uTime:      { value: 0 },
+        uAlpha:     { value: 0 },
+        uClickTime: { value: -1.0 },
+      };
 
       const mat = new THREE.ShaderMaterial({
         transparent: true,
         side: THREE.DoubleSide,
-        uniforms: {
-          uTime:  { value: 0 },
-          uAlpha: { value: 1.0 },
-        },
+        uniforms: clothUniforms,
         vertexShader: `
           uniform float uTime;
-          varying float vH;
+          uniform float uClickTime;
+          varying float vZ;
           void main() {
             vec3 p = position;
-            float d = length(p.xz);
-            float w = 0.0;
-            for (float i = 0.0; i < 8.0; i++) {
-              float delay = i * 0.10;
-              float t = max(0.0, uTime - delay);
-              float r = t * 2.8;
-              float ring = exp(-pow(d - r, 2.0) * 7.0);
-              float decay = max(0.0, 1.0 - t * 0.30) * exp(-d * 0.13);
-              w += ring * decay;
+            float w1 = sin(p.x * 0.55 + uTime * 0.36) * cos(p.y * 0.48 + uTime * 0.26);
+            float w2 = sin(p.x * 0.92 - uTime * 0.42 + p.y * 0.60) * 0.50;
+            float w3 = cos(p.x * 0.38 + p.y * 0.82 - uTime * 0.22) * 0.34;
+            float w = (w1 + w2 + w3) * 0.26;
+            if (uClickTime >= 0.0) {
+              float t  = uTime - uClickTime;
+              float d  = length(p.xy);
+              float rp = exp(-pow(d - t * 2.1, 2.0) * 2.6) * max(0.0, 1.0 - t * 0.50);
+              w += rp * 0.70;
             }
-            float cap = sin(d * 9.0 - uTime * 14.0) * 0.018
-                        * max(0.0, 1.0 - uTime * 0.55) * exp(-d * 0.35);
-            w += cap;
-            p.y = w * 0.44;
-            vH = p.y;
+            p.z = w;
+            vZ  = w;
             gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
           }
         `,
         fragmentShader: `
           uniform float uAlpha;
-          varying float vH;
+          varying float vZ;
           void main() {
-            vec3 deep  = vec3(0.00, 0.03, 0.10);
-            vec3 mid   = vec3(0.04, 0.22, 0.52);
-            vec3 crest = vec3(0.60, 0.88, 1.00);
-            vec3 foam  = vec3(0.93, 0.97, 1.00);
-            float h = clamp(vH * 5.0 + 0.08, 0.0, 1.0);
-            vec3 col;
-            if (h < 0.5) {
-              col = mix(deep, mid, h * 2.0);
-            } else {
-              col = mix(mid, crest, (h - 0.5) * 2.0);
-            }
-            col = mix(col, foam, smoothstep(0.82, 1.0, h));
-            float a = uAlpha * clamp(0.18 + vH * 5.5, 0.0, 0.94);
+            vec3 shadow = vec3(0.02, 0.02, 0.03);
+            vec3 base   = vec3(0.07, 0.07, 0.09);
+            vec3 sheen  = vec3(0.26, 0.25, 0.32);
+            float h = clamp(vZ * 2.2 + 0.5, 0.0, 1.0);
+            vec3 col = h < 0.5
+              ? mix(shadow, base, h * 2.0)
+              : mix(base, sheen, (h - 0.5) * 2.0);
+            float a = uAlpha * clamp(0.62 + vZ * 1.3, 0.0, 0.88);
             gl_FragColor = vec4(col, a);
           }
         `
@@ -173,16 +171,18 @@ function initIntroAnimation() {
 
       scene.add(new THREE.Mesh(geo, mat));
 
-      const DURATION = 3.0;
       let t0 = null;
       (function tick(ts) {
         if (!t0) t0 = ts;
         const t = (ts - t0) / 1000;
-        mat.uniforms.uTime.value  = t;
-        mat.uniforms.uAlpha.value = Math.max(0, 1 - t / DURATION);
+        clothUniforms.uTime.value  = t;
+        clothUniforms.uAlpha.value = Math.min(t / 0.9, 1.0);
         renderer.render(scene, camera);
-        if (t < DURATION) requestAnimationFrame(tick);
-        else { canvas.remove(); renderer.dispose(); geo.dispose(); mat.dispose(); }
+        if (clothActive) {
+          requestAnimationFrame(tick);
+        } else {
+          renderer.dispose(); geo.dispose(); mat.dispose();
+        }
       })(performance.now());
     }
 
@@ -197,19 +197,12 @@ function initIntroAnimation() {
     const navLogo = document.getElementById('nav-logo');
     const header  = document.getElementById('site-header');
 
-    const logoRect = logo.getBoundingClientRect();
-    const cx = logoRect.left + logoRect.width  / 2;
-    const cy = logoRect.top  + logoRect.height / 2;
-
     // 1. Tap + son
     logo.style.transition = 'transform 0.12s ease-out';
     logo.style.transform  = 'scale(0.91)';
     playIntroClick();
 
-    // 2. Ondulations 3D water drop
-    waterRipple3D(cx, cy);
-
-    // 3. Vol vers nav + disparition overlay
+    // 2. Vol vers nav + disparition overlay
     setTimeout(() => {
       logo.style.transition = '';
       logo.style.transform  = '';
@@ -248,27 +241,31 @@ function initIntroAnimation() {
     }, 80);
 
     setTimeout(() => {
+      clothActive = false;
       overlay.remove();
       if (header) { header.style.transition = ''; header.style.opacity = ''; }
       bootSite();
     }, 1100);
   }
 
-  // — Phase 1 : PR apparaît lentement (clignement d'œil)
+  startClothBackground();
+
+  // — Phase 1 : PR apparaît lentement
   setTimeout(() => {
     logo.style.transition = 'opacity 0.9s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)';
     logo.classList.add('visible');
 
-    // — Phase 2 : lettres s'écartent (plus lent)
+    // — Phase 2 : lettres s'écartent
     setTimeout(() => {
       playIntroClick();
+      if (clothUniforms) clothUniforms.uClickTime.value = clothUniforms.uTime.value;
       wraps.forEach((wrap, i) => {
         wrap.style.transition = 'width 1s cubic-bezier(0.16, 1, 0.3, 1)';
         wrap.style.width      = widths[i] + 'px';
       });
 
-      // — Phase 3 : clignement + fermeture (laisser ProRecup visible ~1.8s)
-      setTimeout(closeIntro, 2800);
+      // — Phase 3 : fermeture
+      setTimeout(closeIntro, 1400);
     }, 1400);
 
   }, 400);

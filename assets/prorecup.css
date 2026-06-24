@@ -1629,6 +1629,8 @@ img { display: block; max-width: 100%; }
   opacity: 0;
   transform: translateY(12px);
   will-change: transform, opacity;
+  position: relative;
+  z-index: 1;
 }
 
 .intro-logo.visible {
