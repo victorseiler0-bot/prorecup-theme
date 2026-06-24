@@ -31,9 +31,13 @@
     </p>
 
     <div class="hero-actions reveal">
-      <button type="button" class="hero-btn" id="hero-add-cart" data-variant="{{ section.settings.variant_id }}">
-        Ajouter au panier — 49,99€
-      </button>
+      {% if section.settings.variant_id != blank %}
+        <button type="button" class="hero-btn" id="hero-add-cart" data-variant="{{ section.settings.variant_id }}">
+          Ajouter au panier — 49,99€
+        </button>
+      {% else %}
+        <a href="#buy" class="hero-btn">Commander — 49,99€</a>
+      {% endif %}
       <a href="#features" class="hero-btn-ghost">En savoir plus →</a>
     </div>
 
