@@ -1,5 +1,5 @@
 {% assign product = section.settings.product %}
-{% assign variant_id = product.variants.first.id | default: section.settings.variant_id %}
+{% assign variant_id = product.selected_or_first_available_variant.id | default: product.variants.first.id | default: section.settings.variant_id %}
 <div class="section-connector"><div class="connector-dot"></div></div>
 <section class="product-buy" id="buy">
   <div class="buy-inner">
@@ -42,23 +42,19 @@
       </div>
 
       <div class="reveal" style="display:flex;flex-direction:column;gap:12px;">
-        {% if variant_id != blank %}
-          <button
-            type="button"
-            class="buy-cta"
-            id="btn-add-cart"
-            data-variant="{{ variant_id }}"
-            style="width:100%;border:none;cursor:pointer;"
-          >Ajouter au panier</button>
-          <form action="/cart/add" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="id" value="{{ variant_id }}">
-            <input type="hidden" name="quantity" value="1">
-            <input type="hidden" name="return_to" value="/checkout">
-            <button type="submit" class="buy-secondary" style="width:100%;border:none;cursor:pointer;">Acheter maintenant</button>
-          </form>
-        {% else %}
-          <p style="color:var(--grey);font-size:0.8rem;text-align:center;">Configure le Variant ID dans le customizer</p>
-        {% endif %}
+        <button
+          type="button"
+          class="buy-cta"
+          id="btn-add-cart"
+          data-variant="{{ variant_id }}"
+          style="width:100%;border:none;cursor:pointer;"
+        >Ajouter au panier</button>
+        <form action="/cart/add" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="id" value="{{ variant_id }}">
+          <input type="hidden" name="quantity" value="1">
+          <input type="hidden" name="return_to" value="/cart">
+          <button type="submit" class="buy-secondary" style="width:100%;border:none;cursor:pointer;">Acheter maintenant</button>
+        </form>
         <a href="#features" class="buy-secondary">Voir toutes les caractéristiques</a>
       </div>
 
