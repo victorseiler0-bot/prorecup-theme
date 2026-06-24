@@ -98,75 +98,88 @@ function initIntroAnimation() {
   });
 
   function waterRipple3D(cx, cy) {
-    const canvas  = document.createElement('canvas');
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    canvas.style.cssText = 'position:fixed;inset:0;z-index:10002;pointer-events:none;';
-    document.body.appendChild(canvas);
+    function run() {
+      const W = window.innerWidth, H = window.innerHeight;
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      canvas.style.cssText = 'position:fixed;inset:0;z-index:10002;pointer-events:none;';
+      document.body.appendChild(canvas);
 
-    const ctx   = canvas.getContext('2d');
-    const start = performance.now();
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(W, H);
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
 
-    // 7 vagues avec délais échelonnés, vitesses décroissantes
-    const waves = [
-      { delay:   0, speed: 820, w: 2.8 },
-      { delay: 100, speed: 760, w: 2.3 },
-      { delay: 200, speed: 700, w: 1.9 },
-      { delay: 320, speed: 630, w: 1.5 },
-      { delay: 450, speed: 560, w: 1.2 },
-      { delay: 600, speed: 490, w: 0.9 },
-      { delay: 760, speed: 420, w: 0.7 },
-    ];
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(48, W / H, 0.1, 100);
+      camera.position.set(0, 5, 3.5);
+      camera.lookAt(0, 0, 0);
 
-    const MAX_R = Math.hypot(
-      Math.max(cx, canvas.width  - cx),
-      Math.max(cy, canvas.height - cy)
-    ) * 1.15;
+      const seg = W > 600 ? 80 : 44;
+      const geo = new THREE.PlaneGeometry(12, 12, seg, seg);
+      geo.rotateX(-Math.PI / 2);
 
-    function frame(now) {
-      const elapsed = now - start;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      let active = false;
-
-      waves.forEach(wave => {
-        if (elapsed < wave.delay) { active = true; return; }
-
-        const t = (elapsed - wave.delay) / 1000;
-        const r = t * wave.speed;
-
-        if (r > MAX_R) return;
-        active = true;
-
-        // Fondu : fort au début, s'efface en s'éloignant
-        const alpha = Math.max(0, 0.75 * (1 - r / MAX_R) * (1 - t * 0.22));
-        if (alpha < 0.01) return;
-
-        // Perspective 3D : ellipse compressée + décalage vers le bas
-        const perspRatio = 0.28 + (r / MAX_R) * 0.14; // plus aplati = plus loin
-        const rx = r;
-        const ry = r * perspRatio;
-        const offsetY = r * 0.06; // la vague s'éloigne vers le bas (gravité)
-
-        // Gradient vertical : plus lumineux au centre de l'ellipse (reflet)
-        const grd = ctx.createLinearGradient(cx, cy + offsetY - ry, cx, cy + offsetY + ry);
-        grd.addColorStop(0,   `rgba(180,210,255,${alpha * 0.35})`);
-        grd.addColorStop(0.42,`rgba(255,255,255,${alpha})`);
-        grd.addColorStop(0.58,`rgba(255,255,255,${alpha})`);
-        grd.addColorStop(1,   `rgba(140,190,255,${alpha * 0.4})`);
-
-        ctx.beginPath();
-        ctx.ellipse(cx, cy + offsetY, rx, ry, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = grd;
-        ctx.lineWidth   = wave.w;
-        ctx.stroke();
+      const mat = new THREE.ShaderMaterial({
+        transparent: true,
+        side: THREE.DoubleSide,
+        uniforms: {
+          uTime:  { value: 0 },
+          uAlpha: { value: 1.0 },
+        },
+        vertexShader: `
+          uniform float uTime;
+          varying float vH;
+          void main() {
+            vec3 p = position;
+            float d = length(p.xz);
+            float w = 0.0;
+            for (float i = 0.0; i < 6.0; i++) {
+              float delay = i * 0.13;
+              float t = max(0.0, uTime - delay);
+              float r = t * 2.6;
+              float ring = exp(-pow(d - r, 2.0) * 5.5);
+              float decay = max(0.0, 1.0 - t * 0.38) * exp(-d * 0.18);
+              w += ring * decay;
+            }
+            p.y = w * 0.38;
+            vH = p.y;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float uAlpha;
+          varying float vH;
+          void main() {
+            vec3 deep  = vec3(0.01, 0.03, 0.07);
+            vec3 crest = vec3(0.80, 0.93, 1.00);
+            float h = clamp(vH * 3.8 + 0.12, 0.0, 1.0);
+            vec3 col = mix(deep, crest, h);
+            float a = uAlpha * clamp(0.25 + vH * 4.0, 0.0, 1.0);
+            gl_FragColor = vec4(col, a);
+          }
+        `
       });
 
-      if (active) requestAnimationFrame(frame);
-      else canvas.remove();
+      scene.add(new THREE.Mesh(geo, mat));
+
+      const DURATION = 2.4;
+      let t0 = null;
+      (function tick(ts) {
+        if (!t0) t0 = ts;
+        const t = (ts - t0) / 1000;
+        mat.uniforms.uTime.value  = t;
+        mat.uniforms.uAlpha.value = Math.max(0, 1 - t / DURATION);
+        renderer.render(scene, camera);
+        if (t < DURATION) requestAnimationFrame(tick);
+        else { canvas.remove(); renderer.dispose(); geo.dispose(); mat.dispose(); }
+      })(performance.now());
     }
 
-    requestAnimationFrame(frame);
+    if (typeof THREE !== 'undefined') { run(); return; }
+    const s = document.createElement('script');
+    s.src = window.__threeUrl || '';
+    s.onload = run;
+    document.head.appendChild(s);
   }
 
   function closeIntro() {
