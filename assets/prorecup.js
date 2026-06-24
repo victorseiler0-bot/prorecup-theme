@@ -61,18 +61,33 @@ function initGallery() {
   if (nextBtn) nextBtn.addEventListener('click', () => { clearInterval(timer); goTo(current + 1); autoPlay(); });
   dots.forEach(d => d.addEventListener('click', () => { clearInterval(timer); goTo(parseInt(d.dataset.index)); autoPlay(); }));
 
-  // Swipe tactile
-  let swipeStartX = 0;
-  gallery.addEventListener('touchstart', e => {
-    swipeStartX = e.touches[0].clientX;
-  }, { passive: true });
-  gallery.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - swipeStartX;
-    if (Math.abs(dx) < 44) return;
-    clearInterval(timer);
-    goTo(dx < 0 ? current + 1 : current - 1);
-    autoPlay();
-  }, { passive: true });
+  // Swipe tactile + drag souris (pointer events)
+  let dragStartX = 0;
+  let isDragging = false;
+
+  gallery.addEventListener('pointerdown', e => {
+    dragStartX = e.clientX;
+    isDragging = true;
+    gallery.classList.add('dragging');
+    gallery.setPointerCapture(e.pointerId);
+  });
+
+  gallery.addEventListener('pointerup', e => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    if (Math.abs(dx) > 40) {
+      clearInterval(timer);
+      goTo(dx < 0 ? current + 1 : current - 1);
+      autoPlay();
+    }
+    isDragging = false;
+    gallery.classList.remove('dragging');
+  });
+
+  gallery.addEventListener('pointercancel', () => {
+    isDragging = false;
+    gallery.classList.remove('dragging');
+  });
 
   autoPlay();
 }
