@@ -1643,6 +1643,7 @@ img { display: block; max-width: 100%; }
   overflow: hidden;
   width: 0;
   vertical-align: baseline;
+  will-change: width;
 }
 
 .intro-slide {

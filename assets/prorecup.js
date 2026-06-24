@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const hasIntro = !!document.getElementById('intro-overlay');
 
   if (hasIntro && !sessionStorage.getItem('intro-done')) {
-    initIntroAnimation();
+    document.fonts.ready.then(initIntroAnimation);
   } else {
     // Pas d'intro : supprime l'overlay s'il existe et lance direct
     const overlay = document.getElementById('intro-overlay');
@@ -265,18 +265,31 @@ function initIntroAnimation() {
     setTimeout(() => {
       playIntroClick();
       if (clothUniforms) clothUniforms.uClickTime.value = clothUniforms.uTime.value;
+
+      // Remesure avec police chargée (fonts.ready peut avoir pris du temps)
       wraps.forEach((wrap, i) => {
-        wrap.style.transition = 'width 1.1s cubic-bezier(0.16, 1, 0.3, 1)';
-        wrap.style.width      = widths[i] + 'px';
+        wrap.style.transition = 'none';
+        wrap.style.width      = 'auto';
+        widths[i] = wrap.querySelector('.intro-slide').offsetWidth;
+        wrap.style.width      = '0px';
+        void wrap.offsetWidth; // commit 0px avant d'animer
       });
+
+      // Double RAF : navigateur a deux frames pour calculer le state 0px proprement
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        wraps.forEach((wrap, i) => {
+          wrap.style.transition = 'width 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
+          wrap.style.width      = widths[i] + 'px';
+        });
+      }));
 
       // Glow progressif une fois ProRecup pleinement révélé
       setTimeout(() => {
-        logo.style.transition  = 'text-shadow 1.6s ease, opacity 0.4s ease';
-        logo.style.textShadow  = '0 0 30px rgba(255,255,255,0.35), 0 0 70px rgba(255,255,255,0.12)';
-      }, 1200);
+        logo.style.transition = 'text-shadow 1.6s ease';
+        logo.style.textShadow = '0 0 30px rgba(255,255,255,0.35), 0 0 70px rgba(255,255,255,0.12)';
+      }, 1300);
 
-      // — Phase 3 : fermeture (logo fade-out léger puis fly)
+      // — Phase 3 : fermeture
       setTimeout(closeIntro, 2500);
     }, 1400);
 
