@@ -80,6 +80,11 @@
     const variantId = btn.dataset.variant;
     const feedback = document.getElementById('cart-feedback');
 
+    if (!variantId) {
+      window.location.href = '/cart';
+      return;
+    }
+
     btn.disabled = true;
     btn.textContent = 'Ajout en cours…';
 
