@@ -101,7 +101,18 @@ function initIntroAnimation() {
     const navLogo = document.getElementById('nav-logo');
     const header  = document.getElementById('site-header');
 
-    // Mesure les positions pendant que l'intro est encore visible
+    // 1. Garde le header invisible avant de retirer la classe CSS
+    if (header) header.style.opacity = '0';
+    document.body.classList.remove('intro-running');
+
+    // 2. Expand le nav logo SANS animation, puis force un reflow pour avoir ses vraies dimensions
+    document.querySelectorAll('.logo-slide-wrap').forEach(wrap => {
+      wrap.style.transition = 'none';
+      wrap.style.width      = 'auto';
+    });
+    void navLogo.getBoundingClientRect(); // force reflow
+
+    // 3. Mesure APRÈS expansion (nav logo a sa taille réelle)
     const logoRect = logo.getBoundingClientRect();
     const navRect  = navLogo.getBoundingClientRect();
 
@@ -110,24 +121,20 @@ function initIntroAnimation() {
     const scale = parseFloat(getComputedStyle(navLogo).fontSize)
                 / parseFloat(getComputedStyle(logo).fontSize);
 
-    // Garde le header invisible via inline style avant de retirer la classe CSS
-    if (header) header.style.opacity = '0';
-    document.body.classList.remove('intro-running');
-
-    // Le logo vole vers la nav
+    // 4. Le logo vole vers la nav
     logo.style.transition      = 'transform 0.8s cubic-bezier(0.76, 0, 0.24, 1)';
     logo.style.transformOrigin = 'center center';
     logo.style.transform       = `translate(${tx}px, ${ty}px) scale(${scale})`;
 
-    // Le header apparaît en même temps que le logo arrive
-    if (header) {
-      requestAnimationFrame(() => {
-        header.style.transition = 'opacity 0.5s ease 0.35s';
+    // 5. Header apparaît pendant le vol
+    requestAnimationFrame(() => {
+      if (header) {
+        header.style.transition = 'opacity 0.5s ease 0.3s';
         header.style.opacity    = '1';
-      });
-    }
+      }
+    });
 
-    // Fade out overlay quand le logo est en place
+    // 6. Fade out overlay quand le logo est arrivé
     setTimeout(() => {
       overlay.style.transition = 'opacity 0.35s ease';
       overlay.style.opacity    = '0';
@@ -136,7 +143,7 @@ function initIntroAnimation() {
 
     setTimeout(() => {
       overlay.remove();
-      if (header) header.style.transition = '';
+      if (header) { header.style.transition = ''; header.style.opacity = ''; }
       bootSite();
     }, 1120);
   }
