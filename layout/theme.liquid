@@ -10,16 +10,41 @@
   {{ content_for_header }}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
   {{ 'prorecup.css' | asset_url | stylesheet_tag }}
 </head>
 <body class="{% if template == 'index' %}home{% endif %}">
-  <div id="cursor"></div>
-  <div id="cursor-ring"></div>
+  <div id="cursor" aria-hidden="true"></div>
+
+  {% if template == 'index' %}
+  <div id="intro-overlay" aria-hidden="true">
+    <div class="intro-logo" id="intro-logo">
+      <span class="intro-p">P</span><span class="intro-wrap"><span class="intro-slide">ro</span></span><span class="intro-r">R</span><span class="intro-wrap"><span class="intro-slide">ecup</span></span>
+    </div>
+  </div>
+  {% endif %}
+
   {% section 'header' %}
   <main id="main-content">{{ content_for_layout }}</main>
   {% section 'footer' %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  {% if template == 'index' %}
+  <div class="sticky-buy-bar" id="sticky-buy-bar" aria-hidden="true">
+    <div class="sticky-buy-inner">
+      <span class="sticky-price">89,99€</span>
+      <button type="button" id="sticky-add-cart" class="sticky-cta-btn">Ajouter au panier</button>
+    </div>
+  </div>
+  {% endif %}
+
+  <div id="cart-toast" aria-hidden="true" role="status">
+    <div class="cart-toast-inner">
+      <svg class="cart-toast-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      <span class="cart-toast-text">Ajouté au panier</span>
+      <a href="/cart" class="cart-toast-link">Voir →</a>
+    </div>
+  </div>
+
+  <script>window.__threeUrl = "{{ 'three.min.js' | asset_url }}";</script>
   {{ 'prorecup.js' | asset_url | script_tag }}
 </body>
 </html>

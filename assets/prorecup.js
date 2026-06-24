@@ -2,41 +2,546 @@
    PRORECUP — Main JS
    ============================================================ */
 
+// Désactive la restauration de scroll du navigateur (et de Shopify)
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+// Force le scroll en haut après que tout soit chargé
+// (setTimeout override Shopify qui restaure après load)
+window.addEventListener('load', () => {
+  setTimeout(() => window.scrollTo(0, 0), 0);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
+  const hasIntro = !!document.getElementById('intro-overlay');
+
+  if (hasIntro && !sessionStorage.getItem('intro-done')) {
+    document.fonts.ready.then(initIntroAnimation);
+  } else {
+    // Pas d'intro : supprime l'overlay s'il existe et lance direct
+    const overlay = document.getElementById('intro-overlay');
+    if (overlay) overlay.remove();
+    document.body.classList.remove('intro-running');
+    bootSite();
+  }
+});
+
+function bootSite() {
+  initScrollProgress();
   initCursor();
   initNav();
+  initLogoScroll();
+  initLogoAnimation();
   initReveal();
   initParallax();
   initCounters();
+  initGallery();
+  initStickyBar();
+}
+
+/* ── Son "clic" Apple (Web Audio) ── */
+function playIntroClick() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+
+    // Corps du clic — sine freq descendante
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1100, now);
+    osc.frequency.exponentialRampToValueAtTime(320, now + 0.055);
+    oscGain.gain.setValueAtTime(0.22, now);
+    oscGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
+    osc.connect(oscGain);
+    oscGain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.06);
+
+    // Crack haute fréquence (attaque)
+    const bufLen = Math.floor(ctx.sampleRate * 0.018);
+    const buf    = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+    const data   = buf.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1);
+    const noise      = ctx.createBufferSource();
+    noise.buffer     = buf;
+    const hpf        = ctx.createBiquadFilter();
+    hpf.type         = 'highpass';
+    hpf.frequency.value = 5500;
+    const noiseGain  = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.18, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
+    noise.connect(hpf);
+    hpf.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+    noise.start(now);
+
+    setTimeout(() => ctx.close(), 300);
+  } catch(e) {}
+}
+
+/* ── Intro plein écran PR → ProRecup → nav (auto-play) ── */
+function initIntroAnimation() {
+  const overlay = document.getElementById('intro-overlay');
+  const logo    = document.getElementById('intro-logo');
+  const wraps   = logo.querySelectorAll('.intro-wrap');
+
+  document.body.classList.add('intro-running');
+
+  // Mesure les largeurs naturelles AVANT de mettre width:0
+  const widths = [];
+  wraps.forEach(wrap => {
+    const slide = wrap.querySelector('.intro-slide');
+    wrap.style.transition = 'none';
+    wrap.style.width      = 'auto';
+    widths.push(slide.offsetWidth);
+    wrap.style.width = '0px';
+  });
+
+  let clothUniforms = null;
+  let clothActive   = true;
+
+  function startClothBackground() {
+    function run() {
+      const W = window.innerWidth, H = window.innerHeight;
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;';
+      overlay.insertBefore(canvas, overlay.firstChild);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(W, H);
+      renderer.setPixelRatio(1);
+      renderer.setClearColor(0x000000, 0);
+
+      const scene  = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(78, W / H, 0.1, 50);
+      camera.position.set(0, 0.8, 5);
+      camera.lookAt(0, 0, 0);
+
+      const seg = W > 600 ? 60 : 36;
+      const geo = new THREE.PlaneGeometry(13, 9, seg, Math.round(seg * 0.7));
+
+      clothUniforms = {
+        uTime:      { value: 0 },
+        uAlpha:     { value: 0 },
+        uClickTime: { value: -1.0 },
+      };
+
+      const mat = new THREE.ShaderMaterial({
+        transparent: true,
+        side: THREE.DoubleSide,
+        uniforms: clothUniforms,
+        vertexShader: `
+          uniform float uTime;
+          uniform float uClickTime;
+          varying float vZ;
+          void main() {
+            vec3 p = position;
+            float w1 = sin(p.x * 0.45 + uTime * 0.13) * cos(p.y * 0.38 + uTime * 0.09);
+            float w2 = sin(p.x * 0.70 - uTime * 0.15 + p.y * 0.50) * 0.50;
+            float w3 = cos(p.x * 0.30 + p.y * 0.65 - uTime * 0.08) * 0.34;
+            float w = (w1 + w2 + w3) * 0.30;
+            if (uClickTime >= 0.0) {
+              float t  = uTime - uClickTime;
+              float d  = length(p.xy);
+              float rp = exp(-pow(d - t * 1.1, 2.0) * 1.8) * max(0.0, 1.0 - t * 0.22);
+              w += rp * 0.80;
+            }
+            p.z = w;
+            vZ  = w;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float uAlpha;
+          varying float vZ;
+          void main() {
+            vec3 shadow = vec3(0.02, 0.02, 0.03);
+            vec3 base   = vec3(0.07, 0.07, 0.09);
+            vec3 sheen  = vec3(0.26, 0.25, 0.32);
+            float h = clamp(vZ * 2.2 + 0.5, 0.0, 1.0);
+            vec3 col = h < 0.5
+              ? mix(shadow, base, h * 2.0)
+              : mix(base, sheen, (h - 0.5) * 2.0);
+            float a = uAlpha * clamp(0.62 + vZ * 1.3, 0.0, 0.88);
+            gl_FragColor = vec4(col, a);
+          }
+        `
+      });
+
+      scene.add(new THREE.Mesh(geo, mat));
+
+      let t0 = null;
+      (function tick(ts) {
+        if (!t0) t0 = ts;
+        const t = (ts - t0) / 1000;
+        clothUniforms.uTime.value  = t;
+        clothUniforms.uAlpha.value = Math.min(t / 0.9, 1.0);
+        renderer.render(scene, camera);
+        if (clothActive) {
+          requestAnimationFrame(tick);
+        } else {
+          renderer.dispose(); geo.dispose(); mat.dispose();
+        }
+      })(performance.now());
+    }
+
+    if (typeof THREE !== 'undefined') { run(); return; }
+    const s = document.createElement('script');
+    s.src = window.__threeUrl || '';
+    s.onload = run;
+    document.head.appendChild(s);
+  }
+
+  function closeIntro() {
+    const navLogo = document.getElementById('nav-logo');
+    const header  = document.getElementById('site-header');
+
+    // 1. Tap press
+    logo.style.transition = 'transform 0.14s ease-out';
+    logo.style.transform  = 'scale(0.92)';
+    playIntroClick();
+
+    // 2. Spring-back
+    setTimeout(() => {
+      logo.style.transition = 'transform 0.22s ease-out';
+      logo.style.transform  = 'scale(1)';
+    }, 140);
+
+    // 3. Mesure + vol (après que le spring soit fini)
+    setTimeout(() => {
+      logo.style.textShadow = '';
+
+      document.querySelectorAll('.logo-slide-wrap').forEach(wrap => {
+        wrap.style.transition = 'none';
+        wrap.style.width      = 'auto';
+      });
+      void navLogo.offsetWidth;
+
+      const navRect   = navLogo.getBoundingClientRect();
+      const introRect = logo.getBoundingClientRect();
+      const tx    = (navRect.left + navRect.width  / 2) - (introRect.left + introRect.width  / 2);
+      const ty    = (navRect.top  + navRect.height / 2) - (introRect.top  + introRect.height / 2);
+      const scale = parseFloat(getComputedStyle(navLogo).fontSize)
+                  / parseFloat(getComputedStyle(logo).fontSize);
+
+      requestAnimationFrame(() => {
+        logo.style.transition      = 'transform 0.9s cubic-bezier(0.76, 0, 0.24, 1)';
+        logo.style.transformOrigin = 'center center';
+        logo.style.transform       = `translate(${tx}px, ${ty}px) scale(${scale})`;
+
+        overlay.style.transition   = 'opacity 1.1s ease';
+        overlay.style.opacity      = '0';
+
+        // Page + header apparaissent une fois l'overlay bien avancé
+        setTimeout(() => {
+          document.body.classList.remove('intro-running');
+          if (header) {
+            header.style.transition = 'opacity 0.7s ease';
+            header.style.opacity    = '1';
+          }
+        }, 650);
+
+        sessionStorage.setItem('intro-done', '1');
+      });
+    }, 400);
+
+    setTimeout(() => {
+      clothActive = false;
+      overlay.remove();
+      if (header) { header.style.transition = ''; header.style.opacity = ''; }
+      bootSite();
+    }, 1700);
+  }
+
+  startClothBackground();
+
+  // — Phase 1 : PR apparaît lentement
+  setTimeout(() => {
+    logo.style.transition = 'opacity 0.9s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)';
+    logo.classList.add('visible');
+
+    // — Phase 2 : lettres s'écartent
+    setTimeout(() => {
+      playIntroClick();
+      if (clothUniforms) clothUniforms.uClickTime.value = clothUniforms.uTime.value;
+
+      // Remesure avec police chargée (fonts.ready peut avoir pris du temps)
+      wraps.forEach((wrap, i) => {
+        wrap.style.transition = 'none';
+        wrap.style.width      = 'auto';
+        widths[i] = wrap.querySelector('.intro-slide').offsetWidth;
+        wrap.style.width      = '0px';
+        void wrap.offsetWidth; // commit 0px avant d'animer
+      });
+
+      // Double RAF : navigateur a deux frames pour calculer le state 0px proprement
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        wraps.forEach((wrap, i) => {
+          wrap.style.transition = 'width 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
+          wrap.style.width      = widths[i] + 'px';
+        });
+      }));
+
+      // Glow progressif une fois ProRecup pleinement révélé
+      setTimeout(() => {
+        logo.style.transition = 'text-shadow 1.6s ease';
+        logo.style.textShadow = '0 0 30px rgba(255,255,255,0.35), 0 0 70px rgba(255,255,255,0.12)';
+      }, 1300);
+
+      // — Phase 3 : fermeture
+      setTimeout(closeIntro, 2500);
+    }, 1400);
+
+  }, 400);
+}
+
+/* ── Logo animation nav : PR → ProRecup (seulement sans intro) ── */
+function initLogoAnimation() {
+  // Si l'intro vient de jouer : logo nav déjà en place, on skip l'animation
+  if (sessionStorage.getItem('intro-done')) {
+    const wraps = document.querySelectorAll('.logo-slide-wrap');
+    wraps.forEach(wrap => {
+      wrap.style.transition = 'none';
+      wrap.style.width = 'auto';
+    });
+    return;
+  }
+
+  const wraps = document.querySelectorAll('.logo-slide-wrap');
+  if (!wraps.length) return;
+
+  wraps.forEach(wrap => {
+    const slide = wrap.querySelector('.logo-slide');
+    wrap.style.transition = 'none';
+    wrap.style.width = 'auto';
+    const w = slide.offsetWidth;
+    wrap.style.width = '0px';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      wrap.style.transition = '';
+    }));
+    wrap.dataset.w = w;
+  });
+
+  setTimeout(() => {
+    wraps.forEach(wrap => { wrap.style.width = wrap.dataset.w + 'px'; });
+  }, 500);
+}
+
+/* ── Logo : rejoue l'intro sur homepage, navigation normale ailleurs ── */
+function initLogoScroll() {
+  const logo = document.getElementById('nav-logo');
+  if (!logo) return;
+
+  logo.addEventListener('click', e => {
+    if (window.location.pathname !== '/') return; // autres pages → lien normal
+
+    e.preventDefault();
+
+    // Ne rejoue pas si intro déjà en cours
+    if (document.getElementById('intro-overlay')) return;
+
+    // Scroll en haut instantanément
+    window.scrollTo(0, 0);
+
+    // Recrée l'overlay
+    sessionStorage.removeItem('intro-done');
+    const overlay = document.createElement('div');
+    overlay.id = 'intro-overlay';
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.innerHTML = `
+      <div class="intro-logo" id="intro-logo">
+        <span class="intro-p">P</span><span class="intro-wrap"><span class="intro-slide">ro</span></span><span class="intro-r">R</span><span class="intro-wrap"><span class="intro-slide">ecup</span></span>
+      </div>`;
+    overlay.style.opacity = '1';
+    document.body.prepend(overlay);
+
+    // Remet le nav logo en position fermée (PR)
+    document.querySelectorAll('.logo-slide-wrap').forEach(wrap => {
+      wrap.style.transition = 'none';
+      wrap.style.width      = '0px';
+    });
+
+    initIntroAnimation();
+  });
+}
+
+/* ── Gallery carousel ── */
+function initGallery() {
+  const gallery = document.querySelector('.product-gallery');
+  if (!gallery) return;
+
+  const slides = gallery.querySelectorAll('.gallery-slide');
+  const dots   = gallery.querySelectorAll('.gallery-dot');
+  let current  = 0;
+  let timer;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function autoPlay() {
+    timer = setInterval(() => goTo(current + 1), 4000);
+  }
+
+  const prevBtn = gallery.querySelector('.gallery-prev');
+  const nextBtn = gallery.querySelector('.gallery-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => { clearInterval(timer); goTo(current - 1); autoPlay(); });
+  if (nextBtn) nextBtn.addEventListener('click', () => { clearInterval(timer); goTo(current + 1); autoPlay(); });
+  dots.forEach(d => d.addEventListener('click', () => { clearInterval(timer); goTo(parseInt(d.dataset.index)); autoPlay(); }));
+
+  // Swipe tactile + drag souris (pointer events)
+  let dragStartX = 0;
+  let isDragging = false;
+
+  gallery.addEventListener('pointerdown', e => {
+    dragStartX = e.clientX;
+    isDragging = true;
+    gallery.classList.add('dragging');
+    gallery.setPointerCapture(e.pointerId);
+  });
+
+  gallery.addEventListener('pointerup', e => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    if (Math.abs(dx) > 40) {
+      clearInterval(timer);
+      goTo(dx < 0 ? current + 1 : current - 1);
+      autoPlay();
+    }
+    isDragging = false;
+    gallery.classList.remove('dragging');
+  });
+
+  gallery.addEventListener('pointercancel', () => {
+    isDragging = false;
+    gallery.classList.remove('dragging');
+  });
+
+  autoPlay();
+}
+
+/* ── Sticky Buy Bar ── */
+window.showCartToast = function() {
+  const toast = document.getElementById('cart-toast');
+  if (!toast) return;
+  toast.classList.add('visible');
+  toast.setAttribute('aria-hidden', 'false');
+  clearTimeout(window._cartToastTimer);
+  window._cartToastTimer = setTimeout(() => {
+    toast.classList.remove('visible');
+    toast.setAttribute('aria-hidden', 'true');
+  }, 3000);
+  // Rafraîchit le badge panier dans le nav
+  fetch('/cart.js')
+    .then(r => r.json())
+    .then(cart => {
+      let badge = document.querySelector('.cart-badge');
+      const navCart = document.querySelector('.nav-cart');
+      if (!badge && cart.item_count > 0 && navCart) {
+        badge = document.createElement('span');
+        badge.className = 'cart-badge';
+        navCart.appendChild(badge);
+      }
+      if (badge) badge.textContent = cart.item_count;
+    })
+    .catch(() => {});
+};
+
+function initStickyBar() {
+  const bar = document.getElementById('sticky-buy-bar');
+  if (!bar) return;
+  if (!window.matchMedia('(max-width: 600px)').matches) return;
+
+  const btn        = document.getElementById('sticky-add-cart');
+  const hero       = document.querySelector('.hero');
+  const buySection = document.getElementById('buy');
+
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const anyBtn = document.querySelector('[data-variant]');
+      const variantId = anyBtn ? anyBtn.dataset.variant : null;
+      if (!variantId) { window.location.href = '/cart'; return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Ajout…';
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: variantId, quantity: 1 })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status) {
+          btn.disabled = false;
+          btn.textContent = 'Ajouter au panier';
+        } else {
+          btn.textContent = 'Ajouté ✓';
+          window.showCartToast();
+          setTimeout(() => {
+            btn.disabled = false;
+            btn.textContent = 'Ajouter au panier';
+          }, 2200);
+        }
+      })
+      .catch(() => {
+        btn.disabled = false;
+        btn.textContent = 'Ajouter au panier';
+      });
+    });
+  }
+
+  function update() {
+    if (!hero) return;
+    const heroBottom = hero.getBoundingClientRect().bottom;
+    const atBuy = buySection
+      ? buySection.getBoundingClientRect().top < window.innerHeight * 0.5
+      : false;
+    const show = heroBottom < 0 && !atBuy;
+    bar.classList.toggle('visible', show);
+    bar.setAttribute('aria-hidden', String(!show));
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+}
+
+window.addEventListener('load', () => {
   initHero3D();
 });
 
+/* ── Scroll Progress ── */
+function initScrollProgress() {
+  const bar = document.createElement('div');
+  bar.id = 'scroll-progress';
+  document.body.prepend(bar);
+  window.addEventListener('scroll', () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = `scaleX(${window.scrollY / max})`;
+  }, { passive: true });
+}
+
 /* ── Cursor ── */
 function initCursor() {
+  // Pas de curseur custom sur écrans tactiles
+  if (window.matchMedia('(hover: none)').matches) return;
+
   const dot = document.getElementById('cursor');
-  const ring = document.getElementById('cursor-ring');
   if (!dot) return;
-  let mx = 0, my = 0, rx = 0, ry = 0;
 
   document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
-    dot.style.left = mx + 'px';
-    dot.style.top  = my + 'px';
-  });
-
-  if (ring) {
-    (function tick() {
-      rx += (mx - rx) * 0.1;
-      ry += (my - ry) * 0.1;
-      ring.style.left = rx + 'px';
-      ring.style.top  = ry + 'px';
-      requestAnimationFrame(tick);
-    })();
-  }
+    dot.style.left = e.clientX + 'px';
+    dot.style.top  = e.clientY + 'px';
+  }, { passive: true });
 
   document.querySelectorAll('a, button').forEach(el => {
-    el.addEventListener('mouseenter', () => { dot.classList.add('hover'); ring && ring.classList.add('hover'); });
-    el.addEventListener('mouseleave', () => { dot.classList.remove('hover'); ring && ring.classList.remove('hover'); });
+    el.addEventListener('mouseenter', () => dot.classList.add('hover'));
+    el.addEventListener('mouseleave', () => dot.classList.remove('hover'));
   });
 }
 
@@ -57,21 +562,24 @@ function initReveal() {
       setTimeout(() => e.target.classList.add('visible'), delay);
       io.unobserve(e.target);
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0.18, rootMargin: '0px 0px -60px 0px' });
   els.forEach((el, i) => {
-    el.dataset.delay = (i % 4) * 90;
+    el.dataset.delay = (i % 4) * 160;
     io.observe(el);
   });
 }
 
 /* ── Parallax ── */
 function initParallax() {
+  // Désactivé sur mobile — cause du jank et décharge la batterie
+  if (window.matchMedia('(hover: none)').matches) return;
+
   const content = document.querySelector('.hero-content');
   if (!content) return;
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
-    content.style.transform = `translateY(${y * 0.22}px)`;
-    content.style.opacity = Math.max(0, 1 - y / 480);
+    content.style.transform = `translateY(${y * 0.07}px)`;
+    content.style.opacity = Math.max(0, 1 - y / 1100);
   }, { passive: true });
 }
 
@@ -103,63 +611,78 @@ function initCounters() {
 }
 
 /* ================================================================
-   THREE.JS — Massage Gun 3D (basé sur photo produit)
-   Forme exacte : corps horizontal + manche vertical + tête ball
+   THREE.JS — ProRecup Massage Gun 3D
+   Matières noires mat, rotation broche, fond transparent
    ================================================================ */
 
 function initHero3D() {
   const canvas = document.getElementById('three-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
+  if (window.innerWidth <= 600) return; // fallback image sur mobile
+
+  // Montrer le canvas, cacher l'image fallback
+  canvas.style.display = 'block';
+  const fallback = document.querySelector('.hero-product-img');
+  if (fallback) fallback.style.display = 'none';
 
   const wrap = canvas.parentElement;
-  let W = wrap.clientWidth, H = wrap.clientHeight;
+  let W = wrap.clientWidth  || Math.round(window.innerWidth * 0.5);
+  let H = wrap.clientHeight || window.innerHeight;
 
-  /* Renderer */
+  /* Renderer — fond transparent pour fusion avec la page */
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(W, H);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.4;
+  renderer.toneMappingExposure = 2.0;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(32, W / H, 0.1, 50);
   camera.position.set(0, 0.3, 7);
 
-  /* ── Éclairage ── */
-  scene.add(new THREE.AmbientLight(0xffffff, 0.18));
+  /* ── Éclairage studio — produit noir mat ── */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.14));
 
-  // Key light haut-gauche chaud
-  const key = new THREE.DirectionalLight(0xfff4e0, 2.8);
-  key.position.set(-4, 5, 4);
+  // Key — chaud haut-gauche
+  const key = new THREE.DirectionalLight(0xfff4e0, 5.5);
+  key.position.set(-3, 4, 3);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   scene.add(key);
 
-  // Fill bleu froid droite
-  const fill = new THREE.DirectionalLight(0x8ab0ff, 0.5);
-  fill.position.set(5, 0, 3);
+  // Fill — bleu froid droite
+  const fill = new THREE.DirectionalLight(0x5878ff, 2.0);
+  fill.position.set(5, 0, 2);
   scene.add(fill);
 
-  // Rim arrière
-  const rim = new THREE.DirectionalLight(0xffffff, 1.6);
-  rim.position.set(1, -1, -6);
+  // Rim — blanc pur derrière (contour lumineux)
+  const rim = new THREE.DirectionalLight(0xffffff, 4.8);
+  rim.position.set(0.5, -0.5, -6);
   scene.add(rim);
 
-  // Bounce sol
-  scene.add(Object.assign(new THREE.PointLight(0x2040aa, 0.4, 12), { position: new THREE.Vector3(0, -4, 1) }));
+  // Top — définition des surfaces horizontales
+  const top = new THREE.DirectionalLight(0xffffff, 1.8);
+  top.position.set(0, 6, 2);
+  scene.add(top);
 
-  /* ── Matériaux ── */
-  const matte   = new THREE.MeshStandardMaterial({ color: 0x0c0c0c, metalness: 0.6, roughness: 0.3 });
-  const satin   = new THREE.MeshStandardMaterial({ color: 0x141414, metalness: 0.7, roughness: 0.18 });
-  const dark    = new THREE.MeshStandardMaterial({ color: 0x080808, metalness: 0.5, roughness: 0.45 });
-  const rubber  = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.0, roughness: 0.95 });
-  const gloss   = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, metalness: 0.9, roughness: 0.04 });
-  const screen  = new THREE.MeshStandardMaterial({ color: 0x001830, metalness: 0, roughness: 0, emissive: 0x002244, emissiveIntensity: 1.2 });
-  const ledGreen= new THREE.MeshStandardMaterial({ color: 0x22ff88, emissive: 0x22ff88, emissiveIntensity: 2, metalness: 0, roughness: 0.2 });
-  const accent  = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.5, roughness: 0.5 });
+  // Front point — avant-scène
+  const front = new THREE.PointLight(0xffffff, 3.0, 22);
+  front.position.set(0, 0.5, 7);
+  scene.add(front);
+
+  /* ── Matériaux — noir premium mat (produit réel) ── */
+  const matte   = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.28, roughness: 0.70 });
+  const satin   = new THREE.MeshStandardMaterial({ color: 0x212121, metalness: 0.52, roughness: 0.28 });
+  const dark    = new THREE.MeshStandardMaterial({ color: 0x0c0c0c, metalness: 0.10, roughness: 0.80 });
+  const rubber  = new THREE.MeshStandardMaterial({ color: 0x080808, metalness: 0.00, roughness: 0.98 });
+  const gloss   = new THREE.MeshStandardMaterial({ color: 0x262626, metalness: 0.68, roughness: 0.05 });
+  const screen  = new THREE.MeshStandardMaterial({ color: 0x000d1a, metalness: 0, roughness: 0, emissive: 0x0033cc, emissiveIntensity: 3.0 });
+  const ledGreen= new THREE.MeshStandardMaterial({ color: 0x22ff88, emissive: 0x22ff88, emissiveIntensity: 5.0, metalness: 0, roughness: 0.2 });
+  const accent  = new THREE.MeshStandardMaterial({ color: 0x141414, metalness: 0.20, roughness: 0.60 });
 
   const gun = new THREE.Group();
 
@@ -320,7 +843,7 @@ function initHero3D() {
 
   /* ── TÊTE BALL (sphère — identique à la photo) ── */
   const ballGeo = new THREE.SphereGeometry(0.215, 64, 64);
-  const ballMat = new THREE.MeshStandardMaterial({ color: 0x0f0f0f, metalness: 0.4, roughness: 0.35 });
+  const ballMat = new THREE.MeshStandardMaterial({ color: 0x505050, metalness: 0.15, roughness: 0.4 });
   const ball = new THREE.Mesh(ballGeo, ballMat);
   ball.position.set(1.82, 0, 0);
   ball.castShadow = true;
@@ -350,52 +873,22 @@ function initHero3D() {
   scene.add(shadow);
 
   /* Orientation initiale */
-  gun.rotation.y = 0.45;
   gun.rotation.x = 0.08;
   gun.position.set(-0.15, 0.1, 0);
   scene.add(gun);
 
-  /* ── Drag & auto-rotation ── */
-  let drag = false, px = 0, py = 0, vy = 0.005, vx = 0, autoRot = true;
-
-  canvas.addEventListener('mousedown', e => { drag = true; autoRot = false; px = e.clientX; py = e.clientY; vy = vx = 0; });
-  window.addEventListener('mouseup',   () => { drag = false; });
-  window.addEventListener('mousemove', e => {
-    if (!drag) return;
-    const dx = (e.clientX - px) * 0.007, dy = (e.clientY - py) * 0.003;
-    vy = dx * 0.6; vx = dy * 0.4;
-    gun.rotation.y += dx;
-    gun.rotation.x = Math.max(-0.55, Math.min(0.55, gun.rotation.x + dy));
-    px = e.clientX; py = e.clientY;
-  });
-  canvas.addEventListener('touchstart', e => { drag = true; autoRot = false; px = e.touches[0].clientX; py = e.touches[0].clientY; }, { passive: true });
-  window.addEventListener('touchend',   () => { drag = false; });
-  window.addEventListener('touchmove',  e => {
-    if (!drag) return;
-    const dx = (e.touches[0].clientX - px) * 0.007;
-    vy = dx * 0.6;
-    gun.rotation.y += dx;
-    px = e.touches[0].clientX;
-  }, { passive: true });
-
-  /* ── Animation loop ── */
+  /* ── Rotation broche — constante sur Y ── */
+  const SPEED = 0.011; // ~9 secondes par tour complet
   let t = 0;
+
   function animate() {
     requestAnimationFrame(animate);
-    t += 0.015;
+    t += SPEED;
 
-    if (!drag) {
-      if (autoRot) vy = 0.005;
-      vy *= 0.93; vx *= 0.90;
-      gun.rotation.y += vy;
-      gun.rotation.x += vx;
-    }
+    gun.rotation.y = t;
+    gun.position.y = 0.1 + Math.sin(t * 0.5) * 0.05;
 
-    // Float subtil
-    gun.position.y = 0.1 + Math.sin(t * 0.65) * 0.07;
-
-    // Pulse LED
-    if (btnRing.material) btnRing.material.emissiveIntensity = 1.8 + Math.sin(t * 2.2) * 0.7;
+    if (btnRing.material) btnRing.material.emissiveIntensity = 2.5 + Math.sin(t * 2.5) * 1.0;
 
     renderer.render(scene, camera);
   }

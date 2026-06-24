@@ -1,9 +1,25 @@
 <section class="hero" id="hero">
-  <div class="hero-bg-gradient"></div>
+
+  {%- comment -%} Produit en fond — couvre tout le hero, bords clippés {%- endcomment -%}
+  <img
+    src="{{ 'product-2.png' | asset_url }}"
+    alt=""
+    class="hero-bg-img"
+    aria-hidden="true"
+    loading="eager"
+  >
+
+  {%- comment -%} Dégradé qui rend le texte lisible {%- endcomment -%}
+  <div class="hero-overlay"></div>
+
+  {%- comment -%} Orbes aurora (z-index au-dessus de l'image) {%- endcomment -%}
+  <div class="hero-bg-gradient" aria-hidden="true">
+    <div class="aurora-orb aurora-orb-1"></div>
+    <div class="aurora-orb aurora-orb-2"></div>
+    <div class="aurora-orb aurora-orb-3"></div>
+  </div>
 
   <div class="hero-content">
-    <p class="hero-eyebrow reveal">Récupération musculaire premium</p>
-
     <h1 class="hero-title reveal">
       Performez.<br>
       Récupérez.<br>
@@ -14,8 +30,11 @@
       Le pistolet de massage professionnel qui transforme votre récupération en 10 minutes par jour.
     </p>
 
+    {% assign hero_variant = section.settings.variant_id | default: '53855172985175' %}
     <div class="hero-actions reveal">
-      <a href="#buy" class="hero-btn">Commander — 49,99€</a>
+      <button type="button" class="hero-btn" id="hero-add-cart" data-variant="{{ hero_variant }}">
+        Ajouter au panier — 89,99€
+      </button>
       <a href="#features" class="hero-btn-ghost">En savoir plus →</a>
     </div>
 
@@ -35,20 +54,52 @@
     </div>
   </div>
 
-  <div class="hero-3d" id="hero-canvas-container">
-    <canvas id="three-canvas"></canvas>
-    <p class="canvas-hint">Faites glisser pour pivoter</p>
-  </div>
-
-  <div class="hero-scroll">
-    <div class="hero-scroll-line"></div>
-    <span>Scroll</span>
-  </div>
 </section>
+
+<script>
+(function() {
+  const btn = document.getElementById('hero-add-cart');
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    if (!btn.dataset.variant) { window.location.href = '/cart'; return; }
+    btn.disabled = true;
+    btn.textContent = 'Ajout en cours…';
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: btn.dataset.variant, quantity: 1 })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status) {
+        btn.disabled = false;
+        btn.textContent = 'Ajouter au panier — 89,99€';
+        alert(data.description || 'Erreur — vérifie le stock du produit.');
+      } else {
+        btn.textContent = 'Ajouté ✓';
+        btn.style.background = '#1a5c1a';
+        if (window.showCartToast) window.showCartToast();
+        setTimeout(() => window.location.href = '/cart', 900);
+      }
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.textContent = 'Ajouter au panier — 89,99€';
+    });
+  });
+})();
+</script>
 
 {% schema %}
 {
   "name": "Hero",
-  "settings": []
+  "settings": [
+    {
+      "type": "text",
+      "id": "variant_id",
+      "label": "Variant ID produit",
+      "info": "Colle l'ID du variant ici pour activer le bouton panier direct"
+    }
+  ]
 }
 {% endschema %}

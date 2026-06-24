@@ -1,19 +1,27 @@
+{% assign product = section.settings.product %}
+{% assign variant_id = product.selected_or_first_available_variant.id | default: product.variants.first.id | default: section.settings.variant_id | default: '53855172985175' %}
+<div class="section-connector"><div class="connector-dot"></div></div>
 <section class="product-buy" id="buy">
   <div class="buy-inner">
     <div class="buy-visual reveal-left">
-      {% assign product = all_products['pistolet-de-massage-electrique-8-tetes-interchangeables'] %}
-      {% if product.featured_image %}
-        <img
-          src="{{ product.featured_image | img_url: '900x900' }}"
-          alt="{{ product.title }}"
-          class="buy-product-img"
-          loading="lazy"
-        >
-      {% else %}
-        <div class="buy-placeholder">
-          <canvas id="buy-canvas"></canvas>
+      <div class="product-gallery">
+        <div class="gallery-track">
+          <div class="gallery-slide active"><img src="{{ 'product-1.png' | asset_url }}" alt="ProRecup pistolet vue 1" loading="eager"></div>
+          <div class="gallery-slide"><img src="{{ 'product-2.png' | asset_url }}" alt="ProRecup pistolet vue 2" loading="lazy"></div>
+          <div class="gallery-slide"><img src="{{ 'product-3.png' | asset_url }}" alt="ProRecup pistolet vue 3" loading="lazy"></div>
+          <div class="gallery-slide"><img src="{{ 'product-4.png' | asset_url }}" alt="ProRecup pistolet vue 4" loading="lazy"></div>
+          <div class="gallery-slide"><img src="{{ 'product-5.png' | asset_url }}" alt="ProRecup pistolet vue 5" loading="lazy"></div>
         </div>
-      {% endif %}
+        <div class="gallery-dots">
+          <button class="gallery-dot active" data-index="0" aria-label="Photo 1"></button>
+          <button class="gallery-dot" data-index="1" aria-label="Photo 2"></button>
+          <button class="gallery-dot" data-index="2" aria-label="Photo 3"></button>
+          <button class="gallery-dot" data-index="3" aria-label="Photo 4"></button>
+          <button class="gallery-dot" data-index="4" aria-label="Photo 5"></button>
+        </div>
+        <button class="gallery-prev" aria-label="Précédent">&#8592;</button>
+        <button class="gallery-next" aria-label="Suivant">&#8594;</button>
+      </div>
     </div>
 
     <div class="buy-info">
@@ -24,26 +32,33 @@
         <li><span>Têtes incluses</span><span>8 interchangeables</span></li>
         <li><span>Recharge</span><span>USB-C · 2h</span></li>
         <li><span>Livraison</span><span>Offerte — 7 à 15 jours</span></li>
-        <li><span>Retour</span><span>30 jours satisfait ou remboursé</span></li>
-        <li><span>Couleur</span><span>Noir premium mat</span></li>
+<li><span>Couleur</span><span>Noir premium mat</span></li>
       </ul>
 
       <div class="buy-price reveal">
-        <span class="price-current">49,99€</span>
-        <span class="price-old">69,99€</span>
-        <span class="price-badge">–29%</span>
+        <span class="price-current">89,99€</span>
+        <span class="price-old">119,99€</span>
+        <span class="price-badge">–25%</span>
       </div>
 
       <div class="reveal" style="display:flex;flex-direction:column;gap:12px;">
-        {% if product.variants.first %}
-          <a href="/cart/add?id={{ product.variants.first.id }}&quantity=1" class="buy-cta">
-            Ajouter au panier
-          </a>
-        {% else %}
-          <a href="#" class="buy-cta">Commander maintenant</a>
-        {% endif %}
+        <button
+          type="button"
+          class="buy-cta"
+          id="btn-add-cart"
+          data-variant="{{ variant_id }}"
+          style="width:100%;border:none;cursor:pointer;"
+        >Ajouter au panier</button>
+        <form action="/cart/add" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="id" value="{{ variant_id }}">
+          <input type="hidden" name="quantity" value="1">
+          <input type="hidden" name="return_to" value="/cart">
+          <button type="submit" class="buy-secondary" style="width:100%;border:none;cursor:pointer;">Acheter maintenant</button>
+        </form>
         <a href="#features" class="buy-secondary">Voir toutes les caractéristiques</a>
       </div>
+
+      <div id="cart-feedback" style="display:none;text-align:center;padding:10px 0;font-size:0.9rem;color:#4488ff;"></div>
 
       <div class="buy-trust reveal">
         <span class="trust-item">✓ Paiement sécurisé</span>
@@ -56,9 +71,69 @@
   </div>
 </section>
 
+<script>
+(function() {
+  const btn = document.getElementById('btn-add-cart');
+  if (!btn) return;
+
+  btn.addEventListener('click', function() {
+    const variantId = btn.dataset.variant;
+    const feedback = document.getElementById('cart-feedback');
+
+    if (!variantId) {
+      window.location.href = '/cart';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Ajout en cours…';
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: variantId, quantity: 1 })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status) {
+        feedback.style.color = '#ff4444';
+        feedback.textContent = data.description || 'Erreur — veuillez réessayer.';
+      } else {
+        btn.textContent = 'Ajouté au panier ✓';
+        btn.style.background = '#1a5c1a';
+        feedback.style.color = '#4488ff';
+        feedback.textContent = 'Produit ajouté !';
+        if (window.showCartToast) window.showCartToast();
+        setTimeout(() => window.location.href = '/cart', 900);
+      }
+      feedback.style.display = 'block';
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.textContent = 'Ajouter au panier';
+      feedback.style.color = '#ff4444';
+      feedback.textContent = 'Erreur réseau — réessaie.';
+      feedback.style.display = 'block';
+    });
+  });
+})();
+</script>
+
 {% schema %}
 {
   "name": "Product Buy",
-  "settings": []
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Produit à afficher"
+    },
+    {
+      "type": "text",
+      "id": "variant_id",
+      "label": "Variant ID (secours)",
+      "info": "Copie l'ID depuis Admin → Produits → ton produit → URL"
+    }
+  ]
 }
 {% endschema %}

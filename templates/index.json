@@ -1,9 +1,31 @@
 {
   "sections": {
-    "hero": { "type": "hero", "settings": {} },
-    "numbers": { "type": "numbers", "settings": {} },
-    "features": { "type": "features", "settings": {} },
-    "product-buy": { "type": "product-buy", "settings": {} }
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "variant_id": "53855172985175"
+      }
+    },
+    "numbers": {
+      "type": "numbers",
+      "settings": {}
+    },
+    "features": {
+      "type": "features",
+      "settings": {}
+    },
+    "product-buy": {
+      "type": "product-buy",
+      "settings": {
+        "product": "6-99-speeds-massage-gun-deep-tissue-back-massager-gun-for-athletes-muscle-massage-gun-for-body-with-4-8-massage-heads",
+        "variant_id": "53855172985175"
+      }
+    }
   },
-  "order": ["hero", "numbers", "features", "product-buy"]
+  "order": [
+    "hero",
+    "numbers",
+    "features",
+    "product-buy"
+  ]
 }
