@@ -97,40 +97,102 @@ function initIntroAnimation() {
     wrap.style.width = '0px';
   });
 
+  function waterRipple3D(cx, cy) {
+    const canvas  = document.createElement('canvas');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.cssText = 'position:fixed;inset:0;z-index:10002;pointer-events:none;';
+    document.body.appendChild(canvas);
+
+    const ctx   = canvas.getContext('2d');
+    const start = performance.now();
+
+    // 7 vagues avec délais échelonnés, vitesses décroissantes
+    const waves = [
+      { delay:   0, speed: 820, w: 2.8 },
+      { delay: 100, speed: 760, w: 2.3 },
+      { delay: 200, speed: 700, w: 1.9 },
+      { delay: 320, speed: 630, w: 1.5 },
+      { delay: 450, speed: 560, w: 1.2 },
+      { delay: 600, speed: 490, w: 0.9 },
+      { delay: 760, speed: 420, w: 0.7 },
+    ];
+
+    const MAX_R = Math.hypot(
+      Math.max(cx, canvas.width  - cx),
+      Math.max(cy, canvas.height - cy)
+    ) * 1.15;
+
+    function frame(now) {
+      const elapsed = now - start;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      let active = false;
+
+      waves.forEach(wave => {
+        if (elapsed < wave.delay) { active = true; return; }
+
+        const t = (elapsed - wave.delay) / 1000;
+        const r = t * wave.speed;
+
+        if (r > MAX_R) return;
+        active = true;
+
+        // Fondu : fort au début, s'efface en s'éloignant
+        const alpha = Math.max(0, 0.75 * (1 - r / MAX_R) * (1 - t * 0.22));
+        if (alpha < 0.01) return;
+
+        // Perspective 3D : ellipse compressée + décalage vers le bas
+        const perspRatio = 0.28 + (r / MAX_R) * 0.14; // plus aplati = plus loin
+        const rx = r;
+        const ry = r * perspRatio;
+        const offsetY = r * 0.06; // la vague s'éloigne vers le bas (gravité)
+
+        // Gradient vertical : plus lumineux au centre de l'ellipse (reflet)
+        const grd = ctx.createLinearGradient(cx, cy + offsetY - ry, cx, cy + offsetY + ry);
+        grd.addColorStop(0,   `rgba(180,210,255,${alpha * 0.35})`);
+        grd.addColorStop(0.42,`rgba(255,255,255,${alpha})`);
+        grd.addColorStop(0.58,`rgba(255,255,255,${alpha})`);
+        grd.addColorStop(1,   `rgba(140,190,255,${alpha * 0.4})`);
+
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + offsetY, rx, ry, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = grd;
+        ctx.lineWidth   = wave.w;
+        ctx.stroke();
+      });
+
+      if (active) requestAnimationFrame(frame);
+      else canvas.remove();
+    }
+
+    requestAnimationFrame(frame);
+  }
+
   function closeIntro() {
     const navLogo = document.getElementById('nav-logo');
     const header  = document.getElementById('site-header');
 
-    // Centre du logo pour les ripples
     const logoRect = logo.getBoundingClientRect();
     const cx = logoRect.left + logoRect.width  / 2;
     const cy = logoRect.top  + logoRect.height / 2;
 
-    // 1. Tap animation + son
-    logo.style.transition = 'transform 0.1s ease-out';
+    // 1. Tap + son
+    logo.style.transition = 'transform 0.12s ease-out';
     logo.style.transform  = 'scale(0.91)';
     playIntroClick();
 
-    // 2. Rings de ripple depuis le centre du logo
-    for (let i = 0; i < 5; i++) {
-      const ring = document.createElement('div');
-      ring.className = 'intro-ripple';
-      ring.style.left           = cx + 'px';
-      ring.style.top            = cy + 'px';
-      ring.style.animationDelay = (i * 100) + 'ms';
-      document.body.appendChild(ring);
-    }
+    // 2. Ondulations 3D water drop
+    waterRipple3D(cx, cy);
 
-    // 3. Après le rebond du tap : vol + transition site
+    // 3. Vol vers nav + disparition overlay
     setTimeout(() => {
       logo.style.transition = '';
       logo.style.transform  = '';
 
-      // Header invisible via inline avant retrait classe CSS
       if (header) header.style.opacity = '0';
       document.body.classList.remove('intro-running');
 
-      // Expand nav logo sans animation + mesure
       document.querySelectorAll('.logo-slide-wrap').forEach(wrap => {
         wrap.style.transition = 'none';
         wrap.style.width      = 'auto';
@@ -144,19 +206,16 @@ function initIntroAnimation() {
       const scale = parseFloat(getComputedStyle(navLogo).fontSize)
                   / parseFloat(getComputedStyle(logo).fontSize);
 
-      // Logo vole vers la nav
       logo.style.transition      = 'transform 0.75s cubic-bezier(0.76, 0, 0.24, 1)';
       logo.style.transformOrigin = 'center center';
       logo.style.transform       = `translate(${tx}px, ${ty}px) scale(${scale})`;
 
-      // Overlay disparaît pendant le vol
-      overlay.style.transition = 'opacity 0.75s ease 0.05s';
+      overlay.style.transition = 'opacity 0.7s ease';
       overlay.style.opacity    = '0';
 
-      // Header réapparaît
       requestAnimationFrame(() => {
         if (header) {
-          header.style.transition = 'opacity 0.5s ease 0.25s';
+          header.style.transition = 'opacity 0.5s ease 0.2s';
           header.style.opacity    = '1';
         }
       });
@@ -164,13 +223,11 @@ function initIntroAnimation() {
       sessionStorage.setItem('intro-done', '1');
     }, 80);
 
-    // 4. Nettoyage
     setTimeout(() => {
       overlay.remove();
-      document.querySelectorAll('.intro-ripple').forEach(r => r.remove());
       if (header) { header.style.transition = ''; header.style.opacity = ''; }
       bootSite();
-    }, 1200);
+    }, 1100);
   }
 
   // — Phase 1 : PR apparaît lentement (clignement d'œil)

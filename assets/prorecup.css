@@ -1652,21 +1652,3 @@ img { display: block; max-width: 100%; }
 body.intro-running          { overflow: hidden; }
 body.intro-running #site-header { opacity: 0; pointer-events: none; }
 
-/* Ripple rings */
-.intro-ripple {
-  position: fixed;
-  z-index: 10002;
-  pointer-events: none;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.45);
-  width: 10px;
-  height: 10px;
-  transform: translate(-50%, -50%) scale(0);
-  animation: introRipple 1.5s cubic-bezier(0, 0.6, 0.4, 1) forwards;
-}
-
-@keyframes introRipple {
-  0%   { transform: translate(-50%, -50%) scale(0);   opacity: 0.7; }
-  50%  { opacity: 0.25; }
-  100% { transform: translate(-50%, -50%) scale(260); opacity: 0;   }
-}
