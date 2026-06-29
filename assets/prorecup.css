@@ -174,7 +174,7 @@ img { display: block; max-width: 100%; }
   position: relative;
   display: flex;
   align-items: center;
-  overflow: hidden;
+  overflow: clip;
   background: linear-gradient(135deg, #000510 0%, #07081a 50%, #000000 100%);
   background-size: 300% 300%;
   animation: heroGradientMobile 10s ease infinite;
@@ -433,25 +433,25 @@ img { display: block; max-width: 100%; }
   }
   .hd-product img { width: 100%; display: block; }
 
-  /* Pro — agrandi, centre-gauche, incliné */
+  /* Pro — dépasse en haut et sur les côtés */
   .hd-product-pro {
-    width: 80%;
+    width: 95%;
     top: 50%;
-    left: -2%;
+    left: -8%;
     z-index: 2;
     filter: drop-shadow(0 0 40px rgba(190,188,185,0.22));
     animation: fpro 7s ease-in-out infinite;
   }
   @keyframes fpro {
-    0%,100% { transform: translateY(-52%) rotate(-6deg); }
-    50%      { transform: translateY(calc(-52% - 18px)) rotate(-4deg); }
+    0%,100% { transform: translateY(-56%) rotate(-6deg); }
+    50%      { transform: translateY(calc(-56% - 18px)) rotate(-4deg); }
   }
 
-  /* Mini — agrandi, bas-droite, devant */
+  /* Mini — dépasse en bas et à droite */
   .hd-product-mini {
-    width: 64%;
-    bottom: 3%;
-    right: -1%;
+    width: 76%;
+    bottom: -6%;
+    right: -8%;
     z-index: 3;
     filter: drop-shadow(0 0 30px rgba(175,172,168,0.20));
     animation: fmini 9s ease-in-out infinite;
