@@ -386,6 +386,9 @@
   #sp-panel-1 .sp-visual { margin-right: 0; }
   #sp-panel-2 .sp-visual { margin-left: 0; }
 
+  /* Boutons internes masqués sur mobile — remplacés par le fixe */
+  .sp-panel .sp-btn { display: none; }
+
   .sp-info {
     width: 100%;
     align-items: flex-start;
@@ -468,21 +471,21 @@
     const travel = scene.offsetHeight - window.innerHeight;
     const p      = clamp(-rect.top / travel, 0, 1);
 
-    // Panel 1 : entre 0→0.45, sort 0.45→0.58
-    const p1in  = prog(p, 0,    0.22);
-    const p1out = prog(p, 0.42, 0.56);
+    // Panel 1 : entre vite (0→0.12), plateau long (0.12→0.44), sort (0.44→0.54)
+    const p1in  = prog(p, 0,    0.12);
+    const p1out = prog(p, 0.44, 0.54);
     const p1    = p1in * (1 - p1out);
 
-    // Panel 2 : entre 0.56→0.78, sort 0.88→1
-    const p2in  = prog(p, 0.56, 0.78);
-    const p2out = prog(p, 0.88, 1.0);
+    // Panel 2 : entre (0.54→0.68), plateau long (0.68→0.90), sort (0.90→1.0)
+    const p2in  = prog(p, 0.54, 0.68);
+    const p2out = prog(p, 0.90, 1.0);
     const p2    = p2in * (1 - p2out);
 
     applyPanel(panel1, img1, info1, p1, 1, -1);
     applyPanel(panel2, img2, info2, p2, -1, 1);
 
     // Indicateur
-    const inP2 = p >= 0.56;
+    const inP2 = p >= 0.54;
     if (dot1) dot1.classList.toggle('active', !inP2);
     if (dot2) dot2.classList.toggle('active', inP2);
     if (line) line.classList.toggle('p2', inP2);
@@ -490,6 +493,16 @@
 
     // Cache le hint après démarrage
     if (hint) hint.style.opacity = p < 0.05 ? 1 : 0;
+
+    // Couleur d'ambiance du fond selon le panel
+    const bg = document.querySelector('.sp-bg');
+    if (bg) {
+      if (inP2) {
+        bg.style.background = 'radial-gradient(ellipse 70% 55% at 70% 50%, rgba(175,168,155,0.10) 0%, transparent 65%), radial-gradient(ellipse 50% 45% at 25% 60%, rgba(155,148,140,0.06) 0%, transparent 65%)';
+      } else {
+        bg.style.background = 'radial-gradient(ellipse 70% 55% at 30% 50%, rgba(190,188,185,0.08) 0%, transparent 65%), radial-gradient(ellipse 50% 45% at 75% 60%, rgba(160,158,155,0.06) 0%, transparent 65%)';
+      }
+    }
 
     // Bouton fixe mobile — change selon le produit visible
     const mobileCta   = document.getElementById('sp-mobile-cta');
