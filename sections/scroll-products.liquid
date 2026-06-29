@@ -60,6 +60,13 @@
       </div>
     </div>
 
+    <!-- Bouton fixe mobile — change selon le produit actif -->
+    <a href="{{ mini_url }}" class="sp-mobile-cta" id="sp-mobile-cta">
+      <span class="sp-mobile-cta-label" id="sp-mobile-cta-label">ProRecup Mini</span>
+      <span class="sp-mobile-cta-price" id="sp-mobile-cta-price">44,99€</span>
+      <span class="sp-mobile-cta-arrow">→</span>
+    </a>
+
     <!-- Scroll hint (visible seulement au début) -->
     <div class="sp-scroll-hint" id="sp-scroll-hint">
       <span class="sp-scroll-arrow"></span>
@@ -310,7 +317,44 @@
   50%      { transform: scaleY(1.2) translateY(4px); opacity: 1; }
 }
 
-/* ── Mobile ── */
+/* Bouton fixe mobile */
+.sp-mobile-cta {
+  display: none;
+}
+@media (max-width: 767px) {
+  .sp-mobile-cta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f5f5f7;
+    color: #000;
+    text-decoration: none;
+    border-radius: 100px;
+    padding: 14px 28px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    z-index: 100;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.08);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s, transform 0.35s;
+    will-change: opacity;
+  }
+  .sp-mobile-cta.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .sp-mobile-cta-label { font-weight: 600; }
+  .sp-mobile-cta-price { font-weight: 400; opacity: 0.6; font-size: 0.82rem; }
+  .sp-mobile-cta-arrow { font-size: 1rem; }
+}
+
+/* ── Mobile layout ── */
 @media (max-width: 767px) {
   .sp-scene { height: 600vh; }
 
@@ -446,6 +490,24 @@
 
     // Cache le hint après démarrage
     if (hint) hint.style.opacity = p < 0.05 ? 1 : 0;
+
+    // Bouton fixe mobile — change selon le produit visible
+    const mobileCta   = document.getElementById('sp-mobile-cta');
+    const ctaLabel    = document.getElementById('sp-mobile-cta-label');
+    const ctaPrice    = document.getElementById('sp-mobile-cta-price');
+    const inScene     = p > 0.03 && p < 0.97;
+    if (mobileCta) {
+      mobileCta.classList.toggle('visible', inScene);
+      if (inP2) {
+        mobileCta.href        = '{{ pro_url }}';
+        if (ctaLabel) ctaLabel.textContent = 'ProRecup Pro';
+        if (ctaPrice) ctaPrice.textContent = '89,99€';
+      } else {
+        mobileCta.href        = '{{ mini_url }}';
+        if (ctaLabel) ctaLabel.textContent = 'ProRecup Mini';
+        if (ctaPrice) ctaPrice.textContent = '44,99€';
+      }
+    }
   }
 
   window.addEventListener('scroll', tick, { passive: true });
