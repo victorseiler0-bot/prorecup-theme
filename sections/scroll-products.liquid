@@ -420,71 +420,73 @@
   }
 }
 
-/* ── Mobile layout ── */
+/* ── Mobile layout — plein écran portrait ── */
 @media (max-width: 767px) {
   .sp-scene { height: 600vh; }
 
+  /* Panneau : colonne unique, image haute / texte bas */
   .sp-panel {
-    grid-template-columns: 1fr;
-    padding: 52px 7% 28px;
-    gap: 10px;
-    align-content: start;
-    justify-items: center;
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: unset;
+    padding: 0;
+    gap: 0;
+    align-items: stretch;
+    justify-items: unset;
   }
 
-  /* Mobile : image toujours en haut, texte en bas (reset order) */
-  #sp-panel-1 .sp-visual { order: -1 !important; }
-  #sp-panel-1 .sp-info   { order: 0 !important; }
-  #sp-panel-2 .sp-visual { order: -1 !important; }
-  #sp-panel-2 .sp-info   { order: 0 !important; }
-
+  /* Image : occupe le haut de l'écran */
   .sp-visual {
-    width: 100%;
-    display: flex;
+    width: 100% !important;
+    height: 50vh;
+    display: flex !important;
+    align-items: center;
     justify-content: center;
+    margin: 0 !important;
+    order: 0 !important;
+    padding-top: calc(var(--nav-h, 64px) + 10px);
   }
   .sp-visual img {
-    width: 70%;
-    max-height: 32vh;
+    width: auto;
+    height: 100%;
+    max-height: 42vh;
+    max-width: 88%;
     object-fit: contain;
-  }
-  /* Reset marges négatives desktop */
-  #sp-panel-1 .sp-visual { margin-right: 0; }
-  #sp-panel-2 .sp-visual { margin-left: 0; }
-
-  /* Boutons internes remontés sur mobile — juste après le titre */
-  .sp-info { flex-direction: column; }
-  .sp-info .sp-btn {
-    order: -1;
-    display: none; /* la barre fixe les remplace */
+    filter: drop-shadow(0 0 40px rgba(190,188,185,0.22)) !important;
   }
 
+  /* Texte : remplit le bas */
   .sp-info {
+    order: 1 !important;
     width: 100%;
+    flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+    padding: 18px 28px 110px; /* 110px = espace barre fixe en bas */
   }
 
-  .sp-eyebrow { font-size: 0.62rem; }
-  .sp-title   { font-size: 1.6rem; line-height: 1.1; }
-  .sp-price   { font-size: 1.4rem; }
+  /* Cache le bouton inline — la barre fixe le remplace */
+  .sp-info .sp-btn { display: none !important; }
+
+  .sp-eyebrow { font-size: 0.65rem; }
+  .sp-title   { font-size: 2rem; line-height: 1.08; }
+  .sp-price   { font-size: 1.6rem; }
   .sp-old     { font-size: 0.85rem; }
+  .sp-badge   { font-size: 0.68rem; }
 
-  /* N'affiche que les 2 premières features sur mobile */
+  /* 2 features max sur mobile */
   .sp-feats li:nth-child(n+3) { display: none; }
-  .sp-feats li { font-size: 0.78rem; }
-  .sp-feats { gap: 7px; }
+  .sp-feats li { font-size: 0.82rem; }
+  .sp-feats { gap: 8px; }
+  .sp-pricing { gap: 10px; }
 
-  .sp-pricing { gap: 8px; }
-
-  .sp-btn {
-    padding: 12px 24px;
-    font-size: 0.82rem;
-  }
+  /* Reset marges négatives desktop */
+  #sp-panel-1 .sp-visual { margin-right: 0 !important; }
+  #sp-panel-2 .sp-visual { margin-left: 0 !important; }
 
   .sp-indicator { right: 14px; }
-  .sp-step-label { left: 14px; bottom: 16px; font-size: 0.58rem; }
-  .sp-scroll-hint { bottom: 16px; }
+  .sp-step-label { left: 14px; bottom: 80px; font-size: 0.58rem; }
+  .sp-scroll-hint { bottom: 80px; }
 }
 </style>
 

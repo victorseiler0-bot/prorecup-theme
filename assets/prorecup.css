@@ -476,7 +476,7 @@ img { display: block; max-width: 100%; }
   /* Tags glassmorphism */
   .hd-tag {
     position: absolute;
-    background: rgba(15,15,25,0.65);
+    background: rgba(15,15,15,0.70);
     border: 1px solid rgba(255,255,255,0.14);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -1552,27 +1552,6 @@ img { display: block; max-width: 100%; }
     );
   }
 
-  /* Aurora : grandes, colorées, animées */
-  .aurora-orb { }
-  .aurora-orb-1 {
-    width: 480px; height: 480px;
-    top: -100px; left: -80px;
-    background: radial-gradient(circle, rgba(68,136,255,0.40) 0%, transparent 70%);
-    animation: auroraFloat1 9s ease-in-out infinite;
-  }
-  .aurora-orb-2 {
-    width: 400px; height: 400px;
-    bottom: 60px; right: -100px;
-    background: radial-gradient(circle, rgba(88,44,200,0.36) 0%, transparent 70%);
-    animation: auroraFloat2 12s ease-in-out infinite;
-  }
-  .aurora-orb-3 {
-    display: block;
-    width: 280px; height: 280px;
-    top: 30%; left: 30%;
-    background: radial-gradient(circle, rgba(255,80,40,0.14) 0%, transparent 70%);
-    animation: auroraFloat3 11s ease-in-out infinite;
-  }
 
   /* Contenu : centré verticalement, texte au centre */
   .hero-content {
