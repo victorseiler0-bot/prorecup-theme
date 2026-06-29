@@ -1,3 +1,8 @@
+{% assign p1 = section.settings.product_p1 %}
+{% assign p2 = section.settings.product_p2 %}
+{% assign vid1 = section.settings.variant_id_p1 | default: '53855172985175' %}
+{% assign vid2 = section.settings.variant_id_p2 %}
+
 <div class="section-connector"><div class="connector-dot"></div></div>
 <section class="catalog" id="catalog">
   <div class="catalog-inner">
@@ -10,15 +15,20 @@
     <div class="catalog-grid">
 
       <!-- ── Produit 1 : ProRecup Pro ── -->
+      {% assign p1_url = p1.url | default: '/products/6-99-speeds-massage-gun-deep-tissue-back-massager-gun-for-athletes-muscle-massage-gun-for-body-with-4-8-massage-heads' %}
       <div class="catalog-card reveal-scale">
         <div class="catalog-badge-wrap">
           <span class="catalog-badge">Bestseller</span>
         </div>
-        <div class="catalog-img-wrap">
-          <img src="{{ 'product-1.png' | asset_url }}" alt="ProRecup Pro" class="catalog-img" loading="eager">
-        </div>
+        <a href="{{ p1_url }}" class="catalog-img-link">
+          <div class="catalog-img-wrap">
+            <img src="{{ 'product-1.png' | asset_url }}" alt="ProRecup Pro" class="catalog-img" loading="eager">
+          </div>
+        </a>
         <div class="catalog-body">
-          <p class="catalog-model">ProRecup Pro</p>
+          <a href="{{ p1_url }}" class="catalog-model-link">
+            <p class="catalog-model">ProRecup Pro</p>
+          </a>
           <ul class="catalog-specs">
             <li>30 vitesses réglables</li>
             <li>8 embouts inclus</li>
@@ -29,19 +39,27 @@
             <span class="catalog-old">119,99€</span>
             <span class="catalog-price">89,99€</span>
           </div>
-          <button class="catalog-btn catalog-btn-pro" data-variant="{{ section.settings.variant_id_p1 | default: '53855172985175' }}">
-            Ajouter au panier
-          </button>
+          <div class="catalog-actions">
+            <button class="catalog-btn catalog-btn-pro" data-variant="{{ vid1 }}">
+              Ajouter au panier
+            </button>
+            <a href="{{ p1_url }}" class="catalog-link-detail">Voir le produit →</a>
+          </div>
         </div>
       </div>
 
       <!-- ── Produit 2 : ProRecup Mini ── -->
+      {% assign p2_url = p2.url | default: '#' %}
       <div class="catalog-card reveal-scale">
-        <div class="catalog-img-wrap">
-          <img src="{{ 'p2-main.png' | asset_url }}" alt="ProRecup Mini" class="catalog-img" loading="lazy">
-        </div>
+        <a href="{{ p2_url }}" class="catalog-img-link">
+          <div class="catalog-img-wrap">
+            <img src="{{ 'p2-main.png' | asset_url }}" alt="ProRecup Mini" class="catalog-img" loading="lazy">
+          </div>
+        </a>
         <div class="catalog-body">
-          <p class="catalog-model">ProRecup Mini</p>
+          <a href="{{ p2_url }}" class="catalog-model-link">
+            <p class="catalog-model">ProRecup Mini</p>
+          </a>
           <ul class="catalog-specs">
             <li>Vitesse variable</li>
             <li>8 embouts inclus</li>
@@ -51,15 +69,20 @@
           <div class="catalog-pricing">
             <span class="catalog-price">44,99€</span>
           </div>
-          {% if section.settings.variant_id_p2 != blank %}
-            <button class="catalog-btn catalog-btn-mini" data-variant="{{ section.settings.variant_id_p2 }}">
-              Ajouter au panier
-            </button>
-          {% else %}
-            <button class="catalog-btn catalog-btn-mini catalog-btn-soon" disabled>
-              Bientôt disponible
-            </button>
-          {% endif %}
+          <div class="catalog-actions">
+            {% if vid2 != blank %}
+              <button class="catalog-btn catalog-btn-mini" data-variant="{{ vid2 }}">
+                Ajouter au panier
+              </button>
+            {% else %}
+              <button class="catalog-btn catalog-btn-mini catalog-btn-soon" disabled>
+                Bientôt disponible
+              </button>
+            {% endif %}
+            {% if p2 != blank %}
+              <a href="{{ p2_url }}" class="catalog-link-detail">Voir le produit →</a>
+            {% endif %}
+          </div>
         </div>
       </div>
 
@@ -90,16 +113,10 @@
         } else {
           btn.textContent = 'Ajouté ✓';
           if (window.showCartToast) window.showCartToast();
-          setTimeout(function() {
-            btn.disabled = false;
-            btn.textContent = original;
-          }, 2500);
+          setTimeout(function() { btn.disabled = false; btn.textContent = original; }, 2500);
         }
       })
-      .catch(function() {
-        btn.disabled = false;
-        btn.textContent = original;
-      });
+      .catch(function() { btn.disabled = false; btn.textContent = original; });
     });
   });
 })();
@@ -110,6 +127,16 @@
   "name": "Catalogue",
   "settings": [
     {
+      "type": "product",
+      "id": "product_p1",
+      "label": "Produit 1 — ProRecup Pro"
+    },
+    {
+      "type": "product",
+      "id": "product_p2",
+      "label": "Produit 2 — ProRecup Mini"
+    },
+    {
       "type": "text",
       "id": "variant_id_p1",
       "label": "Variant ID — ProRecup Pro",
@@ -119,7 +146,7 @@
       "type": "text",
       "id": "variant_id_p2",
       "label": "Variant ID — ProRecup Mini",
-      "info": "Colle l'ID du variant après avoir créé le produit dans Shopify"
+      "info": "Colle l'ID du variant après publication du produit"
     }
   ]
 }
