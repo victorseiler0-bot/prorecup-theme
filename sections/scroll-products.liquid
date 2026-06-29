@@ -124,6 +124,10 @@
   gap: 20px;
   will-change: transform, opacity;
 }
+.sp-info > * {
+  opacity: 0;
+  will-change: opacity, transform;
+}
 .sp-eyebrow {
   font-size: 0.7rem;
   letter-spacing: 0.18em;
@@ -316,13 +320,30 @@
   function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
 
   function applyPanel(panel, imgEl, infoEl, active, dirImg, dirInfo) {
-    const a = ease(active);
-    panel.style.opacity = a;
+    const a    = ease(active);
+    const aImg = ease(clamp(active * 1.15, 0, 1));          // image légèrement en avance
+    const aTxt = a > 0.4 ? ease(prog(a, 0.4, 1)) : 0;      // texte décalé après
+
+    panel.style.opacity      = a;
     panel.style.pointerEvents = a > 0.05 ? 'auto' : 'none';
-    if (imgEl)  imgEl.style.transform  = `translateX(${(1-a)*dirImg*70}px) scale(${0.88 + a*0.12})`;
+
+    if (imgEl) {
+      const blur = (1 - aImg) * 18;                          // blur 18px → 0
+      const tx   = (1 - aImg) * dirImg * 90;
+      const sc   = 0.78 + aImg * 0.22;                      // scale 0.78 → 1
+      imgEl.style.transform = `translateX(${tx}px) scale(${sc})`;
+      imgEl.style.filter    = `blur(${blur.toFixed(1)}px) drop-shadow(0 0 50px rgba(200,200,215,0.14))`;
+    }
+
     if (infoEl) {
-      infoEl.style.transform = `translateX(${(1-a)*dirInfo*55}px)`;
-      infoEl.style.opacity   = a > 0.35 ? ease(prog(a, 0.35, 1)) : 0;
+      const children = infoEl.children;
+      for (let i = 0; i < children.length; i++) {
+        const delay = i * 0.12;                              // stagger par élément
+        const ta    = clamp((a - 0.32 - delay) / 0.45, 0, 1);
+        const aEl   = ease(ta);
+        children[i].style.opacity   = aEl;
+        children[i].style.transform = `translateX(${(1-aEl)*dirInfo*40}px) translateY(${(1-aEl)*10}px)`;
+      }
     }
   }
 
