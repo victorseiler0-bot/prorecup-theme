@@ -132,16 +132,23 @@
   will-change: transform, opacity;
   filter: drop-shadow(0 0 50px rgba(200,200,215,0.14));
 }
+/* Panel 1 : image à droite, texte à gauche */
 #sp-panel-1 .sp-visual {
   display: flex;
   justify-content: flex-end;
-  margin-right: -10%;  /* tire l'image vers la droite hors du panneau */
+  margin-right: -10%;
+  order: 2;
 }
+#sp-panel-1 .sp-info { order: 1; }
+
+/* Panel 2 : image à gauche, texte à droite */
 #sp-panel-2 .sp-visual {
   display: flex;
   justify-content: flex-start;
-  margin-left: -10%;   /* tire l'image vers la gauche hors du panneau */
+  margin-left: -10%;
+  order: 1;
 }
+#sp-panel-2 .sp-info { order: 2; }
 
 /* Info texte */
 .sp-info {
@@ -331,7 +338,7 @@
     align-items: center;
     gap: 10px;
     position: fixed;
-    bottom: 24px;
+    bottom: 52px;
     left: 50%;
     transform: translateX(-50%);
     background: #f5f5f7;
@@ -370,11 +377,11 @@
     justify-items: center;
   }
 
-  /* Image en haut, info en bas */
-  #sp-panel-1 .sp-visual,
-  #sp-panel-2 .sp-visual { order: 1; }
-  #sp-panel-1 .sp-info,
-  #sp-panel-2 .sp-info   { order: 2; }
+  /* Mobile : image toujours en haut, texte en bas (reset order) */
+  #sp-panel-1 .sp-visual { order: -1 !important; }
+  #sp-panel-1 .sp-info   { order: 0 !important; }
+  #sp-panel-2 .sp-visual { order: -1 !important; }
+  #sp-panel-2 .sp-info   { order: 0 !important; }
 
   .sp-visual {
     width: 100%;
