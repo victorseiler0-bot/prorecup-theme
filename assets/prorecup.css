@@ -1844,6 +1844,9 @@ img { display: block; max-width: 100%; }
   top: calc(var(--nav-h) + 32px);
 }
 
+/* Galerie cliquable gauche/droite */
+.product-gallery { cursor: pointer; }
+
 /* Galerie page produit — image complète sans crop, fond noir fondu */
 .pp-gallery {
   background: #000 !important;

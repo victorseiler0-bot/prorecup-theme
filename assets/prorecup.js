@@ -408,11 +408,16 @@ function initGallery() {
   gallery.addEventListener('pointerup', e => {
     if (!isDragging) return;
     const dx = e.clientX - dragStartX;
+    clearInterval(timer);
     if (Math.abs(dx) > 40) {
-      clearInterval(timer);
+      // swipe
       goTo(dx < 0 ? current + 1 : current - 1);
-      autoPlay();
+    } else if (Math.abs(dx) < 8) {
+      // tap : moitié gauche = précédent, moitié droite = suivant
+      const rect = gallery.getBoundingClientRect();
+      goTo(e.clientX - rect.left < rect.width / 2 ? current - 1 : current + 1);
     }
+    autoPlay();
     isDragging = false;
     gallery.classList.remove('dragging');
   });
