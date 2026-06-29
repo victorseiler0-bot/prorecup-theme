@@ -319,48 +319,35 @@ img { display: block; max-width: 100%; }
     70%      { transform: translate(18px,-20px) scale(0.92); }
   }
 
-  /* Pro — flottant, bords fondus uniquement */
+  /* Pro — fond supprimé via screen + haute luminosité */
   .hero-duo-pro {
     position: absolute;
-    width: 96%;
-    top: 50%;
-    left: 2%;
-    transform: translateY(-52%);
+    width: 72%;
+    top: 12%;
+    left: 5%;
     mix-blend-mode: screen;
-    filter: brightness(1.5) contrast(1.0) saturate(0.7);
+    filter: brightness(2.8) contrast(0.85) saturate(0.5);
     animation: floatPro 7s ease-in-out infinite;
-    -webkit-mask-image: radial-gradient(ellipse 78% 72% at 52% 50%,
-      black 0%, black 62%,
-      rgba(0,0,0,0.5) 78%,
-      transparent 92%
-    );
-    mask-image: radial-gradient(ellipse 78% 72% at 52% 50%,
-      black 0%, black 62%,
-      rgba(0,0,0,0.5) 78%,
-      transparent 92%
-    );
+    -webkit-mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
+      black 0%, black 68%, rgba(0,0,0,0.3) 82%, transparent 94%);
+    mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
+      black 0%, black 68%, rgba(0,0,0,0.3) 82%, transparent 94%);
   }
 
-  /* Mini — flottant décalé, bords fondus uniquement */
+  /* Mini — même taille, positionné en bas, fond supprimé */
   .hero-duo-mini {
     position: absolute;
-    width: 62%;
+    width: 72%;
     bottom: 8%;
-    right: -2%;
+    right: 0%;
     mix-blend-mode: screen;
-    filter: brightness(1.4) contrast(1.0) saturate(0.7);
-    transform: rotate(10deg);
+    filter: brightness(2.8) contrast(0.85) saturate(0.5);
+    transform: rotate(8deg);
     animation: floatMini 9s ease-in-out infinite 1.5s;
-    -webkit-mask-image: radial-gradient(ellipse 76% 70% at 50% 50%,
-      black 0%, black 58%,
-      rgba(0,0,0,0.45) 76%,
-      transparent 90%
-    );
-    mask-image: radial-gradient(ellipse 76% 70% at 50% 50%,
-      black 0%, black 58%,
-      rgba(0,0,0,0.45) 76%,
-      transparent 90%
-    );
+    -webkit-mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
+      black 0%, black 68%, rgba(0,0,0,0.3) 82%, transparent 94%);
+    mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
+      black 0%, black 68%, rgba(0,0,0,0.3) 82%, transparent 94%);
   }
 
   @keyframes floatPro {
