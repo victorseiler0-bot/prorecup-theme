@@ -280,31 +280,72 @@ img { display: block; max-width: 100%; }
     z-index: 2;
   }
 
-  /* Pro — solide, bords fondus dans le fond sombre */
-  .hero-duo-pro {
+  /* Fumée derrière (z-index 1 & 2) */
+  .hd-smoke {
     position: absolute;
-    width: 72%;
-    top: 10%;
-    left: 4%;
-    animation: floatPro 7s ease-in-out infinite;
-    -webkit-mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
-      black 0%, black 58%, rgba(0,0,0,0.45) 76%, transparent 92%);
-    mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
-      black 0%, black 58%, rgba(0,0,0,0.45) 76%, transparent 92%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hd-smoke-b1 {
+    width: 500px; height: 320px;
+    background: radial-gradient(ellipse, rgba(180,200,255,0.10) 0%, transparent 70%);
+    filter: blur(55px);
+    top: 15%; left: -10%;
+    z-index: 1;
+    animation: hdSmoke1 16s ease-in-out infinite;
+  }
+  .hd-smoke-b2 {
+    width: 360px; height: 260px;
+    background: radial-gradient(ellipse, rgba(160,140,255,0.08) 0%, transparent 68%);
+    filter: blur(48px);
+    bottom: 20%; right: 5%;
+    z-index: 1;
+    animation: hdSmoke2 20s ease-in-out infinite 4s;
+  }
+  /* Fumée devant (z-index 4) */
+  .hd-smoke-f1 {
+    width: 300px; height: 200px;
+    background: radial-gradient(ellipse, rgba(210,220,255,0.07) 0%, transparent 65%);
+    filter: blur(40px);
+    top: 40%; left: 20%;
+    z-index: 4;
+    animation: hdSmoke3 12s ease-in-out infinite 2s;
   }
 
-  /* Mini — même taille, bas-droite, solide */
+  @keyframes hdSmoke1 {
+    0%,100% { transform: translate(0,0) scale(1); opacity: 0.8; }
+    40%      { transform: translate(25px,-35px) scale(1.1); opacity: 1; }
+    70%      { transform: translate(-18px,20px) scale(0.93); opacity: 0.65; }
+  }
+  @keyframes hdSmoke2 {
+    0%,100% { transform: translate(0,0) scale(1); opacity: 0.7; }
+    45%      { transform: translate(-30px,25px) scale(1.08); opacity: 0.95; }
+    75%      { transform: translate(20px,-15px) scale(0.9); opacity: 0.55; }
+  }
+  @keyframes hdSmoke3 {
+    0%,100% { transform: translate(0,0) scale(1); opacity: 0.6; }
+    50%      { transform: translate(15px,-20px) scale(1.12); opacity: 0.85; }
+  }
+
+  /* Pro — haut-gauche, grand */
+  .hero-duo-pro {
+    position: absolute;
+    width: 82%;
+    top: 4%;
+    left: -4%;
+    z-index: 2;
+    animation: floatPro 7s ease-in-out infinite;
+  }
+
+  /* Mini — bas-droite, légèrement tourné, devant le Pro */
   .hero-duo-mini {
     position: absolute;
-    width: 72%;
-    bottom: 6%;
-    right: 0%;
-    transform: rotate(8deg);
+    width: 62%;
+    bottom: 4%;
+    right: -2%;
+    z-index: 3;
+    transform: rotate(10deg);
     animation: floatMini 9s ease-in-out infinite 1.5s;
-    -webkit-mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
-      black 0%, black 58%, rgba(0,0,0,0.45) 76%, transparent 92%);
-    mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
-      black 0%, black 58%, rgba(0,0,0,0.45) 76%, transparent 92%);
   }
 
   @keyframes floatPro {
