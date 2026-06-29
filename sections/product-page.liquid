@@ -62,7 +62,7 @@
           <input type="hidden" name="id" value="{{ variant.id }}">
           <input type="hidden" name="quantity" value="1">
           <button type="button" class="pp-btn-cart" data-variant="{{ variant.id }}">
-            Ajouter au panier
+            Acheter
           </button>
           <button type="submit" class="pp-btn-checkout">
             Acheter maintenant
@@ -99,8 +99,7 @@
         alert(data.description || 'Erreur');
       } else {
         btn.textContent = 'Ajouté ✓';
-        if (window.showCartToast) window.showCartToast();
-        setTimeout(function() { window.location.href = '/cart'; }, 900);
+        window.location.href = '/cart';
       }
     })
     .catch(function() { btn.disabled = false; btn.textContent = 'Ajouter au panier'; });

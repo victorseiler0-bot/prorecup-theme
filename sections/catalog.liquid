@@ -40,7 +40,7 @@
           </div>
           <div class="catalog-actions">
             <button class="catalog-btn catalog-btn-pro" data-variant="{{ vid1 }}">
-              Ajouter au panier
+              Acheter
             </button>
             <a href="{{ p1_url }}" class="catalog-link-detail">Voir le produit →</a>
           </div>
@@ -48,7 +48,7 @@
       </div>
 
       <!-- ── Produit 2 : ProRecup Mini ── -->
-      {% assign p2_url = p2.url | default: '#' %}
+      {% assign p2_url = p2.url | default: '/products/electric-massage-gun-deep-tissue-facial-massgaer-8-heads-arms-back-leg-muscle-relaxing-for-body-back-arm-sport-fitness-1' %}
       <div class="catalog-card reveal-scale">
         <a href="{{ p2_url }}" class="catalog-img-link">
           <div class="catalog-img-wrap">
@@ -70,7 +70,7 @@
           <div class="catalog-actions">
             {% if vid2 != blank %}
               <button class="catalog-btn catalog-btn-mini" data-variant="{{ vid2 }}">
-                Ajouter au panier
+                Acheter
               </button>
             {% else %}
               <button class="catalog-btn catalog-btn-mini catalog-btn-soon" disabled>
@@ -110,8 +110,7 @@
           alert(data.description || 'Erreur — vérifie le stock.');
         } else {
           btn.textContent = 'Ajouté ✓';
-          if (window.showCartToast) window.showCartToast();
-          setTimeout(function() { btn.disabled = false; btn.textContent = original; }, 2500);
+          window.location.href = '/cart';
         }
       })
       .catch(function() { btn.disabled = false; btn.textContent = original; });
