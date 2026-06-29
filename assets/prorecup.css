@@ -1521,10 +1521,29 @@ img { display: block; max-width: 100%; }
     justify-content: flex-end;
     align-items: stretch;
     background: #000;
-    /* Gradient animé en fond */
-    background: linear-gradient(135deg, #080808 0%, #0f0f10 50%, #000000 100%);
-    background-size: 300% 300%;
-    animation: heroGradientMobile 10s ease infinite;
+    animation: none;
+  }
+
+  /* Glow gris lux mobile — identique au scroll section */
+  .aurora-orb-1 {
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(190,188,185,0.18) 0%, transparent 70%);
+    top: 5%; right: -60px;
+    animation: auroraFloat1 14s ease-in-out infinite;
+  }
+  .aurora-orb-2 {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(160,158,155,0.12) 0%, transparent 70%);
+    top: 30%; left: -40px;
+    bottom: auto;
+    animation: auroraFloat2 18s ease-in-out infinite;
+  }
+  .aurora-orb-3 {
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(200,198,195,0.09) 0%, transparent 70%);
+    bottom: 15%; right: 10%;
+    top: auto;
+    animation: auroraFloat3 11s ease-in-out infinite;
   }
 
   /* Cache la photo produit et le duo sur mobile */
