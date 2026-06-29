@@ -1,89 +1,65 @@
-{% assign current_product = product %}
-{% assign variant = current_product.selected_or_first_available_variant %}
+{% assign variant = product.selected_or_first_available_variant %}
+{% assign display_name = section.settings.display_name | default: product.title %}
 
 <section class="pp-wrap">
   <div class="pp-inner">
 
-    <!-- Retour -->
     <a href="/" class="pp-back">← Nos modèles</a>
 
     <div class="pp-layout">
 
-      <!-- ── Galerie photos ── -->
+      <!-- ── Galerie ── -->
       <div class="pp-gallery-col">
-        <div class="product-gallery pp-gallery">
+        <div class="product-gallery">
           <div class="gallery-track">
-            {% for image in current_product.images %}
+            {% for image in product.images %}
               <div class="gallery-slide {% if forloop.first %}active{% endif %}">
                 <img
                   src="{{ image | image_url: width: 900 }}"
-                  alt="{{ image.alt | escape | default: current_product.title }}"
+                  alt="{{ image.alt | default: display_name | escape }}"
                   {% if forloop.first %}loading="eager"{% else %}loading="lazy"{% endif %}
                 >
               </div>
             {% else %}
-              <div class="gallery-slide active">
-                <div class="pp-no-img">Photo bientôt disponible</div>
+              <div class="gallery-slide active pp-no-img-wrap">
+                <div class="pp-no-img">Photo à venir</div>
               </div>
             {% endfor %}
           </div>
-          {% if current_product.images.size > 1 %}
+          {% if product.images.size > 1 %}
             <div class="gallery-dots">
-              {% for image in current_product.images %}
+              {% for image in product.images %}
                 <button class="gallery-dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}" aria-label="Photo {{ forloop.index }}"></button>
               {% endfor %}
             </div>
-            <button class="gallery-prev" aria-label="Précédent">&#8592;</button>
-            <button class="gallery-next" aria-label="Suivant">&#8594;</button>
           {% endif %}
         </div>
-
-        <!-- Thumbnails -->
-        {% if current_product.images.size > 1 %}
-          <div class="pp-thumbs">
-            {% for image in current_product.images %}
-              <button class="pp-thumb {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
-                <img src="{{ image | image_url: width: 120 }}" alt="">
-              </button>
-            {% endfor %}
-          </div>
-        {% endif %}
       </div>
 
-      <!-- ── Infos produit ── -->
+      <!-- ── Info ── -->
       <div class="pp-info-col">
         <p class="pp-eyebrow">ProRecup</p>
-        <h1 class="pp-title">{{ current_product.title }}</h1>
+        <h1 class="pp-title">{{ display_name }}</h1>
 
         <div class="pp-price-row">
           {% if variant.compare_at_price > variant.price %}
-            <span class="pp-price">{{ variant.price | money }}</span>
-            <span class="pp-old-price">{{ variant.compare_at_price | money }}</span>
-            <span class="pp-discount-badge">
-              -{{ variant.compare_at_price | minus: variant.price | times: 100 | divided_by: variant.compare_at_price }}%
-            </span>
+            <span class="pp-price">{{ variant.price | money_without_trailing_zeros }}</span>
+            <span class="pp-old-price">{{ variant.compare_at_price | money_without_trailing_zeros }}</span>
+            <span class="pp-discount-badge">-{{ variant.compare_at_price | minus: variant.price | times: 100 | divided_by: variant.compare_at_price }}%</span>
           {% else %}
-            <span class="pp-price">{{ variant.price | money }}</span>
+            <span class="pp-price">{{ variant.price | money_without_trailing_zeros }}</span>
           {% endif %}
         </div>
 
-        {% if current_product.description != blank %}
-          <div class="pp-desc">{{ current_product.description }}</div>
-        {% endif %}
-
-        {% form 'product', current_product, class: 'pp-form' %}
+        {% form 'product', product, class: 'pp-form', id: 'pp-form' %}
           <input type="hidden" name="id" value="{{ variant.id }}">
           <input type="hidden" name="quantity" value="1">
-          <button type="submit" class="pp-btn-cart">Ajouter au panier</button>
-          <button
-            type="submit"
-            formaction="/cart/add"
-            name="return_to"
-            value="/checkout"
-            class="pp-btn-checkout"
-            formmethod="post"
-            onclick="this.form.elements['return_to'].value='/checkout'"
-          >Acheter maintenant</button>
+          <button type="button" class="pp-btn-cart" id="pp-add-cart" data-variant="{{ variant.id }}">
+            Ajouter au panier
+          </button>
+          <button type="submit" formaction="/cart" class="pp-btn-checkout">
+            Acheter maintenant
+          </button>
         {% endform %}
 
         <ul class="pp-trust">
@@ -99,51 +75,43 @@
 
 <script>
 (function() {
-  var gallery = document.querySelector('.pp-gallery');
-  if (!gallery) return;
-  var slides  = gallery.querySelectorAll('.gallery-slide');
-  var dots    = gallery.querySelectorAll('.gallery-dot');
-  var thumbs  = document.querySelectorAll('.pp-thumb');
+  /* ── Galerie ── */
+  var slides  = document.querySelectorAll('.pp-wrap .gallery-slide');
+  var dots    = document.querySelectorAll('.pp-wrap .gallery-dot');
   var current = 0;
 
   function goTo(n) {
     slides[current].classList.remove('active');
-    if (dots[current])   dots[current].classList.remove('active');
-    if (thumbs[current]) thumbs[current].classList.remove('active');
+    if (dots[current]) dots[current].classList.remove('active');
     current = (n + slides.length) % slides.length;
     slides[current].classList.add('active');
-    if (dots[current])   dots[current].classList.add('active');
-    if (thumbs[current]) thumbs[current].classList.add('active');
+    if (dots[current]) dots[current].classList.add('active');
   }
 
-  dots.forEach(function(d) { d.addEventListener('click', function() { goTo(+d.dataset.index); }); });
-  thumbs.forEach(function(t) { t.addEventListener('click', function() { goTo(+t.dataset.index); }); });
-  var prev = gallery.querySelector('.gallery-prev');
-  var next = gallery.querySelector('.gallery-next');
-  if (prev) prev.addEventListener('click', function() { goTo(current - 1); });
-  if (next) next.addEventListener('click', function() { goTo(current + 1); });
+  dots.forEach(function(d) {
+    d.addEventListener('click', function() { goTo(+d.dataset.index); });
+  });
 
-  /* Swipe */
-  var startX = 0;
-  gallery.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; }, {passive: true});
-  gallery.addEventListener('touchend',   function(e) {
-    var dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
-  }, {passive: true});
+  var gallery = document.querySelector('.pp-wrap .product-gallery');
+  if (gallery) {
+    var startX = 0;
+    gallery.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; }, {passive: true});
+    gallery.addEventListener('touchend',   function(e) {
+      var dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
+    }, {passive: true});
+  }
 
-  /* Add to cart */
-  var form = document.querySelector('.pp-form');
-  if (form) {
-    form.querySelector('.pp-btn-cart').addEventListener('click', function(e) {
-      e.preventDefault();
-      var btn = this;
-      var id  = form.querySelector('[name=id]').value;
+  /* ── Ajouter au panier ── */
+  var btn = document.getElementById('pp-add-cart');
+  if (btn) {
+    btn.addEventListener('click', function() {
       btn.disabled = true;
       btn.textContent = 'Ajout en cours…';
       fetch('/cart/add.js', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({id: id, quantity: 1})
+        body: JSON.stringify({id: btn.dataset.variant, quantity: 1})
       })
       .then(function(r) { return r.json(); })
       .then(function(data) {
@@ -166,6 +134,13 @@
 {% schema %}
 {
   "name": "Page Produit",
-  "settings": []
+  "settings": [
+    {
+      "type": "text",
+      "id": "display_name",
+      "label": "Nom affiché",
+      "info": "Ex : ProRecup Pro — remplace le titre Shopify si renseigné"
+    }
+  ]
 }
 {% endschema %}
