@@ -83,12 +83,13 @@
   background: #000;
 }
 
-/* Fond avec léger dégradé */
+/* Fond avec léger dégradé — même gris lux que le hero */
 .sp-bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 50%,
-    rgba(40,40,50,0.55) 0%, transparent 70%);
+  background:
+    radial-gradient(ellipse 70% 55% at 30% 50%, rgba(190,188,185,0.08) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 45% at 75% 60%, rgba(160,158,155,0.06) 0%, transparent 65%);
   pointer-events: none;
 }
 
@@ -305,9 +306,39 @@
   50%      { transform: scaleY(1.2) translateY(4px); opacity: 1; }
 }
 
-/* Mobile : désactivé */
+/* ── Mobile ── */
 @media (max-width: 767px) {
-  .sp-scene { display: none; }
+  .sp-scene { height: 400vh; }
+
+  .sp-panel {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    padding: 0 6% 0;
+    gap: 0;
+    align-content: center;
+  }
+
+  /* Sur mobile : image toujours en haut */
+  #sp-panel-1 { flex-direction: column; }
+  #sp-panel-2 { flex-direction: column; }
+
+  #sp-panel-2 .sp-info { order: 2; }
+  #sp-panel-2 .sp-visual { order: 1; }
+
+  .sp-visual img {
+    width: 100%;
+    max-height: 42vh;
+    object-fit: contain;
+  }
+  #sp-panel-1 .sp-visual { margin-right: 0; justify-content: center; }
+  #sp-panel-2 .sp-visual { margin-left: 0; justify-content: center; }
+
+  .sp-title { font-size: 2rem; }
+  .sp-price  { font-size: 1.5rem; }
+
+  .sp-indicator { right: 16px; }
+  .sp-step-label { left: 16px; bottom: 24px; }
+  .sp-scroll-hint { bottom: 24px; }
 }
 </style>
 
