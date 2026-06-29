@@ -265,6 +265,13 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
 }
 
+/* ── Hero body wrapper ── */
+.hero-body {
+  display: contents; /* transparent sur mobile — enfants restent dans .hero flex */
+}
+
+.hero-duo { display: none; }
+
 .hero-content {
   padding: calc(var(--nav-h) + 180px) 80px 80px;
   display: flex;
@@ -273,6 +280,58 @@ img { display: block; max-width: 100%; }
   max-width: 640px;
   position: relative;
   z-index: 3;
+}
+
+/* ── Desktop : duo produits à droite ── */
+@media (min-width: 1024px) {
+  .hero-body {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    z-index: 3;
+  }
+
+  .hero-body .hero-content {
+    flex: 0 0 54%;
+    max-width: 54%;
+    padding: 0 32px 0 8%;
+    position: static;
+    z-index: auto;
+  }
+
+  .hero-duo {
+    display: block;
+    flex: 1;
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    pointer-events: none;
+  }
+
+  /* Pro — grand, centré, effet fumée blendé */
+  .hero-duo-pro {
+    position: absolute;
+    width: 105%;
+    top: 50%;
+    left: -5%;
+    transform: translateY(-50%);
+    mix-blend-mode: screen;
+    filter: brightness(1.18) contrast(1.05) saturate(0.85);
+    opacity: 0.96;
+  }
+
+  /* Mini — plus petit, coin bas-droit en superposition */
+  .hero-duo-mini {
+    position: absolute;
+    width: 58%;
+    bottom: 7%;
+    right: -4%;
+    mix-blend-mode: screen;
+    filter: brightness(0.88) contrast(1.08);
+    opacity: 0.82;
+    transform: rotate(12deg);
+  }
 }
 
 .hero-eyebrow {
