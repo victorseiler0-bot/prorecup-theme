@@ -222,16 +222,16 @@ img { display: block; max-width: 100%; }
 }
 
 .aurora-orb-1 {
-  width: 700px; height: 700px;
+  width: 900px; height: 900px;
   background: radial-gradient(circle, rgba(190,188,185,0.13) 0%, transparent 70%);
-  top: -180px; right: 8%;
+  top: -200px; right: 4%;
   animation: auroraFloat1 14s ease-in-out infinite;
 }
 
 .aurora-orb-2 {
-  width: 520px; height: 520px;
+  width: 700px; height: 700px;
   background: radial-gradient(circle, rgba(160,158,155,0.10) 0%, transparent 70%);
-  bottom: -80px; right: 28%;
+  bottom: -200px; right: 24%;
   animation: auroraFloat2 18s ease-in-out infinite;
 }
 
@@ -484,17 +484,17 @@ img { display: block; max-width: 100%; }
     white-space: nowrap;
     pointer-events: none;
     z-index: 10;
-    /* Pro — collé sous/droite du pistolet, loin du texte gauche */
-    bottom: 6%;
-    right: 2%;
-    top: auto;
+    /* Pro — près de la tête (haut) du pistolet Pro */
+    top: 6%;
+    right: 4%;
+    bottom: auto;
     left: auto;
   }
   .hd-tag-r {
-    /* Mini — haut gauche du pistolet Mini */
-    top: 4%;
+    /* Mini — bas droite du pistolet Mini */
+    bottom: 22%;
     left: 4%;
-    bottom: auto;
+    top: auto;
     right: auto;
   }
 
@@ -515,10 +515,12 @@ img { display: block; max-width: 100%; }
     white-space: nowrap;
     pointer-events: none;
   }
-  .hd-chip-1 { top: 12%; left: -8%; }
-  .hd-chip-2 { top: 24%; left: -12%; }
-  .hd-chip-3 { bottom: 24%; right: -8%; }
-  .hd-chip-4 { bottom: 14%; right: -10%; }
+  /* Chips Pro — haut gauche de hero-right, au-dessus du Pro */
+  .hd-chip-1 { top: 8%;  left: 2%; }
+  .hd-chip-2 { top: 16%; left: 6%; }
+  /* Chips Mini — haut droite, bien au-dessus */
+  .hd-chip-3 { top: 6%;  right: 6%; }
+  .hd-chip-4 { top: 14%; right: 10%; }
 
   /* Scroll hint */
   .hero-scroll-hint {
@@ -1140,18 +1142,19 @@ img { display: block; max-width: 100%; }
   display: block;
   text-align: center;
   padding: 16px 40px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: transparent;
-  color: var(--white);
+  border: none;
+  background: var(--white);
+  color: var(--black);
   border-radius: 100px;
   font-size: 0.82rem;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  transition: border-color 0.2s, background 0.2s;
+  transition: opacity 0.2s, transform 0.25s var(--ease-out);
   cursor: pointer;
 }
 
-.buy-secondary:hover { background: rgba(255,255,255,0.06); }
+.buy-secondary:hover { opacity: 0.88; transform: scale(1.02); }
 
 .buy-note {
   font-size: 0.76rem;
@@ -2130,18 +2133,18 @@ img { display: block; max-width: 100%; }
 .pp-btn-checkout {
   width: 100%;
   padding: 16px;
-  background: transparent;
-  color: var(--white);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: var(--white);
+  color: var(--black);
+  border: none;
   border-radius: 100px;
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: opacity 0.2s, transform 0.25s var(--ease-out);
 }
-.pp-btn-checkout:hover { border-color: rgba(255,255,255,0.5); }
+.pp-btn-checkout:hover { opacity: 0.88; transform: scale(1.02); }
 
 .pp-trust {
   list-style: none;
@@ -2337,13 +2340,13 @@ body.intro-running #site-header { opacity: 0; pointer-events: none; }
 }
 
 .catalog-btn-mini {
-  background: transparent;
-  color: var(--white);
-  border: 1px solid rgba(255,255,255,0.25);
+  background: var(--white);
+  color: var(--black);
+  border: none;
 }
 
 .catalog-btn-mini:hover:not([disabled]) {
-  border-color: rgba(255,255,255,0.55);
+  opacity: 0.88;
 }
 
 .catalog-btn-soon {
