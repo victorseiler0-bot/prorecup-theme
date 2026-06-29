@@ -309,7 +309,7 @@ img { display: block; max-width: 100%; }
     pointer-events: none;
   }
 
-  /* Pro — screen blend + masque dégradé sur tous les bords */
+  /* Pro — intégration totale : fondu sur tous les bords + bord gauche */
   .hero-duo-pro {
     position: absolute;
     width: 108%;
@@ -317,28 +317,40 @@ img { display: block; max-width: 100%; }
     left: -8%;
     transform: translateY(-52%);
     mix-blend-mode: screen;
-    filter: brightness(1.35) contrast(1.05) saturate(0.75);
-    opacity: 0.92;
-    -webkit-mask-image: radial-gradient(ellipse 80% 78% at 52% 50%,
-      black 30%, rgba(0,0,0,0.6) 58%, transparent 80%);
-    mask-image: radial-gradient(ellipse 80% 78% at 52% 50%,
-      black 30%, rgba(0,0,0,0.6) 58%, transparent 80%);
+    filter: brightness(1.55) contrast(1.0) saturate(0.65);
+    opacity: 0.95;
+    -webkit-mask-image:
+      radial-gradient(ellipse 56% 52% at 54% 50%,
+        black 0%, rgba(0,0,0,0.7) 32%, rgba(0,0,0,0.15) 55%, transparent 68%),
+      linear-gradient(to right, transparent 0%, black 30%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      radial-gradient(ellipse 56% 52% at 54% 50%,
+        black 0%, rgba(0,0,0,0.7) 32%, rgba(0,0,0,0.15) 55%, transparent 68%),
+      linear-gradient(to right, transparent 0%, black 30%);
+    mask-composite: intersect;
   }
 
-  /* Mini — agrandi, mêmes bords fondus */
+  /* Mini — même intégration, fondu circulaire + bord gauche */
   .hero-duo-mini {
     position: absolute;
     width: 74%;
     bottom: 5%;
     right: -6%;
     mix-blend-mode: screen;
-    filter: brightness(1.25) contrast(1.05) saturate(0.7);
-    opacity: 0.88;
+    filter: brightness(1.45) contrast(1.0) saturate(0.65);
+    opacity: 0.9;
     transform: rotate(10deg);
-    -webkit-mask-image: radial-gradient(ellipse 78% 76% at 48% 50%,
-      black 28%, rgba(0,0,0,0.55) 55%, transparent 78%);
-    mask-image: radial-gradient(ellipse 78% 76% at 48% 50%,
-      black 28%, rgba(0,0,0,0.55) 55%, transparent 78%);
+    -webkit-mask-image:
+      radial-gradient(ellipse 54% 50% at 48% 50%,
+        black 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.12) 52%, transparent 66%),
+      linear-gradient(to right, transparent 0%, black 25%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      radial-gradient(ellipse 54% 50% at 48% 50%,
+        black 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.12) 52%, transparent 66%),
+      linear-gradient(to right, transparent 0%, black 25%);
+    mask-composite: intersect;
   }
 }
 
