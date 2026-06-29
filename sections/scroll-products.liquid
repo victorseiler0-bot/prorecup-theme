@@ -74,13 +74,15 @@
 .sp-scene {
   height: 500vh;
   position: relative;
+  background: #000;
+  z-index: 1; /* sous le hero z-index:2 pour que les produits passent devant */
 }
 .sp-stage {
   position: sticky;
   top: 0;
   height: 100vh;
   overflow: clip;
-  background: #000;
+  background: transparent; /* laisse le noir du hero continuer */
 }
 
 /* Fond avec léger dégradé — même gris lux que le hero */
