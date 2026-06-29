@@ -216,21 +216,21 @@ img { display: block; max-width: 100%; }
 
 .aurora-orb-1 {
   width: 700px; height: 700px;
-  background: radial-gradient(circle, rgba(68,136,255,0.22) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(190,188,185,0.13) 0%, transparent 70%);
   top: -180px; right: 8%;
   animation: auroraFloat1 14s ease-in-out infinite;
 }
 
 .aurora-orb-2 {
   width: 520px; height: 520px;
-  background: radial-gradient(circle, rgba(88,44,200,0.18) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(160,158,155,0.10) 0%, transparent 70%);
   bottom: -80px; right: 28%;
   animation: auroraFloat2 18s ease-in-out infinite;
 }
 
 .aurora-orb-3 {
   width: 380px; height: 380px;
-  background: radial-gradient(circle, rgba(255,80,40,0.09) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(210,200,190,0.07) 0%, transparent 70%);
   top: 35%; right: 50%;
   animation: auroraFloat3 11s ease-in-out infinite;
 }
@@ -306,8 +306,8 @@ img { display: block; max-width: 100%; }
   animation: badgePulse 2.4s ease-in-out infinite;
 }
 @keyframes badgePulse {
-  0%,100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(74,144,255,0.5); }
-  50%      { opacity: 0.7; transform: scale(1.2); box-shadow: 0 0 0 5px rgba(74,144,255,0); }
+  0%,100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(200,198,195,0.4); }
+  50%      { opacity: 0.7; transform: scale(1.2); box-shadow: 0 0 0 5px rgba(200,198,195,0); }
 }
 
 /* CTA principal */
@@ -389,7 +389,7 @@ img { display: block; max-width: 100%; }
   }
   .hd-smoke-b1 {
     width: 480px; height: 320px;
-    background: radial-gradient(ellipse, rgba(60,110,255,0.26) 0%, transparent 68%);
+    background: radial-gradient(ellipse, rgba(180,178,175,0.16) 0%, transparent 68%);
     filter: blur(65px);
     top: 8%; left: -12%;
     z-index: 1;
@@ -397,7 +397,7 @@ img { display: block; max-width: 100%; }
   }
   .hd-smoke-b2 {
     width: 340px; height: 260px;
-    background: radial-gradient(ellipse, rgba(120,60,255,0.22) 0%, transparent 65%);
+    background: radial-gradient(ellipse, rgba(155,152,148,0.14) 0%, transparent 65%);
     filter: blur(55px);
     bottom: 10%; right: 4%;
     z-index: 1;
@@ -405,7 +405,7 @@ img { display: block; max-width: 100%; }
   }
   .hd-smoke-f1 {
     width: 240px; height: 150px;
-    background: radial-gradient(ellipse, rgba(160,185,255,0.15) 0%, transparent 62%);
+    background: radial-gradient(ellipse, rgba(200,198,195,0.12) 0%, transparent 62%);
     filter: blur(38px);
     top: 44%; left: 24%;
     z-index: 4;
@@ -439,7 +439,7 @@ img { display: block; max-width: 100%; }
     top: 50%;
     left: -2%;
     z-index: 2;
-    filter: drop-shadow(0 0 40px rgba(80,130,255,0.32));
+    filter: drop-shadow(0 0 40px rgba(190,188,185,0.22));
     animation: fpro 7s ease-in-out infinite;
   }
   @keyframes fpro {
@@ -453,7 +453,7 @@ img { display: block; max-width: 100%; }
     bottom: 3%;
     right: -1%;
     z-index: 3;
-    filter: drop-shadow(0 0 30px rgba(140,80,255,0.28));
+    filter: drop-shadow(0 0 30px rgba(175,172,168,0.20));
     animation: fmini 9s ease-in-out infinite;
     animation-fill-mode: both;
   }

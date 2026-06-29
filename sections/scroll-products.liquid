@@ -16,12 +16,30 @@
     <!-- Label step -->
     <div class="sp-step-label" id="sp-step-label">01 / 02</div>
 
-    <!-- Panel 1 — ProRecup Pro -->
+    <!-- Panel 1 — ProRecup Mini (le moins cher en premier) -->
     <div class="sp-panel" id="sp-panel-1">
       <div class="sp-visual" id="sp-img-1">
-        <img src="{{ 'hero-pro.png' | asset_url }}" alt="ProRecup Pro">
+        <img src="{{ 'hero-mini.png' | asset_url }}" alt="ProRecup Mini">
       </div>
       <div class="sp-info" id="sp-info-1">
+        <p class="sp-eyebrow">ProRecup Mini</p>
+        <h2 class="sp-title">Compact.<br><em>Redoutable.</em></h2>
+        <ul class="sp-feats">
+          <li>Vitesse variable</li>
+          <li>4h d'autonomie</li>
+          <li>8 embouts inclus</li>
+          <li>Charge USB-C</li>
+        </ul>
+        <div class="sp-pricing">
+          <span class="sp-price">44,99€</span>
+        </div>
+        <a href="{{ mini_url }}" class="sp-btn">Voir le produit →</a>
+      </div>
+    </div>
+
+    <!-- Panel 2 — ProRecup Pro -->
+    <div class="sp-panel" id="sp-panel-2">
+      <div class="sp-info" id="sp-info-2">
         <p class="sp-eyebrow">ProRecup Pro</p>
         <h2 class="sp-title">Le pistolet<br>des <em>champions.</em></h2>
         <ul class="sp-feats">
@@ -37,26 +55,8 @@
         </div>
         <a href="{{ pro_url }}" class="sp-btn">Voir le produit →</a>
       </div>
-    </div>
-
-    <!-- Panel 2 — ProRecup Mini -->
-    <div class="sp-panel" id="sp-panel-2">
-      <div class="sp-info" id="sp-info-2">
-        <p class="sp-eyebrow">ProRecup Mini</p>
-        <h2 class="sp-title">Compact.<br><em>Redoutable.</em></h2>
-        <ul class="sp-feats">
-          <li>Vitesse variable</li>
-          <li>4h d'autonomie</li>
-          <li>8 embouts inclus</li>
-          <li>Charge USB-C</li>
-        </ul>
-        <div class="sp-pricing">
-          <span class="sp-price">44,99€</span>
-        </div>
-        <a href="{{ mini_url }}" class="sp-btn">Voir le produit →</a>
-      </div>
       <div class="sp-visual" id="sp-img-2">
-        <img src="{{ 'hero-mini.png' | asset_url }}" alt="ProRecup Mini">
+        <img src="{{ 'hero-pro.png' | asset_url }}" alt="ProRecup Pro">
       </div>
     </div>
 
@@ -88,7 +88,7 @@
   position: absolute;
   inset: 0;
   background: radial-gradient(ellipse 80% 60% at 50% 50%,
-    rgba(30,40,100,0.35) 0%, transparent 70%);
+    rgba(40,40,50,0.55) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -112,7 +112,7 @@
   max-width: 480px;
   display: block;
   will-change: transform, opacity;
-  filter: drop-shadow(0 0 50px rgba(80,120,255,0.22));
+  filter: drop-shadow(0 0 50px rgba(200,200,215,0.14));
 }
 #sp-panel-1 .sp-visual { display: flex; justify-content: flex-end; }
 #sp-panel-2 .sp-visual { display: flex; justify-content: flex-start; }
@@ -128,7 +128,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(120,150,255,0.9);
+  color: rgba(190,190,205,0.85);
   font-weight: 500;
 }
 .sp-title {
@@ -162,7 +162,7 @@
   content: '—';
   position: absolute;
   left: 0;
-  color: rgba(120,150,255,0.7);
+  color: rgba(180,180,195,0.6);
 }
 .sp-pricing {
   display: flex;
