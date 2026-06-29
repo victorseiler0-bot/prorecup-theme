@@ -8,16 +8,10 @@
     <div class="aurora-orb aurora-orb-3"></div>
   </div>
 
-  <!-- Duo produits — absolu droite, derrière le texte -->
-  <div class="hero-duo" aria-hidden="true">
-    <div class="hd-smoke hd-smoke-b1"></div>
-    <div class="hd-smoke hd-smoke-b2"></div>
-    <img src="{{ 'hero-pro.png' | asset_url }}" alt="" class="hero-duo-pro" loading="eager">
-    <img src="{{ 'hero-mini.png' | asset_url }}" alt="" class="hero-duo-mini" loading="eager">
-    <div class="hd-smoke hd-smoke-f1"></div>
-  </div>
-
+  <!-- Contenu gauche -->
   <div class="hero-content">
+    <p class="hero-eyebrow reveal">Récupération Premium</p>
+
     <h1 class="hero-title reveal">
       Performez.<br>
       Récupérez.<br>
@@ -25,13 +19,56 @@
     </h1>
 
     <p class="hero-subtitle reveal">
-      Deux modèles. Un seul objectif : transformer votre récupération en avantage compétitif.
+      Deux modèles pensés pour les exigeants. Un seul objectif : transformer votre récupération en avantage compétitif.
     </p>
+
+    <div class="hero-stats reveal">
+      <div class="hero-stat">
+        <span class="hero-stat-val">★ 4.9</span>
+        <span class="hero-stat-label">Note clients</span>
+      </div>
+      <div class="hero-stat-sep"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-val">5 000+</span>
+        <span class="hero-stat-label">Clients satisfaits</span>
+      </div>
+      <div class="hero-stat-sep"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-val">30J</span>
+        <span class="hero-stat-label">Retour gratuit</span>
+      </div>
+    </div>
 
     <div class="hero-actions reveal">
       <a href="#catalog" class="hero-btn">Acheter →</a>
       <a href="#features" class="hero-btn-ghost">En savoir plus</a>
     </div>
+  </div>
+
+  <!-- Duo produits droite -->
+  <div class="hero-duo" aria-hidden="false">
+    <div class="hd-smoke hd-smoke-b1"></div>
+    <div class="hd-smoke hd-smoke-b2"></div>
+
+    <!-- Pro -->
+    <div class="hd-product hd-product-pro">
+      <img src="{{ 'hero-pro.png' | asset_url }}" alt="ProRecup Pro" class="hero-duo-pro" loading="eager">
+      <div class="hd-tag">
+        <span class="hd-tag-name">ProRecup Pro</span>
+        <span class="hd-tag-price">89,99€ <s>119,99€</s></span>
+      </div>
+    </div>
+
+    <!-- Mini -->
+    <div class="hd-product hd-product-mini">
+      <img src="{{ 'hero-mini.png' | asset_url }}" alt="ProRecup Mini" class="hero-duo-mini" loading="eager">
+      <div class="hd-tag hd-tag-right">
+        <span class="hd-tag-name">ProRecup Mini</span>
+        <span class="hd-tag-price">44,99€</span>
+      </div>
+    </div>
+
+    <div class="hd-smoke hd-smoke-f1"></div>
   </div>
 
 </section>
