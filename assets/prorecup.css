@@ -324,7 +324,7 @@ img { display: block; max-width: 100%; }
     pointer-events: none;
   }
 
-  /* Pro — intégration totale : fondu sur tous les bords + bord gauche */
+  /* Pro — fondu total : ellipse serrée, bords s'évaporent dans le fond */
   .hero-duo-pro {
     position: absolute;
     width: 108%;
@@ -332,40 +332,48 @@ img { display: block; max-width: 100%; }
     left: -8%;
     transform: translateY(-52%);
     mix-blend-mode: screen;
-    filter: brightness(1.55) contrast(1.0) saturate(0.65);
-    opacity: 0.95;
-    -webkit-mask-image:
-      radial-gradient(ellipse 56% 52% at 54% 50%,
-        black 0%, rgba(0,0,0,0.7) 32%, rgba(0,0,0,0.15) 55%, transparent 68%),
-      linear-gradient(to right, transparent 0%, black 30%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-      radial-gradient(ellipse 56% 52% at 54% 50%,
-        black 0%, rgba(0,0,0,0.7) 32%, rgba(0,0,0,0.15) 55%, transparent 68%),
-      linear-gradient(to right, transparent 0%, black 30%);
-    mask-composite: intersect;
+    filter: brightness(1.6) contrast(0.98) saturate(0.6);
+    opacity: 1;
+    -webkit-mask-image: radial-gradient(ellipse 40% 37% at 55% 50%,
+      black 0%,
+      rgba(0,0,0,0.85) 22%,
+      rgba(0,0,0,0.4) 44%,
+      rgba(0,0,0,0.08) 60%,
+      transparent 72%
+    );
+    mask-image: radial-gradient(ellipse 40% 37% at 55% 50%,
+      black 0%,
+      rgba(0,0,0,0.85) 22%,
+      rgba(0,0,0,0.4) 44%,
+      rgba(0,0,0,0.08) 60%,
+      transparent 72%
+    );
   }
 
-  /* Mini — même intégration, fondu circulaire + bord gauche */
+  /* Mini — fondu total, ellipse serrée, coin bas-droit */
   .hero-duo-mini {
     position: absolute;
     width: 74%;
     bottom: 5%;
     right: -6%;
     mix-blend-mode: screen;
-    filter: brightness(1.45) contrast(1.0) saturate(0.65);
-    opacity: 0.9;
+    filter: brightness(1.5) contrast(0.98) saturate(0.6);
+    opacity: 1;
     transform: rotate(10deg);
-    -webkit-mask-image:
-      radial-gradient(ellipse 54% 50% at 48% 50%,
-        black 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.12) 52%, transparent 66%),
-      linear-gradient(to right, transparent 0%, black 25%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-      radial-gradient(ellipse 54% 50% at 48% 50%,
-        black 0%, rgba(0,0,0,0.65) 30%, rgba(0,0,0,0.12) 52%, transparent 66%),
-      linear-gradient(to right, transparent 0%, black 25%);
-    mask-composite: intersect;
+    -webkit-mask-image: radial-gradient(ellipse 38% 35% at 50% 50%,
+      black 0%,
+      rgba(0,0,0,0.82) 20%,
+      rgba(0,0,0,0.35) 42%,
+      rgba(0,0,0,0.06) 58%,
+      transparent 70%
+    );
+    mask-image: radial-gradient(ellipse 38% 35% at 50% 50%,
+      black 0%,
+      rgba(0,0,0,0.82) 20%,
+      rgba(0,0,0,0.35) 42%,
+      rgba(0,0,0,0.06) 58%,
+      transparent 70%
+    );
   }
 }
 
