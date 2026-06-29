@@ -132,7 +132,7 @@
   max-width: none;
   display: block;
   will-change: transform, opacity;
-  filter: drop-shadow(0 0 50px rgba(200,200,215,0.14));
+  filter: drop-shadow(0 0 50px rgba(190,188,185,0.14));
 }
 /* Panel 1 : image à droite, texte à gauche */
 #sp-panel-1 .sp-visual {
@@ -167,7 +167,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(190,190,205,0.85);
+  color: rgba(185,183,180,0.85);
   font-weight: 500;
 }
 .sp-title {
@@ -201,7 +201,7 @@
   content: '—';
   position: absolute;
   left: 0;
-  color: rgba(180,180,195,0.6);
+  color: rgba(175,173,170,0.6);
 }
 .sp-pricing {
   display: flex;
@@ -478,20 +478,21 @@
   function prog(v, a, b)  { return clamp((v - a) / (b - a), 0, 1); }
   function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
 
-  function applyPanel(panel, imgEl, infoEl, active, dirImg, dirInfo) {
+  function applyPanel(panel, imgEl, infoEl, active, dirImg, dirInfo, fromTop) {
     const a    = ease(active);
-    const aImg = ease(clamp(active * 1.15, 0, 1));          // image légèrement en avance
-    const aTxt = a > 0.4 ? ease(prog(a, 0.4, 1)) : 0;      // texte décalé après
+    const aImg = ease(clamp(active * 1.15, 0, 1));
 
     panel.style.opacity      = a;
     panel.style.pointerEvents = a > 0.05 ? 'auto' : 'none';
 
     if (imgEl) {
-      const blur = (1 - aImg) * 18;                          // blur 18px → 0
-      const tx   = (1 - aImg) * dirImg * 90;
-      const sc   = 0.78 + aImg * 0.22;                      // scale 0.78 → 1
-      imgEl.style.transform = `translateX(${tx}px) scale(${sc})`;
-      imgEl.style.filter    = `blur(${blur.toFixed(1)}px) drop-shadow(0 0 50px rgba(200,200,215,0.14))`;
+      const blur = (1 - aImg) * 18;
+      // Panel 1 entre depuis le haut (liaison avec hero Mini)
+      const tx = fromTop ? 0                        : (1 - aImg) * dirImg * 90;
+      const ty = fromTop ? (1 - aImg) * -80 : 0;
+      const sc = 0.82 + aImg * 0.18;
+      imgEl.style.transform = `translateX(${tx}px) translateY(${ty}px) scale(${sc})`;
+      imgEl.style.filter    = `blur(${blur.toFixed(1)}px) drop-shadow(0 0 50px rgba(190,188,185,0.14))`;
     }
 
     if (infoEl) {
@@ -523,8 +524,8 @@
     const p2out = prog(p, 0.90, 1.0);
     const p2    = p2in * (1 - p2out);
 
-    applyPanel(panel1, img1, info1, p1, 1, -1);
-    applyPanel(panel2, img2, info2, p2, -1, 1);
+    applyPanel(panel1, img1, info1, p1, 1, -1, true);   // Panel 1 : image vient du haut (liaison hero)
+    applyPanel(panel2, img2, info2, p2, -1, 1, false);
 
     // Indicateur
     const inP2 = p >= 0.54;
@@ -546,12 +547,15 @@
       }
     }
 
-    // Barre fixe mobile
+    // Barre fixe mobile — visible uniquement si la scène est dans le viewport
     const bar      = document.getElementById('sp-bar');
     const barName  = document.getElementById('sp-bar-name');
     const barPrice = document.getElementById('sp-bar-price');
     const barBtn   = document.getElementById('sp-bar-btn');
-    const inScene  = p > 0.01 && p < 0.99;
+    const scTop    = rect.top;
+    const scBottom = scTop + scene.offsetHeight;
+    const inView   = scTop < window.innerHeight * 0.95 && scBottom > window.innerHeight * 0.05;
+    const inScene  = inView && p > 0.04 && p < 0.96;
     if (bar) {
       bar.classList.toggle('visible', inScene);
       const showPro = p2 > p1;
@@ -569,6 +573,30 @@
 
   window.addEventListener('scroll', tick, { passive: true });
   tick();
+
+  // ── Liaison hero → scroll : parallax sur le produit Mini du hero ──
+  (function() {
+    const heroMini = document.querySelector('.hd-product-mini');
+    const heroSection = document.querySelector('.hero');
+    if (!heroMini || !heroSection) return;
+
+    function heroParallax() {
+      const heroH  = heroSection.offsetHeight;
+      const scrollY = window.scrollY;
+      // progress de 0 (hero plein) à 1 (hero sorti)
+      const pHero = Math.max(0, Math.min(1, scrollY / heroH));
+      if (pHero > 0) {
+        // Le mini suit le scroll : monte et part légèrement vers la gauche
+        heroMini.style.transform = `rotate(11deg) translateY(${-pHero * 60}px) translateX(${-pHero * 30}px) scale(${1 - pHero * 0.08})`;
+        heroMini.style.opacity   = 1 - pHero * 1.8; // disparaît rapidement
+      } else {
+        heroMini.style.transform = '';
+        heroMini.style.opacity   = '';
+      }
+    }
+    window.addEventListener('scroll', heroParallax, { passive: true });
+    heroParallax();
+  })();
 })();
 </script>
 
