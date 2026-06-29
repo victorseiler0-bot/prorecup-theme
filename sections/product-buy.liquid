@@ -9,8 +9,9 @@
           <div class="gallery-slide active"><img src="{{ 'product-1.png' | asset_url }}" alt="ProRecup pistolet vue 1" loading="eager"></div>
           <div class="gallery-slide"><img src="{{ 'product-2.png' | asset_url }}" alt="ProRecup pistolet vue 2" loading="lazy"></div>
           <div class="gallery-slide"><img src="{{ 'product-3.png' | asset_url }}" alt="ProRecup pistolet vue 3" loading="lazy"></div>
-          <div class="gallery-slide"><img src="{{ 'product-4.png' | asset_url }}" alt="ProRecup pistolet vue 4" loading="lazy"></div>
+          <div class="gallery-slide"><img src="{{ 'product-4.webp' | asset_url }}" alt="ProRecup pistolet vue 4" loading="lazy"></div>
           <div class="gallery-slide"><img src="{{ 'product-5.png' | asset_url }}" alt="ProRecup pistolet vue 5" loading="lazy"></div>
+          <div class="gallery-slide"><img src="{{ 'product-6.jpg' | asset_url }}" alt="ProRecup pistolet vue 6" loading="lazy"></div>
         </div>
         <div class="gallery-dots">
           <button class="gallery-dot active" data-index="0" aria-label="Photo 1"></button>
@@ -18,6 +19,7 @@
           <button class="gallery-dot" data-index="2" aria-label="Photo 3"></button>
           <button class="gallery-dot" data-index="3" aria-label="Photo 4"></button>
           <button class="gallery-dot" data-index="4" aria-label="Photo 5"></button>
+          <button class="gallery-dot" data-index="5" aria-label="Photo 6"></button>
         </div>
         <button class="gallery-prev" aria-label="Précédent">&#8592;</button>
         <button class="gallery-next" aria-label="Suivant">&#8594;</button>
@@ -31,7 +33,7 @@
       <ul class="buy-specs reveal">
         <li><span>Têtes incluses</span><span>8 interchangeables</span></li>
         <li><span>Recharge</span><span>USB-C · 2h</span></li>
-        <li><span>Livraison</span><span>Offerte — 7 à 15 jours</span></li>
+        <li><span>Livraison</span><span>7 à 15 jours</span></li>
 <li><span>Couleur</span><span>Noir premium mat</span></li>
       </ul>
 
@@ -58,7 +60,7 @@
         <a href="#features" class="buy-secondary">Voir toutes les caractéristiques</a>
       </div>
 
-      <div id="cart-feedback" style="display:none;text-align:center;padding:10px 0;font-size:0.9rem;color:#4488ff;"></div>
+      <div id="cart-feedback" style="display:none;text-align:center;padding:10px 0;font-size:0.9rem;color:#4169e1;"></div>
 
       <div class="buy-trust reveal">
         <span class="trust-item">✓ Paiement sécurisé</span>
@@ -66,7 +68,7 @@
         <span class="trust-item">✓ SAV réactif</span>
       </div>
 
-      <p class="buy-note reveal">📦 Livraison internationale offerte · Suivi inclus · Retour gratuit 30 jours</p>
+      <p class="buy-note reveal">📦 Suivi inclus · Retour gratuit 30 jours</p>
     </div>
   </div>
 </section>
@@ -101,7 +103,7 @@
       } else {
         btn.textContent = 'Ajouté au panier ✓';
         btn.style.background = '#1a5c1a';
-        feedback.style.color = '#4488ff';
+        feedback.style.color = '#4169e1';
         feedback.textContent = 'Produit ajouté !';
         if (window.showCartToast) window.showCartToast();
         setTimeout(() => window.location.href = '/cart', 900);

@@ -9,7 +9,7 @@
   --grey: #6e6e73;
   --surface: #111111;
   --surface2: #1a1a1a;
-  --accent-blue: #4488ff;
+  --accent-blue: #4169e1;
   --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
   --font-body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --nav-h: 64px;
@@ -106,6 +106,10 @@ img { display: block; max-width: 100%; }
 .logo-slide {
   display: inline-block;
   white-space: nowrap;
+}
+
+.logo-blue {
+  color: var(--accent-blue);
 }
 
 .nav-links {
