@@ -32,6 +32,8 @@
         </ul>
         <div class="sp-pricing">
           <span class="sp-price">44,99€</span>
+          <span class="sp-old">59,99€</span>
+          <span class="sp-badge">-25%</span>
         </div>
         <a href="{{ mini_url }}" class="sp-btn">Voir le produit →</a>
       </div>
@@ -60,13 +62,17 @@
       </div>
     </div>
 
-    <!-- Barre fixe mobile — change selon le produit actif -->
-    <div class="sp-bar" id="sp-bar">
+    <!-- Barre fixe mobile — toujours visible, change selon le contexte -->
+    <div class="sp-bar visible" id="sp-bar">
       <div class="sp-bar-info">
-        <span class="sp-bar-name" id="sp-bar-name">ProRecup Mini</span>
-        <span class="sp-bar-price" id="sp-bar-price">44,99€</span>
+        <span class="sp-bar-name" id="sp-bar-name">ProRecup</span>
+        <div class="sp-bar-prices" id="sp-bar-prices">
+          <span class="sp-bar-price" id="sp-bar-price"></span>
+          <span class="sp-bar-old" id="sp-bar-old"></span>
+          <span class="sp-bar-badge" id="sp-bar-badge"></span>
+        </div>
       </div>
-      <a href="{{ mini_url }}" class="sp-bar-btn" id="sp-bar-btn">Voir le produit →</a>
+      <a href="#catalog" class="sp-bar-btn" id="sp-bar-btn">Nos modèles →</a>
     </div>
 
     <!-- Scroll hint (visible seulement au début) -->
@@ -334,6 +340,9 @@
 .sp-bar { display: none; }
 
 @media (max-width: 767px) {
+  /* sticky-buy-bar du theme = masqué sur homepage, sp-bar le remplace */
+  .sticky-buy-bar { display: none !important; }
+
   .sp-bar {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -350,7 +359,7 @@
     opacity: 0;
     pointer-events: none;
     transform: translateY(100%);
-    transition: opacity 0.35s, transform 0.35s;
+    transition: opacity 0.4s, transform 0.4s;
   }
   .sp-bar.visible {
     opacity: 1;
@@ -360,18 +369,39 @@
   .sp-bar-info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
+    min-width: 0;
   }
   .sp-bar-name {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 600;
-    color: #f5f5f7;
+    color: rgba(245,245,247,0.75);
     letter-spacing: 0.02em;
   }
+  .sp-bar-prices {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
   .sp-bar-price {
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: #f5f5f7;
+  }
+  .sp-bar-old {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.3);
+    text-decoration: line-through;
+  }
+  .sp-bar-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: rgba(255,80,60,0.15);
+    border: 1px solid rgba(255,80,60,0.3);
+    color: rgba(255,100,80,0.9);
+    padding: 2px 7px;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
   }
   .sp-bar-btn {
     display: inline-flex;
@@ -381,8 +411,8 @@
     color: #000;
     text-decoration: none;
     border-radius: 100px;
-    padding: 12px 22px;
-    font-size: 0.82rem;
+    padding: 12px 20px;
+    font-size: 0.8rem;
     font-weight: 700;
     white-space: nowrap;
     flex-shrink: 0;
@@ -547,26 +577,43 @@
       }
     }
 
-    // Barre fixe mobile — visible uniquement si la scène est dans le viewport
+    // Barre fixe mobile — toujours visible, change selon contexte
     const bar      = document.getElementById('sp-bar');
     const barName  = document.getElementById('sp-bar-name');
     const barPrice = document.getElementById('sp-bar-price');
+    const barOld   = document.getElementById('sp-bar-old');
+    const barBadge = document.getElementById('sp-bar-badge');
     const barBtn   = document.getElementById('sp-bar-btn');
-    const scTop    = rect.top;
-    const scBottom = scTop + scene.offsetHeight;
-    const inView   = scTop < window.innerHeight * 0.95 && scBottom > window.innerHeight * 0.05;
-    const inScene  = inView && p > 0.04 && p < 0.96;
     if (bar) {
-      bar.classList.toggle('visible', inScene);
-      const showPro = p2 > p1;
-      if (showPro) {
-        if (barBtn)   barBtn.href            = '{{ pro_url }}';
-        if (barName)  barName.textContent    = 'ProRecup Pro';
-        if (barPrice) barPrice.textContent   = '89,99€';
+      bar.classList.add('visible');
+
+      const scTop    = rect.top;
+      const scBottom = scTop + scene.offsetHeight;
+      const inView   = scTop < window.innerHeight * 0.95 && scBottom > window.innerHeight * 0.05;
+      const inScene  = inView && p > 0.04 && p < 0.96;
+
+      if (!inScene) {
+        // État par défaut → redirige vers le catalogue en bas
+        if (barName)  barName.textContent  = 'ProRecup';
+        if (barPrice) barPrice.textContent = '';
+        if (barOld)   barOld.textContent   = '';
+        if (barBadge) barBadge.textContent = '';
+        if (barBtn)   { barBtn.href = '#catalog'; barBtn.textContent = 'Voir nos modèles →'; }
       } else {
-        if (barBtn)   barBtn.href            = '{{ mini_url }}';
-        if (barName)  barName.textContent    = 'ProRecup Mini';
-        if (barPrice) barPrice.textContent   = '44,99€';
+        const showPro = p2 > p1;
+        if (showPro) {
+          if (barName)  barName.textContent  = 'ProRecup Pro';
+          if (barPrice) barPrice.textContent = '89,99€';
+          if (barOld)   barOld.textContent   = '119,99€';
+          if (barBadge) barBadge.textContent = '-25%';
+          if (barBtn)   { barBtn.href = '{{ pro_url }}'; barBtn.textContent = 'Voir le produit →'; }
+        } else {
+          if (barName)  barName.textContent  = 'ProRecup Mini';
+          if (barPrice) barPrice.textContent = '44,99€';
+          if (barOld)   barOld.textContent   = '59,99€';
+          if (barBadge) barBadge.textContent = '-25%';
+          if (barBtn)   { barBtn.href = '{{ mini_url }}'; barBtn.textContent = 'Voir le produit →'; }
+        }
       }
     }
   }

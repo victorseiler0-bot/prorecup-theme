@@ -457,10 +457,10 @@ img { display: block; max-width: 100%; }
     50%      { transform: translateY(calc(-56% - 18px)) rotate(-4deg); }
   }
 
-  /* Mini — haut droite, le plus haut possible */
+  /* Mini — haut droite */
   .hd-product-mini {
     width: 70%;
-    top: -2%;
+    top: 8%;
     right: -6%;
     bottom: auto;
     z-index: 3;
