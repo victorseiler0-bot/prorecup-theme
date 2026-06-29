@@ -185,21 +185,6 @@ img { display: block; max-width: 100%; }
   display: none;
 }
 
-/* Fondu bas hero → section catalog (z-index 1 : sous le texte) */
-.hero-fade-bottom {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 220px;
-  background: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(5, 6, 20, 0.55) 45%,
-    rgba(0, 0, 0, 0.92) 75%,
-    #000 100%
-  );
-  z-index: 1;
-  pointer-events: none;
-}
-
 /* Gradient lisibilité texte — côté gauche uniquement */
 .hero-overlay {
   position: absolute;
@@ -280,8 +265,6 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
 }
 
-.hero-duo { display: none; }
-
 .hero-content {
   padding: calc(var(--nav-h) + 180px) 80px 80px;
   display: flex;
@@ -290,66 +273,6 @@ img { display: block; max-width: 100%; }
   max-width: 640px;
   position: relative;
   z-index: 3;
-}
-
-/* ── Desktop : duo produits en absolu à droite, derrière le texte ── */
-@media (min-width: 1024px) {
-  .hero-duo {
-    display: block;
-    position: absolute;
-    right: 0; top: 0; bottom: 0;
-    width: 55%;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  .hero-duo-pro {
-    position: absolute;
-    width: 100%;
-    top: 50%;
-    left: 0;
-    transform: translateY(-52%);
-    mix-blend-mode: screen;
-    filter: brightness(1.6) contrast(0.98) saturate(0.6);
-    -webkit-mask-image: radial-gradient(ellipse 42% 38% at 52% 50%,
-      black 0%,
-      rgba(0,0,0,0.8) 22%,
-      rgba(0,0,0,0.35) 46%,
-      rgba(0,0,0,0.05) 62%,
-      transparent 74%
-    );
-    mask-image: radial-gradient(ellipse 42% 38% at 52% 50%,
-      black 0%,
-      rgba(0,0,0,0.8) 22%,
-      rgba(0,0,0,0.35) 46%,
-      rgba(0,0,0,0.05) 62%,
-      transparent 74%
-    );
-  }
-
-  .hero-duo-mini {
-    position: absolute;
-    width: 66%;
-    bottom: 6%;
-    right: -4%;
-    mix-blend-mode: screen;
-    filter: brightness(1.5) contrast(0.98) saturate(0.6);
-    transform: rotate(10deg);
-    -webkit-mask-image: radial-gradient(ellipse 40% 36% at 50% 50%,
-      black 0%,
-      rgba(0,0,0,0.78) 20%,
-      rgba(0,0,0,0.3) 44%,
-      rgba(0,0,0,0.04) 60%,
-      transparent 72%
-    );
-    mask-image: radial-gradient(ellipse 40% 36% at 50% 50%,
-      black 0%,
-      rgba(0,0,0,0.78) 20%,
-      rgba(0,0,0,0.3) 44%,
-      rgba(0,0,0,0.04) 60%,
-      transparent 72%
-    );
-  }
 }
 
 .hero-eyebrow {
@@ -1960,21 +1883,6 @@ body.intro-running #site-header { opacity: 0; pointer-events: none; }
 
 .catalog {
   padding: 80px 0 120px;
-  position: relative;
-}
-
-.catalog::before {
-  content: '';
-  position: absolute;
-  top: -80px; left: 0; right: 0;
-  height: 280px;
-  background: radial-gradient(ellipse 70% 100% at 50% 0%,
-    rgba(44, 68, 180, 0.12) 0%,
-    rgba(88, 44, 200, 0.06) 45%,
-    transparent 72%
-  );
-  pointer-events: none;
-  z-index: 0;
 }
 
 .catalog-inner {
