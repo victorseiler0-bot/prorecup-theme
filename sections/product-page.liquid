@@ -1,5 +1,6 @@
 {% assign variant = product.selected_or_first_available_variant %}
 {% assign display_name = section.settings.display_name | default: product.title %}
+{% assign image_set = section.settings.image_set | default: 'pro' %}
 
 <section class="pp-wrap">
   <div class="pp-inner">
@@ -12,27 +13,33 @@
       <div class="pp-gallery-col">
         <div class="product-gallery">
           <div class="gallery-track">
-            {% for image in product.images %}
-              <div class="gallery-slide {% if forloop.first %}active{% endif %}">
-                <img
-                  src="{{ image | image_url: width: 900 }}"
-                  alt="{{ image.alt | default: display_name | escape }}"
-                  {% if forloop.first %}loading="eager"{% else %}loading="lazy"{% endif %}
-                >
-              </div>
+            {% if image_set == 'mini' %}
+              <div class="gallery-slide active"><img src="{{ 'p2-main.png' | asset_url }}" alt="{{ display_name }}" loading="eager"></div>
+              <div class="gallery-slide"><img src="{{ 'p2-2.png' | asset_url }}" alt="{{ display_name }}" loading="lazy"></div>
+              <div class="gallery-slide"><img src="{{ 'p2-3.png' | asset_url }}" alt="{{ display_name }}" loading="lazy"></div>
+              <div class="gallery-slide"><img src="{{ 'p2-4.png' | asset_url }}" alt="{{ display_name }}" loading="lazy"></div>
             {% else %}
-              <div class="gallery-slide active pp-no-img-wrap">
-                <div class="pp-no-img">Photo à venir</div>
-              </div>
-            {% endfor %}
+              <div class="gallery-slide active"><img src="{{ 'product-2.png' | asset_url }}" alt="{{ display_name }}" loading="eager"></div>
+              <div class="gallery-slide"><img src="{{ 'product-3.png' | asset_url }}" alt="{{ display_name }}" loading="lazy"></div>
+              <div class="gallery-slide"><img src="{{ 'product-4.webp' | asset_url }}" alt="{{ display_name }}" loading="lazy"></div>
+              <div class="gallery-slide"><img src="{{ 'product-5.png' | asset_url }}" alt="{{ display_name }}" loading="lazy"></div>
+              <div class="gallery-slide"><img src="{{ 'product-6.jpg' | asset_url }}" alt="{{ display_name }}" loading="lazy"></div>
+            {% endif %}
           </div>
-          {% if product.images.size > 1 %}
-            <div class="gallery-dots">
-              {% for image in product.images %}
-                <button class="gallery-dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}" aria-label="Photo {{ forloop.index }}"></button>
-              {% endfor %}
-            </div>
-          {% endif %}
+          <div class="gallery-dots">
+            {% if image_set == 'mini' %}
+              <button class="gallery-dot active" data-index="0" aria-label="Photo 1"></button>
+              <button class="gallery-dot" data-index="1" aria-label="Photo 2"></button>
+              <button class="gallery-dot" data-index="2" aria-label="Photo 3"></button>
+              <button class="gallery-dot" data-index="3" aria-label="Photo 4"></button>
+            {% else %}
+              <button class="gallery-dot active" data-index="0" aria-label="Photo 1"></button>
+              <button class="gallery-dot" data-index="1" aria-label="Photo 2"></button>
+              <button class="gallery-dot" data-index="2" aria-label="Photo 3"></button>
+              <button class="gallery-dot" data-index="3" aria-label="Photo 4"></button>
+              <button class="gallery-dot" data-index="4" aria-label="Photo 5"></button>
+            {% endif %}
+          </div>
         </div>
       </div>
 
@@ -51,13 +58,13 @@
           {% endif %}
         </div>
 
-        {% form 'product', product, class: 'pp-form', id: 'pp-form' %}
+        {% form 'product', product, class: 'pp-form' %}
           <input type="hidden" name="id" value="{{ variant.id }}">
           <input type="hidden" name="quantity" value="1">
-          <button type="button" class="pp-btn-cart" id="pp-add-cart" data-variant="{{ variant.id }}">
+          <button type="button" class="pp-btn-cart" data-variant="{{ variant.id }}">
             Ajouter au panier
           </button>
-          <button type="submit" formaction="/cart" class="pp-btn-checkout">
+          <button type="submit" class="pp-btn-checkout">
             Acheter maintenant
           </button>
         {% endform %}
@@ -75,59 +82,30 @@
 
 <script>
 (function() {
-  /* ── Galerie ── */
-  var slides  = document.querySelectorAll('.pp-wrap .gallery-slide');
-  var dots    = document.querySelectorAll('.pp-wrap .gallery-dot');
-  var current = 0;
-
-  function goTo(n) {
-    slides[current].classList.remove('active');
-    if (dots[current]) dots[current].classList.remove('active');
-    current = (n + slides.length) % slides.length;
-    slides[current].classList.add('active');
-    if (dots[current]) dots[current].classList.add('active');
-  }
-
-  dots.forEach(function(d) {
-    d.addEventListener('click', function() { goTo(+d.dataset.index); });
+  var btn = document.querySelector('.pp-btn-cart');
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    btn.disabled = true;
+    btn.textContent = 'Ajout en cours…';
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id: btn.dataset.variant, quantity: 1})
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.status) {
+        btn.disabled = false;
+        btn.textContent = 'Ajouter au panier';
+        alert(data.description || 'Erreur');
+      } else {
+        btn.textContent = 'Ajouté ✓';
+        if (window.showCartToast) window.showCartToast();
+        setTimeout(function() { window.location.href = '/cart'; }, 900);
+      }
+    })
+    .catch(function() { btn.disabled = false; btn.textContent = 'Ajouter au panier'; });
   });
-
-  var gallery = document.querySelector('.pp-wrap .product-gallery');
-  if (gallery) {
-    var startX = 0;
-    gallery.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; }, {passive: true});
-    gallery.addEventListener('touchend',   function(e) {
-      var dx = e.changedTouches[0].clientX - startX;
-      if (Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
-    }, {passive: true});
-  }
-
-  /* ── Ajouter au panier ── */
-  var btn = document.getElementById('pp-add-cart');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      btn.disabled = true;
-      btn.textContent = 'Ajout en cours…';
-      fetch('/cart/add.js', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({id: btn.dataset.variant, quantity: 1})
-      })
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (data.status) {
-          btn.disabled = false;
-          btn.textContent = 'Ajouter au panier';
-          alert(data.description || 'Erreur');
-        } else {
-          btn.textContent = 'Ajouté ✓';
-          if (window.showCartToast) window.showCartToast();
-          setTimeout(function() { window.location.href = '/cart'; }, 900);
-        }
-      })
-      .catch(function() { btn.disabled = false; btn.textContent = 'Ajouter au panier'; });
-    });
-  }
 })();
 </script>
 
@@ -136,10 +114,20 @@
   "name": "Page Produit",
   "settings": [
     {
+      "type": "select",
+      "id": "image_set",
+      "label": "Photos à afficher",
+      "options": [
+        { "value": "pro",  "label": "ProRecup Pro" },
+        { "value": "mini", "label": "ProRecup Mini" }
+      ],
+      "default": "pro"
+    },
+    {
       "type": "text",
       "id": "display_name",
       "label": "Nom affiché",
-      "info": "Ex : ProRecup Pro — remplace le titre Shopify si renseigné"
+      "info": "Ex : ProRecup Pro"
     }
   ]
 }
