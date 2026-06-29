@@ -465,8 +465,8 @@ img { display: block; max-width: 100%; }
   /* Tags glassmorphism */
   .hd-tag {
     position: absolute;
-    background: rgba(15,15,25,0.60);
-    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(15,15,25,0.55);
+    border: 1px solid rgba(255,255,255,0.13);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-radius: 12px;
@@ -476,17 +476,16 @@ img { display: block; max-width: 100%; }
     gap: 3px;
     white-space: nowrap;
     pointer-events: none;
-    /* Pro : collé sous le pistolet, côté droit de l'image */
-    bottom: 18%;
-    right: 6%;
+    top: 6%;
+    right: -2%;
+    bottom: auto;
     left: auto;
   }
   .hd-tag-r {
-    /* Mini : collé au-dessus du pistolet, côté gauche */
-    top: 14%;
-    left: 6%;
+    top: auto;
     right: auto;
-    bottom: auto;
+    bottom: 6%;
+    left: -4%;
   }
   .hd-tag-name {
     font-size: 0.65rem;
