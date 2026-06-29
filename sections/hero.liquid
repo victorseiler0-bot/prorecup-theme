@@ -8,67 +8,73 @@
     <div class="aurora-orb aurora-orb-3"></div>
   </div>
 
-  <!-- Contenu gauche -->
-  <div class="hero-content">
-    <p class="hero-eyebrow reveal">Récupération Premium</p>
+  <div class="hero-grid">
 
-    <h1 class="hero-title reveal">
-      Performez.<br>
-      Récupérez.<br>
-      <em>Dominez.</em>
-    </h1>
+    <!-- GAUCHE : texte -->
+    <div class="hero-left">
 
-    <p class="hero-subtitle reveal">
-      Deux modèles pensés pour les exigeants. Un seul objectif : transformer votre récupération en avantage compétitif.
-    </p>
+      <div class="hero-badge reveal">
+        <span class="hero-badge-dot"></span>
+        Récupération Premium
+      </div>
 
-    <div class="hero-stats reveal">
-      <div class="hero-stat">
-        <span class="hero-stat-val">★ 4.9</span>
-        <span class="hero-stat-label">Note clients</span>
+      <h1 class="hero-title reveal">
+        Performez.<br>
+        Récupérez.<br>
+        <em>Dominez.</em>
+      </h1>
+
+      <a href="#catalog" class="hero-cta reveal">Acheter maintenant →</a>
+
+      <p class="hero-sub reveal">
+        Deux modèles pensés pour les exigeants.<br>Livraison rapide · Retour 30 jours.
+      </p>
+
+      <div class="hero-metrics reveal">
+        <div class="hm-item">
+          <span class="hm-val">★ 4.9</span>
+          <span class="hm-lab">Note clients</span>
+        </div>
+        <span class="hm-sep"></span>
+        <div class="hm-item">
+          <span class="hm-val">5 000+</span>
+          <span class="hm-lab">Clients</span>
+        </div>
+        <span class="hm-sep"></span>
+        <div class="hm-item">
+          <span class="hm-val">30 J</span>
+          <span class="hm-lab">Retour gratuit</span>
+        </div>
       </div>
-      <div class="hero-stat-sep"></div>
-      <div class="hero-stat">
-        <span class="hero-stat-val">5 000+</span>
-        <span class="hero-stat-label">Clients satisfaits</span>
-      </div>
-      <div class="hero-stat-sep"></div>
-      <div class="hero-stat">
-        <span class="hero-stat-val">30J</span>
-        <span class="hero-stat-label">Retour gratuit</span>
-      </div>
+
     </div>
 
-    <div class="hero-actions reveal">
-      <a href="#catalog" class="hero-btn">Acheter →</a>
-      <a href="#features" class="hero-btn-ghost">En savoir plus</a>
-    </div>
-  </div>
+    <!-- DROITE : produits -->
+    <div class="hero-right" aria-hidden="true">
 
-  <!-- Duo produits droite -->
-  <div class="hero-duo" aria-hidden="false">
-    <div class="hd-smoke hd-smoke-b1"></div>
-    <div class="hd-smoke hd-smoke-b2"></div>
+      <div class="hd-smoke hd-smoke-b1"></div>
+      <div class="hd-smoke hd-smoke-b2"></div>
 
-    <!-- Pro -->
-    <div class="hd-product hd-product-pro">
-      <img src="{{ 'hero-pro.png' | asset_url }}" alt="ProRecup Pro" class="hero-duo-pro" loading="eager">
-      <div class="hd-tag">
-        <span class="hd-tag-name">ProRecup Pro</span>
-        <span class="hd-tag-price">89,99€ <s>119,99€</s></span>
+      <div class="hd-product hd-product-pro">
+        <img src="{{ 'hero-pro.png' | asset_url }}" alt="ProRecup Pro" loading="eager">
+        <div class="hd-tag">
+          <span class="hd-tag-name">ProRecup Pro</span>
+          <span class="hd-tag-price">89,99€ <s>119,99€</s></span>
+        </div>
       </div>
-    </div>
 
-    <!-- Mini -->
-    <div class="hd-product hd-product-mini">
-      <img src="{{ 'hero-mini.png' | asset_url }}" alt="ProRecup Mini" class="hero-duo-mini" loading="eager">
-      <div class="hd-tag hd-tag-right">
-        <span class="hd-tag-name">ProRecup Mini</span>
-        <span class="hd-tag-price">44,99€</span>
+      <div class="hd-product hd-product-mini">
+        <img src="{{ 'hero-mini.png' | asset_url }}" alt="ProRecup Mini" loading="eager">
+        <div class="hd-tag hd-tag-r">
+          <span class="hd-tag-name">ProRecup Mini</span>
+          <span class="hd-tag-price">44,99€</span>
+        </div>
       </div>
+
+      <div class="hd-smoke hd-smoke-f1"></div>
+
     </div>
 
-    <div class="hd-smoke hd-smoke-f1"></div>
   </div>
 
 </section>

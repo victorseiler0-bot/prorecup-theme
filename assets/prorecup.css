@@ -265,204 +265,239 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
 }
 
-/* ── Duo produits hero — desktop uniquement ── */
-.hero-duo { display: none; }
-.hero-smoke { display: none; }
+/* ══════════════════════════════════════
+   HERO GRID — layout desktop
+══════════════════════════════════════ */
 
+/* Cache les éléments droite par défaut (mobile) */
+.hero-right { display: none; }
+.hd-smoke   { display: none; }
+
+/* Contenu gauche — mobile */
+.hero-content,
+.hero-left {
+  padding: calc(var(--nav-h) + 80px) 28px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: relative;
+  z-index: 3;
+}
+
+/* Badge eyebrow */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--grey);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px;
+  padding: 6px 14px 6px 10px;
+  width: fit-content;
+}
+.hero-badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #4a90ff;
+  animation: badgePulse 2.4s ease-in-out infinite;
+}
+@keyframes badgePulse {
+  0%,100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(74,144,255,0.5); }
+  50%      { opacity: 0.7; transform: scale(1.2); box-shadow: 0 0 0 5px rgba(74,144,255,0); }
+}
+
+/* CTA principal */
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  color: #000;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 16px 32px;
+  border-radius: 100px;
+  width: fit-content;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 28px rgba(255,255,255,0.12), 0 4px 16px rgba(0,0,0,0.4);
+}
+.hero-cta:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 40px rgba(255,255,255,0.22), 0 6px 24px rgba(0,0,0,0.5);
+}
+
+/* Sous-texte */
+.hero-sub {
+  font-size: 0.82rem;
+  color: var(--grey);
+  line-height: 1.7;
+}
+
+/* Métriques */
+.hero-metrics {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.hm-item { display: flex; flex-direction: column; gap: 2px; }
+.hm-val  { font-size: 1rem; font-weight: 600; color: var(--white); }
+.hm-lab  { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); }
+.hm-sep  { width: 1px; height: 28px; background: rgba(255,255,255,0.1); flex-shrink: 0; }
+
+/* ══════════════════════════════════════
+   DESKTOP ≥ 1024px
+══════════════════════════════════════ */
 @media (min-width: 1024px) {
 
-  .hero-duo {
-    display: block;
-    position: absolute;
-    right: 0; top: 0; bottom: 0;
-    width: 52%;
-    pointer-events: none;
-    z-index: 2;
-  }
+  .hero { align-items: stretch; }
 
-  /* Layout hero desktop : gauche texte, droite produits */
-  .hero { align-items: center; }
-
-  .hero-content {
+  /* Grille plein écran */
+  .hero-grid {
     position: relative;
     z-index: 3;
-    max-width: 46%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    height: 100%;
+    padding: 0 6% 0 8%;
   }
 
-  /* Stats row */
-  .hero-stats {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-top: 4px;
-  }
-  .hero-stat { display: flex; flex-direction: column; gap: 2px; }
-  .hero-stat-val {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--white);
-    letter-spacing: 0.02em;
-  }
-  .hero-stat-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--grey);
-  }
-  .hero-stat-sep {
-    width: 1px;
-    height: 32px;
-    background: rgba(255,255,255,0.12);
+  .hero-left {
+    padding: 0;
+    justify-content: center;
+    gap: 28px;
   }
 
-  /* Duo container */
-  .hero-duo {
+  .hero-right {
     display: block;
-    position: absolute;
-    right: 0; top: 0; bottom: 0;
-    width: 54%;
+    position: relative;
+    height: 100%;
     pointer-events: none;
-    z-index: 2;
   }
 
   /* Fumée */
   .hd-smoke {
+    display: block;
     position: absolute;
     border-radius: 50%;
     pointer-events: none;
   }
   .hd-smoke-b1 {
-    width: 460px; height: 300px;
-    background: radial-gradient(ellipse, rgba(80,120,255,0.24) 0%, transparent 68%);
-    filter: blur(62px);
-    top: 10%; left: -10%;
+    width: 480px; height: 320px;
+    background: radial-gradient(ellipse, rgba(60,110,255,0.26) 0%, transparent 68%);
+    filter: blur(65px);
+    top: 8%; left: -12%;
     z-index: 1;
-    animation: hdSmoke1 15s ease-in-out infinite;
+    animation: hdS1 16s ease-in-out infinite;
   }
   .hd-smoke-b2 {
-    width: 320px; height: 240px;
-    background: radial-gradient(ellipse, rgba(130,70,255,0.20) 0%, transparent 65%);
-    filter: blur(52px);
-    bottom: 12%; right: 5%;
+    width: 340px; height: 260px;
+    background: radial-gradient(ellipse, rgba(120,60,255,0.22) 0%, transparent 65%);
+    filter: blur(55px);
+    bottom: 10%; right: 4%;
     z-index: 1;
-    animation: hdSmoke2 19s ease-in-out infinite 5s;
+    animation: hdS2 20s ease-in-out infinite 5s;
   }
   .hd-smoke-f1 {
-    width: 260px; height: 160px;
-    background: radial-gradient(ellipse, rgba(170,190,255,0.16) 0%, transparent 62%);
-    filter: blur(40px);
-    top: 42%; left: 22%;
+    width: 240px; height: 150px;
+    background: radial-gradient(ellipse, rgba(160,185,255,0.15) 0%, transparent 62%);
+    filter: blur(38px);
+    top: 44%; left: 24%;
     z-index: 4;
-    animation: hdSmoke3 11s ease-in-out infinite 2s;
+    animation: hdS3 12s ease-in-out infinite 2s;
   }
 
-  @keyframes hdSmoke1 {
+  @keyframes hdS1 {
     0%,100% { transform: translate(0,0) scale(1); }
-    45%      { transform: translate(28px,-38px) scale(1.1); }
-    72%      { transform: translate(-18px,20px) scale(0.92); }
+    45%      { transform: translate(30px,-42px) scale(1.12); }
+    72%      { transform: translate(-20px,22px) scale(0.91); }
   }
-  @keyframes hdSmoke2 {
-    0%,100% { transform: translate(0,0) scale(1); }
-    40%      { transform: translate(-26px,28px) scale(1.08); }
-    70%      { transform: translate(20px,-16px) scale(0.9); }
+  @keyframes hdS2 {
+    0%,100% { transform: translate(0,0); }
+    40%      { transform: translate(-28px,30px) scale(1.1); }
+    70%      { transform: translate(22px,-18px) scale(0.89); }
   }
-  @keyframes hdSmoke3 {
-    0%,100% { transform: translate(0,0) scale(1); opacity: 0.7; }
-    50%      { transform: translate(18px,-22px) scale(1.14); opacity: 1; }
+  @keyframes hdS3 {
+    0%,100% { opacity: 0.65; transform: translate(0,0) scale(1); }
+    50%      { opacity: 1;    transform: translate(16px,-20px) scale(1.15); }
   }
 
-  /* Wrappers produit */
-  .hd-product { position: absolute; }
+  /* Produits */
+  .hd-product {
+    position: absolute;
+  }
+  .hd-product img { width: 100%; display: block; }
 
+  /* Pro — grand, centre-gauche, incliné */
   .hd-product-pro {
-    width: 64%;
+    width: 66%;
     top: 50%;
     left: 2%;
-    transform: translateY(-54%) rotate(-7deg);
     z-index: 2;
-    animation: floatPro 7s ease-in-out infinite;
+    filter: drop-shadow(0 0 32px rgba(80,130,255,0.28));
+    animation: fpro 7s ease-in-out infinite;
   }
+  @keyframes fpro {
+    0%,100% { transform: translateY(-52%) rotate(-6deg); }
+    50%      { transform: translateY(calc(-52% - 16px)) rotate(-4deg); }
+  }
+
+  /* Mini — bas-droite, devant, incliné autre sens */
   .hd-product-mini {
-    width: 52%;
+    width: 54%;
     bottom: 5%;
-    right: 1%;
+    right: 0%;
     z-index: 3;
-    transform: rotate(12deg);
-    animation: floatMini 9s ease-in-out infinite;
+    filter: drop-shadow(0 0 24px rgba(140,80,255,0.24));
+    animation: fmini 9s ease-in-out infinite;
     animation-fill-mode: both;
   }
-
-  .hero-duo-pro, .hero-duo-mini {
-    width: 100%;
-    display: block;
+  @keyframes fmini {
+    0%,100% { transform: rotate(11deg) translateY(0px); }
+    50%      { transform: rotate(9deg) translateY(-14px); }
   }
 
-  /* Tags flottants */
+  /* Tags glassmorphism */
   .hd-tag {
     position: absolute;
-    bottom: 8%;
-    left: -8%;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 10px;
-    padding: 8px 14px;
+    background: rgba(15,15,25,0.55);
+    border: 1px solid rgba(255,255,255,0.13);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 12px;
+    padding: 9px 16px;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
+    white-space: nowrap;
+    bottom: 6%;
+    left: -4%;
     pointer-events: none;
   }
-  .hd-tag-right {
+  .hd-tag-r {
     left: auto;
-    right: -6%;
-    bottom: 110%;
+    right: -2%;
+    bottom: auto;
+    top: 6%;
   }
   .hd-tag-name {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--white);
+    color: rgba(255,255,255,0.7);
   }
   .hd-tag-price {
-    font-size: 0.78rem;
+    font-size: 0.85rem;
+    font-weight: 600;
     color: var(--white);
-    font-weight: 500;
   }
-  .hd-tag-price s {
-    color: var(--grey);
-    font-size: 0.68rem;
-    margin-left: 4px;
-  }
-
-  @keyframes floatPro {
-    0%,100% { transform: translateY(-54%) rotate(-7deg); }
-    50%      { transform: translateY(calc(-54% - 15px)) rotate(-5deg); }
-  }
-  @keyframes floatMini {
-    0%,100% { transform: rotate(12deg) translateY(0px); }
-    50%      { transform: rotate(10deg) translateY(-13px); }
-  }
-
-  @keyframes floatPro {
-    0%,100% { transform: translateY(-52%) rotate(-1deg); }
-    50%      { transform: translateY(calc(-52% - 16px)) rotate(1deg); }
-  }
-  @keyframes floatMini {
-    0%,100% { transform: rotate(10deg) translateY(0px); }
-    50%      { transform: rotate(8deg) translateY(-14px); }
-  }
-}
-
-.hero-content {
-  padding: calc(var(--nav-h) + 180px) 80px 80px;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  max-width: 640px;
-  position: relative;
-  z-index: 3;
+  .hd-tag-price s { color: var(--grey); font-size: 0.72rem; margin-left: 5px; font-weight: 400; }
 }
 
 .hero-eyebrow {
