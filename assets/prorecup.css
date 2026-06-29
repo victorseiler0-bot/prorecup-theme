@@ -375,7 +375,7 @@ img { display: block; max-width: 100%; }
   }
 
   .hero-left {
-    padding: 0;
+    padding: calc(var(--nav-h) + 40px) 0 0;
     justify-content: center;
     gap: 28px;
   }
