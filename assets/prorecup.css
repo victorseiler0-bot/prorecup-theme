@@ -280,74 +280,31 @@ img { display: block; max-width: 100%; }
     z-index: 2;
   }
 
-  /* Fumée subtile : deux halos colorés très discrets */
-  .hero-smoke {
-    display: block;
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-  }
-  .hero-smoke-1 {
-    width: 420px; height: 380px;
-    background: radial-gradient(circle,
-      rgba(68,110,255,0.09) 0%,
-      rgba(80,40,180,0.05) 50%,
-      transparent 72%
-    );
-    filter: blur(50px);
-    top: 12%; left: -5%;
-    animation: smokeA 14s ease-in-out infinite;
-  }
-  .hero-smoke-2 {
-    width: 300px; height: 300px;
-    background: radial-gradient(circle,
-      rgba(100,50,220,0.07) 0%,
-      transparent 68%
-    );
-    filter: blur(40px);
-    bottom: 18%; right: 2%;
-    animation: smokeB 18s ease-in-out infinite 3s;
-  }
-  @keyframes smokeA {
-    0%,100% { transform: translate(0,0) scale(1); }
-    45%      { transform: translate(20px,-30px) scale(1.08); }
-    72%      { transform: translate(-15px,18px) scale(0.94); }
-  }
-  @keyframes smokeB {
-    0%,100% { transform: translate(0,0) scale(1); }
-    40%      { transform: translate(-22px,28px) scale(1.06); }
-    70%      { transform: translate(18px,-20px) scale(0.92); }
-  }
-
-  /* Pro — fond supprimé via screen + haute luminosité */
+  /* Pro — solide, bords fondus dans le fond sombre */
   .hero-duo-pro {
     position: absolute;
     width: 72%;
-    top: 12%;
-    left: 5%;
-    mix-blend-mode: screen;
-    filter: brightness(2.8) contrast(0.85) saturate(0.5);
+    top: 10%;
+    left: 4%;
     animation: floatPro 7s ease-in-out infinite;
     -webkit-mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
-      black 0%, black 68%, rgba(0,0,0,0.3) 82%, transparent 94%);
+      black 0%, black 58%, rgba(0,0,0,0.45) 76%, transparent 92%);
     mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
-      black 0%, black 68%, rgba(0,0,0,0.3) 82%, transparent 94%);
+      black 0%, black 58%, rgba(0,0,0,0.45) 76%, transparent 92%);
   }
 
-  /* Mini — même taille, positionné en bas, fond supprimé */
+  /* Mini — même taille, bas-droite, solide */
   .hero-duo-mini {
     position: absolute;
     width: 72%;
-    bottom: 8%;
+    bottom: 6%;
     right: 0%;
-    mix-blend-mode: screen;
-    filter: brightness(2.8) contrast(0.85) saturate(0.5);
     transform: rotate(8deg);
     animation: floatMini 9s ease-in-out infinite 1.5s;
     -webkit-mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
-      black 0%, black 68%, rgba(0,0,0,0.3) 82%, transparent 94%);
+      black 0%, black 58%, rgba(0,0,0,0.45) 76%, transparent 92%);
     mask-image: radial-gradient(ellipse 82% 78% at 50% 50%,
-      black 0%, black 68%, rgba(0,0,0,0.3) 82%, transparent 94%);
+      black 0%, black 58%, rgba(0,0,0,0.45) 76%, transparent 92%);
   }
 
   @keyframes floatPro {
