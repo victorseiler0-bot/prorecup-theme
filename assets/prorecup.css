@@ -470,10 +470,9 @@ img { display: block; max-width: 100%; }
   }
 
   /* Tags glassmorphism */
-  /* Tags */
   .hd-tag {
     position: absolute;
-    background: rgba(15,15,25,0.60);
+    background: rgba(15,15,25,0.65);
     border: 1px solid rgba(255,255,255,0.14);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -484,18 +483,19 @@ img { display: block; max-width: 100%; }
     gap: 3px;
     white-space: nowrap;
     pointer-events: none;
-    /* Pro — bas, bien à l'intérieur */
-    bottom: 14%;
-    left: 6%;
+    z-index: 10;
+    /* Pro — collé sous/droite du pistolet, loin du texte gauche */
+    bottom: 6%;
+    right: 2%;
     top: auto;
-    right: auto;
+    left: auto;
   }
   .hd-tag-r {
-    /* Mini — haut droit, bien à l'intérieur */
-    top: 10%;
-    right: 4%;
+    /* Mini — haut gauche du pistolet Mini */
+    top: 4%;
+    left: 4%;
     bottom: auto;
-    left: auto;
+    right: auto;
   }
 
   /* Chips features */
