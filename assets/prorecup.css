@@ -185,6 +185,21 @@ img { display: block; max-width: 100%; }
   display: none;
 }
 
+/* Fondu bas hero → section catalog */
+.hero-fade-bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 220px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(5, 6, 20, 0.55) 45%,
+    rgba(0, 0, 0, 0.92) 75%,
+    #000 100%
+  );
+  z-index: 4;
+  pointer-events: none;
+}
+
 /* Gradient lisibilité texte — côté gauche uniquement */
 .hero-overlay {
   position: absolute;
@@ -1962,6 +1977,21 @@ body.intro-running #site-header { opacity: 0; pointer-events: none; }
 
 .catalog {
   padding: 80px 0 120px;
+  position: relative;
+}
+
+.catalog::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: 0; right: 0;
+  height: 280px;
+  background: radial-gradient(ellipse 70% 100% at 50% 0%,
+    rgba(44, 68, 180, 0.12) 0%,
+    rgba(88, 44, 200, 0.06) 45%,
+    transparent 72%
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
 .catalog-inner {
