@@ -265,6 +265,118 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
 }
 
+/* ── Duo produits hero — desktop uniquement ── */
+.hero-duo { display: none; }
+.hero-smoke { display: none; }
+
+@media (min-width: 1024px) {
+
+  .hero-duo {
+    display: block;
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 52%;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Fumée subtile : deux halos colorés très discrets */
+  .hero-smoke {
+    display: block;
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hero-smoke-1 {
+    width: 420px; height: 380px;
+    background: radial-gradient(circle,
+      rgba(68,110,255,0.09) 0%,
+      rgba(80,40,180,0.05) 50%,
+      transparent 72%
+    );
+    filter: blur(50px);
+    top: 12%; left: -5%;
+    animation: smokeA 14s ease-in-out infinite;
+  }
+  .hero-smoke-2 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle,
+      rgba(100,50,220,0.07) 0%,
+      transparent 68%
+    );
+    filter: blur(40px);
+    bottom: 18%; right: 2%;
+    animation: smokeB 18s ease-in-out infinite 3s;
+  }
+  @keyframes smokeA {
+    0%,100% { transform: translate(0,0) scale(1); }
+    45%      { transform: translate(20px,-30px) scale(1.08); }
+    72%      { transform: translate(-15px,18px) scale(0.94); }
+  }
+  @keyframes smokeB {
+    0%,100% { transform: translate(0,0) scale(1); }
+    40%      { transform: translate(-22px,28px) scale(1.06); }
+    70%      { transform: translate(18px,-20px) scale(0.92); }
+  }
+
+  /* Pro — flottant, détouré mix-blend screen */
+  .hero-duo-pro {
+    position: absolute;
+    width: 96%;
+    top: 50%;
+    left: 2%;
+    transform: translateY(-52%);
+    mix-blend-mode: screen;
+    filter: brightness(1.65) contrast(0.97) saturate(0.55);
+    animation: floatPro 7s ease-in-out infinite;
+    -webkit-mask-image: radial-gradient(ellipse 48% 44% at 52% 50%,
+      black 0%, black 30%,
+      rgba(0,0,0,0.55) 52%,
+      rgba(0,0,0,0.08) 66%,
+      transparent 76%
+    );
+    mask-image: radial-gradient(ellipse 48% 44% at 52% 50%,
+      black 0%, black 30%,
+      rgba(0,0,0,0.55) 52%,
+      rgba(0,0,0,0.08) 66%,
+      transparent 76%
+    );
+  }
+
+  /* Mini — flottant décalé, rythme différent */
+  .hero-duo-mini {
+    position: absolute;
+    width: 62%;
+    bottom: 8%;
+    right: -2%;
+    mix-blend-mode: screen;
+    filter: brightness(1.55) contrast(0.97) saturate(0.55);
+    transform: rotate(10deg);
+    animation: floatMini 9s ease-in-out infinite 1.5s;
+    -webkit-mask-image: radial-gradient(ellipse 46% 42% at 50% 50%,
+      black 0%, black 28%,
+      rgba(0,0,0,0.5) 50%,
+      rgba(0,0,0,0.07) 64%,
+      transparent 74%
+    );
+    mask-image: radial-gradient(ellipse 46% 42% at 50% 50%,
+      black 0%, black 28%,
+      rgba(0,0,0,0.5) 50%,
+      rgba(0,0,0,0.07) 64%,
+      transparent 74%
+    );
+  }
+
+  @keyframes floatPro {
+    0%,100% { transform: translateY(-52%) rotate(-1deg); }
+    50%      { transform: translateY(calc(-52% - 16px)) rotate(1deg); }
+  }
+  @keyframes floatMini {
+    0%,100% { transform: rotate(10deg) translateY(0px); }
+    50%      { transform: rotate(8deg) translateY(-14px); }
+  }
+}
+
 .hero-content {
   padding: calc(var(--nav-h) + 180px) 80px 80px;
   display: flex;
