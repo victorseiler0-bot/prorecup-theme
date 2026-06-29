@@ -13,6 +13,10 @@
       "type": "hero",
       "settings": {}
     },
+    "scroll-products": {
+      "type": "scroll-products",
+      "settings": {}
+    },
     "catalog": {
       "type": "catalog",
       "settings": {
@@ -31,6 +35,7 @@
   },
   "order": [
     "hero",
+    "scroll-products",
     "catalog",
     "numbers",
     "features"

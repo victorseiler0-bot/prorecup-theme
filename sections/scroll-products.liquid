@@ -1,0 +1,368 @@
+{% assign pro_url = '/products/6-99-speeds-massage-gun-deep-tissue-back-massager-gun-for-athletes-muscle-massage-gun-for-body-with-4-8-massage-heads' %}
+{% assign mini_url = '/products/electric-massage-gun-deep-tissue-facial-massgaer-8-heads-arms-back-leg-muscle-relaxing-for-body-back-arm-sport-fitness-1' %}
+
+<div class="sp-scene">
+  <div class="sp-stage">
+
+    <div class="sp-bg"></div>
+
+    <!-- Indicateur progression -->
+    <div class="sp-indicator">
+      <div class="sp-ind-dot sp-ind-1"></div>
+      <div class="sp-ind-line"></div>
+      <div class="sp-ind-dot sp-ind-2"></div>
+    </div>
+
+    <!-- Label step -->
+    <div class="sp-step-label" id="sp-step-label">01 / 02</div>
+
+    <!-- Panel 1 — ProRecup Pro -->
+    <div class="sp-panel" id="sp-panel-1">
+      <div class="sp-visual" id="sp-img-1">
+        <img src="{{ 'hero-pro.png' | asset_url }}" alt="ProRecup Pro">
+      </div>
+      <div class="sp-info" id="sp-info-1">
+        <p class="sp-eyebrow">ProRecup Pro</p>
+        <h2 class="sp-title">Le pistolet<br>des <em>champions.</em></h2>
+        <ul class="sp-feats">
+          <li>30 vitesses réglables</li>
+          <li>Écran LCD tactile</li>
+          <li>8 embouts inclus</li>
+          <li>Batterie longue durée</li>
+        </ul>
+        <div class="sp-pricing">
+          <span class="sp-price">89,99€</span>
+          <span class="sp-old">119,99€</span>
+          <span class="sp-badge">-25%</span>
+        </div>
+        <a href="{{ pro_url }}" class="sp-btn">Voir le produit →</a>
+      </div>
+    </div>
+
+    <!-- Panel 2 — ProRecup Mini -->
+    <div class="sp-panel" id="sp-panel-2">
+      <div class="sp-info" id="sp-info-2">
+        <p class="sp-eyebrow">ProRecup Mini</p>
+        <h2 class="sp-title">Compact.<br><em>Redoutable.</em></h2>
+        <ul class="sp-feats">
+          <li>Vitesse variable</li>
+          <li>4h d'autonomie</li>
+          <li>8 embouts inclus</li>
+          <li>Charge USB-C</li>
+        </ul>
+        <div class="sp-pricing">
+          <span class="sp-price">44,99€</span>
+        </div>
+        <a href="{{ mini_url }}" class="sp-btn">Voir le produit →</a>
+      </div>
+      <div class="sp-visual" id="sp-img-2">
+        <img src="{{ 'hero-mini.png' | asset_url }}" alt="ProRecup Mini">
+      </div>
+    </div>
+
+    <!-- Scroll hint (visible seulement au début) -->
+    <div class="sp-scroll-hint" id="sp-scroll-hint">
+      <span class="sp-scroll-arrow"></span>
+      <span>Scroll</span>
+    </div>
+
+  </div>
+</div>
+
+<style>
+/* ── Scène sticky ── */
+.sp-scene {
+  height: 300vh;
+  position: relative;
+}
+.sp-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+/* Fond avec léger dégradé */
+.sp-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 50%,
+    rgba(30,40,100,0.35) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Panneaux */
+.sp-panel {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 0 8%;
+  gap: 60px;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+/* Visuel produit */
+.sp-visual img {
+  width: 100%;
+  max-width: 480px;
+  display: block;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 0 50px rgba(80,120,255,0.22));
+}
+#sp-panel-1 .sp-visual { display: flex; justify-content: flex-end; }
+#sp-panel-2 .sp-visual { display: flex; justify-content: flex-start; }
+
+/* Info texte */
+.sp-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  will-change: transform, opacity;
+}
+.sp-eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(120,150,255,0.9);
+  font-weight: 500;
+}
+.sp-title {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+  font-weight: 300;
+  line-height: 1.05;
+  color: #f5f5f7;
+}
+.sp-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, #f5f5f7, rgba(245,245,247,0.35));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.sp-feats {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+}
+.sp-feats li {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.55);
+  padding-left: 18px;
+  position: relative;
+}
+.sp-feats li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: rgba(120,150,255,0.7);
+}
+.sp-pricing {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sp-price {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #f5f5f7;
+}
+.sp-old {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.3);
+  text-decoration: line-through;
+}
+.sp-badge {
+  background: rgba(255,80,60,0.15);
+  border: 1px solid rgba(255,80,60,0.3);
+  color: rgba(255,100,80,0.9);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.06em;
+}
+.sp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #f5f5f7;
+  color: #000;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 14px 28px;
+  border-radius: 100px;
+  width: fit-content;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+}
+.sp-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 30px rgba(255,255,255,0.15);
+}
+
+/* Indicateur latéral */
+.sp-indicator {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+.sp-ind-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  transition: background 0.4s, transform 0.4s;
+}
+.sp-ind-dot.active {
+  background: #fff;
+  transform: scale(1.3);
+}
+.sp-ind-line {
+  width: 1px;
+  height: 48px;
+  background: rgba(255,255,255,0.12);
+  position: relative;
+  overflow: hidden;
+}
+.sp-ind-line::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  background: #fff;
+  height: 50%;
+  transition: transform 0.4s;
+  transform: translateY(0%);
+}
+.sp-ind-line.p2::after { transform: translateY(100%); }
+
+/* Label step */
+.sp-step-label {
+  position: absolute;
+  left: 40px;
+  bottom: 40px;
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  color: rgba(255,255,255,0.25);
+  z-index: 10;
+}
+
+/* Scroll hint */
+.sp-scroll-hint {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  z-index: 10;
+  transition: opacity 0.5s;
+}
+.sp-scroll-arrow {
+  display: block;
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+  animation: arrowDrop 1.8s ease-in-out infinite;
+}
+@keyframes arrowDrop {
+  0%,100% { transform: scaleY(1) translateY(0); opacity: 0.4; }
+  50%      { transform: scaleY(1.2) translateY(4px); opacity: 1; }
+}
+
+/* Mobile : désactivé */
+@media (max-width: 767px) {
+  .sp-scene { display: none; }
+}
+</style>
+
+<script>
+(function() {
+  const scene  = document.querySelector('.sp-scene');
+  const panel1 = document.getElementById('sp-panel-1');
+  const panel2 = document.getElementById('sp-panel-2');
+  const img1   = document.getElementById('sp-img-1');
+  const img2   = document.getElementById('sp-img-2');
+  const info1  = document.getElementById('sp-info-1');
+  const info2  = document.getElementById('sp-info-2');
+  const hint   = document.getElementById('sp-scroll-hint');
+  const label  = document.getElementById('sp-step-label');
+  const dot1   = document.querySelector('.sp-ind-1');
+  const dot2   = document.querySelector('.sp-ind-2');
+  const line   = document.querySelector('.sp-ind-line');
+  if (!scene) return;
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function prog(v, a, b)  { return clamp((v - a) / (b - a), 0, 1); }
+  function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+  function applyPanel(panel, imgEl, infoEl, active, dirImg, dirInfo) {
+    const a = ease(active);
+    panel.style.opacity = a;
+    panel.style.pointerEvents = a > 0.05 ? 'auto' : 'none';
+    if (imgEl)  imgEl.style.transform  = `translateX(${(1-a)*dirImg*70}px) scale(${0.88 + a*0.12})`;
+    if (infoEl) {
+      infoEl.style.transform = `translateX(${(1-a)*dirInfo*55}px)`;
+      infoEl.style.opacity   = a > 0.35 ? ease(prog(a, 0.35, 1)) : 0;
+    }
+  }
+
+  function tick() {
+    const rect   = scene.getBoundingClientRect();
+    const travel = scene.offsetHeight - window.innerHeight;
+    const p      = clamp(-rect.top / travel, 0, 1);
+
+    // Panel 1 : entre 0→0.45, sort 0.45→0.58
+    const p1in  = prog(p, 0,    0.22);
+    const p1out = prog(p, 0.42, 0.56);
+    const p1    = p1in * (1 - p1out);
+
+    // Panel 2 : entre 0.56→0.78, sort 0.88→1
+    const p2in  = prog(p, 0.56, 0.78);
+    const p2out = prog(p, 0.88, 1.0);
+    const p2    = p2in * (1 - p2out);
+
+    applyPanel(panel1, img1, info1, p1, 1, -1);
+    applyPanel(panel2, img2, info2, p2, -1, 1);
+
+    // Indicateur
+    const inP2 = p >= 0.56;
+    if (dot1) dot1.classList.toggle('active', !inP2);
+    if (dot2) dot2.classList.toggle('active', inP2);
+    if (line) line.classList.toggle('p2', inP2);
+    if (label) label.textContent = inP2 ? '02 / 02' : '01 / 02';
+
+    // Cache le hint après démarrage
+    if (hint) hint.style.opacity = p < 0.05 ? 1 : 0;
+  }
+
+  window.addEventListener('scroll', tick, { passive: true });
+  tick();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Scroll Produits",
+  "settings": []
+}
+{% endschema %}
