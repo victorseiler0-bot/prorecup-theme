@@ -460,7 +460,7 @@ img { display: block; max-width: 100%; }
   /* Mini — milieu droite (descendu) */
   .hd-product-mini {
     width: 70%;
-    top: 20%;
+    top: 38%;
     right: -6%;
     bottom: auto;
     z-index: 3;
