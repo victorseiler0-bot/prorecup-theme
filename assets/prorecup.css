@@ -433,40 +433,41 @@ img { display: block; max-width: 100%; }
   }
   .hd-product img { width: 100%; display: block; }
 
-  /* Pro — grand, centre-gauche, incliné */
+  /* Pro — agrandi, centre-gauche, incliné */
   .hd-product-pro {
-    width: 66%;
+    width: 80%;
     top: 50%;
-    left: 2%;
+    left: -2%;
     z-index: 2;
-    filter: drop-shadow(0 0 32px rgba(80,130,255,0.28));
+    filter: drop-shadow(0 0 40px rgba(80,130,255,0.32));
     animation: fpro 7s ease-in-out infinite;
   }
   @keyframes fpro {
     0%,100% { transform: translateY(-52%) rotate(-6deg); }
-    50%      { transform: translateY(calc(-52% - 16px)) rotate(-4deg); }
+    50%      { transform: translateY(calc(-52% - 18px)) rotate(-4deg); }
   }
 
-  /* Mini — bas-droite, devant, incliné autre sens */
+  /* Mini — agrandi, bas-droite, devant */
   .hd-product-mini {
-    width: 54%;
-    bottom: 5%;
-    right: 0%;
+    width: 64%;
+    bottom: 3%;
+    right: -1%;
     z-index: 3;
-    filter: drop-shadow(0 0 24px rgba(140,80,255,0.24));
+    filter: drop-shadow(0 0 30px rgba(140,80,255,0.28));
     animation: fmini 9s ease-in-out infinite;
     animation-fill-mode: both;
   }
   @keyframes fmini {
     0%,100% { transform: rotate(11deg) translateY(0px); }
-    50%      { transform: rotate(9deg) translateY(-14px); }
+    50%      { transform: rotate(9deg) translateY(-16px); }
   }
 
   /* Tags glassmorphism */
+  /* Tags */
   .hd-tag {
     position: absolute;
-    background: rgba(15,15,25,0.55);
-    border: 1px solid rgba(255,255,255,0.13);
+    background: rgba(15,15,25,0.60);
+    border: 1px solid rgba(255,255,255,0.14);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-radius: 12px;
@@ -476,16 +477,76 @@ img { display: block; max-width: 100%; }
     gap: 3px;
     white-space: nowrap;
     pointer-events: none;
-    top: 6%;
+    /* Pro — bas gauche */
+    bottom: 14%;
+    left: -2%;
+    top: auto;
+    right: auto;
+  }
+  .hd-tag-r {
+    /* Mini — haut droit */
+    top: 10%;
     right: -2%;
     bottom: auto;
     left: auto;
   }
-  .hd-tag-r {
-    top: auto;
-    right: auto;
-    bottom: 6%;
-    left: -4%;
+
+  /* Chips features */
+  .hd-chip {
+    position: absolute;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 100px;
+    padding: 5px 13px;
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .hd-chip-1 { top: 12%; left: -8%; }
+  .hd-chip-2 { top: 24%; left: -12%; }
+  .hd-chip-3 { bottom: 24%; right: -8%; }
+  .hd-chip-4 { bottom: 14%; right: -10%; }
+
+  /* Scroll hint */
+  .hero-scroll-hint {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .hero-scroll-line {
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: linear-gradient(to right, rgba(255,255,255,0.4), transparent);
+  }
+  .hero-scroll-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+
+  /* Séparateur vertical entre colonnes */
+  .hero-col-sep {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    bottom: 20%;
+    width: 1px;
+    background: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(255,255,255,0.08) 30%,
+      rgba(255,255,255,0.08) 70%,
+      transparent 100%
+    );
+    pointer-events: none;
   }
   .hd-tag-name {
     font-size: 0.65rem;
