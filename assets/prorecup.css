@@ -477,16 +477,16 @@ img { display: block; max-width: 100%; }
     gap: 3px;
     white-space: nowrap;
     pointer-events: none;
-    /* Pro — bas gauche */
+    /* Pro — bas, bien à l'intérieur */
     bottom: 14%;
-    left: -2%;
+    left: 6%;
     top: auto;
     right: auto;
   }
   .hd-tag-r {
-    /* Mini — haut droit */
+    /* Mini — haut droit, bien à l'intérieur */
     top: 10%;
-    right: -2%;
+    right: 4%;
     bottom: auto;
     left: auto;
   }
