@@ -185,7 +185,7 @@ img { display: block; max-width: 100%; }
   display: none;
 }
 
-/* Fondu bas hero → section catalog */
+/* Fondu bas hero → section catalog (z-index 1 : sous le texte) */
 .hero-fade-bottom {
   position: absolute;
   bottom: 0; left: 0; right: 0;
@@ -196,7 +196,7 @@ img { display: block; max-width: 100%; }
     rgba(0, 0, 0, 0.92) 75%,
     #000 100%
   );
-  z-index: 4;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -280,11 +280,6 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
 }
 
-/* ── Hero body wrapper ── */
-.hero-body {
-  display: contents; /* transparent sur mobile — enfants restent dans .hero flex */
-}
-
 .hero-duo { display: none; }
 
 .hero-content {
@@ -297,82 +292,62 @@ img { display: block; max-width: 100%; }
   z-index: 3;
 }
 
-/* ── Desktop : duo produits à droite ── */
+/* ── Desktop : duo produits en absolu à droite, derrière le texte ── */
 @media (min-width: 1024px) {
-  .hero-body {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    position: relative;
-    z-index: 3;
-  }
-
-  .hero-body .hero-content {
-    flex: 0 0 54%;
-    max-width: 54%;
-    padding: 0 32px 0 8%;
-    position: static;
-    z-index: auto;
-  }
-
   .hero-duo {
     display: block;
-    flex: 1;
-    position: relative;
-    height: 100vh;
-    height: 100svh;
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 55%;
     pointer-events: none;
+    z-index: 2;
   }
 
-  /* Pro — fondu total : ellipse serrée, bords s'évaporent dans le fond */
   .hero-duo-pro {
     position: absolute;
-    width: 108%;
+    width: 100%;
     top: 50%;
-    left: -8%;
+    left: 0;
     transform: translateY(-52%);
     mix-blend-mode: screen;
     filter: brightness(1.6) contrast(0.98) saturate(0.6);
-    opacity: 1;
-    -webkit-mask-image: radial-gradient(ellipse 40% 37% at 55% 50%,
+    -webkit-mask-image: radial-gradient(ellipse 42% 38% at 52% 50%,
       black 0%,
-      rgba(0,0,0,0.85) 22%,
-      rgba(0,0,0,0.4) 44%,
-      rgba(0,0,0,0.08) 60%,
-      transparent 72%
+      rgba(0,0,0,0.8) 22%,
+      rgba(0,0,0,0.35) 46%,
+      rgba(0,0,0,0.05) 62%,
+      transparent 74%
     );
-    mask-image: radial-gradient(ellipse 40% 37% at 55% 50%,
+    mask-image: radial-gradient(ellipse 42% 38% at 52% 50%,
       black 0%,
-      rgba(0,0,0,0.85) 22%,
-      rgba(0,0,0,0.4) 44%,
-      rgba(0,0,0,0.08) 60%,
-      transparent 72%
+      rgba(0,0,0,0.8) 22%,
+      rgba(0,0,0,0.35) 46%,
+      rgba(0,0,0,0.05) 62%,
+      transparent 74%
     );
   }
 
-  /* Mini — fondu total, ellipse serrée, coin bas-droit */
   .hero-duo-mini {
     position: absolute;
-    width: 74%;
-    bottom: 5%;
-    right: -6%;
+    width: 66%;
+    bottom: 6%;
+    right: -4%;
     mix-blend-mode: screen;
     filter: brightness(1.5) contrast(0.98) saturate(0.6);
-    opacity: 1;
     transform: rotate(10deg);
-    -webkit-mask-image: radial-gradient(ellipse 38% 35% at 50% 50%,
+    -webkit-mask-image: radial-gradient(ellipse 40% 36% at 50% 50%,
       black 0%,
-      rgba(0,0,0,0.82) 20%,
-      rgba(0,0,0,0.35) 42%,
-      rgba(0,0,0,0.06) 58%,
-      transparent 70%
+      rgba(0,0,0,0.78) 20%,
+      rgba(0,0,0,0.3) 44%,
+      rgba(0,0,0,0.04) 60%,
+      transparent 72%
     );
-    mask-image: radial-gradient(ellipse 38% 35% at 50% 50%,
+    mask-image: radial-gradient(ellipse 40% 36% at 50% 50%,
       black 0%,
-      rgba(0,0,0,0.82) 20%,
-      rgba(0,0,0,0.35) 42%,
-      rgba(0,0,0,0.06) 58%,
-      transparent 70%
+      rgba(0,0,0,0.78) 20%,
+      rgba(0,0,0,0.3) 44%,
+      rgba(0,0,0,0.04) 60%,
+      transparent 72%
     );
   }
 }

@@ -1,13 +1,5 @@
 <section class="hero" id="hero">
 
-  <img
-    src="{{ 'product-1.png' | asset_url }}"
-    alt=""
-    class="hero-bg-img"
-    aria-hidden="true"
-    loading="eager"
-  >
-
   <div class="hero-overlay"></div>
   <div class="hero-fade-bottom" aria-hidden="true"></div>
 
@@ -17,30 +9,27 @@
     <div class="aurora-orb aurora-orb-3"></div>
   </div>
 
-  <div class="hero-body">
+  <!-- Images desktop : positionnées en absolu à droite, derrière le texte -->
+  <div class="hero-duo" aria-hidden="true">
+    <img src="{{ 'hero-pro.png' | asset_url }}" alt="" class="hero-duo-pro" loading="eager">
+    <img src="{{ 'hero-mini.png' | asset_url }}" alt="" class="hero-duo-mini" loading="eager">
+  </div>
 
-    <div class="hero-content">
-      <h1 class="hero-title reveal">
-        Performez.<br>
-        Récupérez.<br>
-        <em>Dominez.</em>
-      </h1>
+  <div class="hero-content">
+    <h1 class="hero-title reveal">
+      Performez.<br>
+      Récupérez.<br>
+      <em>Dominez.</em>
+    </h1>
 
-      <p class="hero-subtitle reveal">
-        Deux modèles. Un seul objectif : transformer votre récupération en avantage compétitif.
-      </p>
+    <p class="hero-subtitle reveal">
+      Deux modèles. Un seul objectif : transformer votre récupération en avantage compétitif.
+    </p>
 
-      <div class="hero-actions reveal">
-        <a href="#catalog" class="hero-btn">Choisir mon modèle →</a>
-        <a href="#features" class="hero-btn-ghost">En savoir plus →</a>
-      </div>
+    <div class="hero-actions reveal">
+      <a href="#catalog" class="hero-btn">Choisir mon modèle →</a>
+      <a href="#features" class="hero-btn-ghost">En savoir plus →</a>
     </div>
-
-    <div class="hero-duo" aria-hidden="true">
-      <img src="{{ 'hero-pro.png' | asset_url }}" alt="" class="hero-duo-pro" loading="eager">
-      <img src="{{ 'hero-mini.png' | asset_url }}" alt="" class="hero-duo-mini" loading="eager">
-    </div>
-
   </div>
 
 </section>
