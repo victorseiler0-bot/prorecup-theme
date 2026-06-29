@@ -60,12 +60,14 @@
       </div>
     </div>
 
-    <!-- Bouton fixe mobile — change selon le produit actif -->
-    <a href="{{ mini_url }}" class="sp-mobile-cta" id="sp-mobile-cta">
-      <span class="sp-mobile-cta-label" id="sp-mobile-cta-label">ProRecup Mini</span>
-      <span class="sp-mobile-cta-price" id="sp-mobile-cta-price">44,99€</span>
-      <span class="sp-mobile-cta-arrow">→</span>
-    </a>
+    <!-- Barre fixe mobile — change selon le produit actif -->
+    <div class="sp-bar" id="sp-bar">
+      <div class="sp-bar-info">
+        <span class="sp-bar-name" id="sp-bar-name">ProRecup Mini</span>
+        <span class="sp-bar-price" id="sp-bar-price">44,99€</span>
+      </div>
+      <a href="{{ mini_url }}" class="sp-bar-btn" id="sp-bar-btn">Voir le produit →</a>
+    </div>
 
     <!-- Scroll hint (visible seulement au début) -->
     <div class="sp-scroll-hint" id="sp-scroll-hint">
@@ -328,41 +330,64 @@
   50%      { transform: scaleY(1.2) translateY(4px); opacity: 1; }
 }
 
-/* Bouton fixe mobile */
-.sp-mobile-cta {
-  display: none;
-}
+/* Barre fixe mobile */
+.sp-bar { display: none; }
+
 @media (max-width: 767px) {
-  .sp-mobile-cta {
+  .sp-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
     display: flex;
     align-items: center;
-    gap: 10px;
-    position: fixed;
-    bottom: 52px;
-    left: 50%;
-    transform: translateX(-50%);
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+    background: rgba(12,12,14,0.92);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(100%);
+    transition: opacity 0.35s, transform 0.35s;
+  }
+  .sp-bar.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .sp-bar-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .sp-bar-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #f5f5f7;
+    letter-spacing: 0.02em;
+  }
+  .sp-bar-price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f5f5f7;
+  }
+  .sp-bar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     background: #f5f5f7;
     color: #000;
     text-decoration: none;
     border-radius: 100px;
-    padding: 14px 28px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    z-index: 100;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.08);
+    padding: 12px 22px;
+    font-size: 0.82rem;
+    font-weight: 700;
     white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.35s, transform 0.35s;
-    will-change: opacity;
+    flex-shrink: 0;
+    letter-spacing: 0.03em;
   }
-  .sp-mobile-cta.visible {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .sp-mobile-cta-label { font-weight: 600; }
-  .sp-mobile-cta-price { font-weight: 400; opacity: 0.6; font-size: 0.82rem; }
-  .sp-mobile-cta-arrow { font-size: 1rem; }
 }
 
 /* ── Mobile layout ── */
@@ -397,8 +422,12 @@
   #sp-panel-1 .sp-visual { margin-right: 0; }
   #sp-panel-2 .sp-visual { margin-left: 0; }
 
-  /* Boutons internes masqués sur mobile — remplacés par le fixe */
-  .sp-panel .sp-btn { display: none; }
+  /* Boutons internes remontés sur mobile — juste après le titre */
+  .sp-info { flex-direction: column; }
+  .sp-info .sp-btn {
+    order: -1;
+    display: none; /* la barre fixe les remplace */
+  }
 
   .sp-info {
     width: 100%;
@@ -517,23 +546,23 @@
       }
     }
 
-    // Bouton fixe mobile — basé sur opacité réelle des panels
-    const mobileCta = document.getElementById('sp-mobile-cta');
-    const ctaLabel  = document.getElementById('sp-mobile-cta-label');
-    const ctaPrice  = document.getElementById('sp-mobile-cta-price');
-    const inScene   = p > 0.02 && p < 0.98;
-    if (mobileCta) {
-      mobileCta.classList.toggle('visible', inScene);
-      // Compare les opacités calculées pour choisir le bon produit
+    // Barre fixe mobile
+    const bar      = document.getElementById('sp-bar');
+    const barName  = document.getElementById('sp-bar-name');
+    const barPrice = document.getElementById('sp-bar-price');
+    const barBtn   = document.getElementById('sp-bar-btn');
+    const inScene  = p > 0.01 && p < 0.99;
+    if (bar) {
+      bar.classList.toggle('visible', inScene);
       const showPro = p2 > p1;
       if (showPro) {
-        mobileCta.href = '{{ pro_url }}';
-        if (ctaLabel) ctaLabel.textContent = 'ProRecup Pro';
-        if (ctaPrice) ctaPrice.textContent = '89,99€';
+        if (barBtn)   barBtn.href            = '{{ pro_url }}';
+        if (barName)  barName.textContent    = 'ProRecup Pro';
+        if (barPrice) barPrice.textContent   = '89,99€';
       } else {
-        mobileCta.href = '{{ mini_url }}';
-        if (ctaLabel) ctaLabel.textContent = 'ProRecup Mini';
-        if (ctaPrice) ctaPrice.textContent = '44,99€';
+        if (barBtn)   barBtn.href            = '{{ mini_url }}';
+        if (barName)  barName.textContent    = 'ProRecup Mini';
+        if (barPrice) barPrice.textContent   = '44,99€';
       }
     }
   }

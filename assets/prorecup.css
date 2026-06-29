@@ -177,9 +177,9 @@ img { display: block; max-width: 100%; }
   align-items: center;
   overflow-x: clip;
   overflow-y: visible;
-  background: linear-gradient(135deg, #080808 0%, #0f0f10 50%, #000000 100%);
-  background-size: 300% 300%;
-  animation: heroGradientMobile 10s ease infinite;
+  background:
+    radial-gradient(ellipse 120% 80% at 60% 40%, #141416 0%, #000000 60%),
+    linear-gradient(160deg, #111112 0%, #050505 100%);
 }
 
 /* Image produit masquée sur toutes les tailles */
@@ -1520,7 +1520,7 @@ img { display: block; max-width: 100%; }
     flex-direction: column;
     justify-content: flex-end;
     align-items: stretch;
-    background: #000;
+    background: #0a0a0a;
     animation: none;
   }
 
