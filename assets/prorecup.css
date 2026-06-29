@@ -488,15 +488,15 @@ img { display: block; max-width: 100%; }
     white-space: nowrap;
     pointer-events: none;
     z-index: 10;
-    /* Pro — en bas à gauche du container Pro (loin du Mini) */
-    bottom: 18%;
+    /* Pro — haut gauche du container Pro */
+    top: 12%;
     left: 8%;
-    top: auto;
+    bottom: auto;
     right: auto;
   }
   .hd-tag-r {
-    /* Mini — en bas à droite du container Mini, clairement attaché */
-    bottom: -8%;
+    /* Mini — légèrement remonté */
+    bottom: 2%;
     right: 2%;
     left: auto;
     top: auto;
