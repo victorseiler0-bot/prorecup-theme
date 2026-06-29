@@ -457,10 +457,10 @@ img { display: block; max-width: 100%; }
     50%      { transform: translateY(calc(-56% - 18px)) rotate(-4deg); }
   }
 
-  /* Mini — haut droite */
+  /* Mini — milieu droite (descendu) */
   .hd-product-mini {
     width: 70%;
-    top: 8%;
+    top: 20%;
     right: -6%;
     bottom: auto;
     z-index: 3;
@@ -488,18 +488,18 @@ img { display: block; max-width: 100%; }
     white-space: nowrap;
     pointer-events: none;
     z-index: 10;
-    /* Pro — près de la tête (haut) du pistolet Pro */
-    top: 6%;
-    right: 4%;
-    bottom: auto;
-    left: auto;
-  }
-  .hd-tag-r {
-    /* Mini — bas droite du pistolet Mini */
-    bottom: 22%;
-    left: 4%;
+    /* Pro — en bas à gauche du container Pro (loin du Mini) */
+    bottom: 18%;
+    left: 8%;
     top: auto;
     right: auto;
+  }
+  .hd-tag-r {
+    /* Mini — en bas à droite du container Mini, clairement attaché */
+    bottom: -8%;
+    right: 2%;
+    left: auto;
+    top: auto;
   }
 
   /* Chips features */
