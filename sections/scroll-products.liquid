@@ -467,12 +467,14 @@
 
     if (infoEl) {
       const children = infoEl.children;
+      const n        = Math.max(children.length, 1);
       for (let i = 0; i < children.length; i++) {
-        const delay = i * 0.12;                              // stagger par élément
-        const ta    = clamp((a - 0.32 - delay) / 0.45, 0, 1);
+        // stagger léger : dernier élément atteint 1 quand a=0.55
+        const start = 0.18 + (i / n) * 0.22;
+        const ta    = clamp((a - start) / (0.55 - start), 0, 1);
         const aEl   = ease(ta);
         children[i].style.opacity   = aEl;
-        children[i].style.transform = `translateX(${(1-aEl)*dirInfo*40}px) translateY(${(1-aEl)*10}px)`;
+        children[i].style.transform = `translateX(${(1-aEl)*dirInfo*36}px) translateY(${(1-aEl)*8}px)`;
       }
     }
   }
