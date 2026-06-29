@@ -1,6 +1,14 @@
 {% assign variant = product.selected_or_first_available_variant %}
-{% assign display_name = section.settings.display_name | default: product.title %}
-{% assign image_set = section.settings.image_set | default: 'pro' %}
+{% if product.handle contains 'electric' %}
+  {% assign image_set = 'mini' %}
+  {% assign display_name = 'ProRecup Mini' %}
+{% else %}
+  {% assign image_set = 'pro' %}
+  {% assign display_name = 'ProRecup Pro' %}
+{% endif %}
+{% if section.settings.display_name != blank %}
+  {% assign display_name = section.settings.display_name %}
+{% endif %}
 
 <section class="pp-wrap">
   <div class="pp-inner">
