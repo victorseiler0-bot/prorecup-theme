@@ -508,19 +508,21 @@
       }
     }
 
-    // Bouton fixe mobile — change selon le produit visible
-    const mobileCta   = document.getElementById('sp-mobile-cta');
-    const ctaLabel    = document.getElementById('sp-mobile-cta-label');
-    const ctaPrice    = document.getElementById('sp-mobile-cta-price');
-    const inScene     = p > 0.03 && p < 0.97;
+    // Bouton fixe mobile — basé sur opacité réelle des panels
+    const mobileCta = document.getElementById('sp-mobile-cta');
+    const ctaLabel  = document.getElementById('sp-mobile-cta-label');
+    const ctaPrice  = document.getElementById('sp-mobile-cta-price');
+    const inScene   = p > 0.02 && p < 0.98;
     if (mobileCta) {
       mobileCta.classList.toggle('visible', inScene);
-      if (inP2) {
-        mobileCta.href        = '{{ pro_url }}';
+      // Compare les opacités calculées pour choisir le bon produit
+      const showPro = p2 > p1;
+      if (showPro) {
+        mobileCta.href = '{{ pro_url }}';
         if (ctaLabel) ctaLabel.textContent = 'ProRecup Pro';
         if (ctaPrice) ctaPrice.textContent = '89,99€';
       } else {
-        mobileCta.href        = '{{ mini_url }}';
+        mobileCta.href = '{{ mini_url }}';
         if (ctaLabel) ctaLabel.textContent = 'ProRecup Mini';
         if (ctaPrice) ctaPrice.textContent = '44,99€';
       }

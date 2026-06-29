@@ -177,7 +177,7 @@ img { display: block; max-width: 100%; }
   align-items: center;
   overflow-x: clip;
   overflow-y: visible;
-  background: linear-gradient(135deg, #000510 0%, #07081a 50%, #000000 100%);
+  background: linear-gradient(135deg, #080808 0%, #0f0f10 50%, #000000 100%);
   background-size: 300% 300%;
   animation: heroGradientMobile 10s ease infinite;
 }
@@ -1522,7 +1522,7 @@ img { display: block; max-width: 100%; }
     align-items: stretch;
     background: #000;
     /* Gradient animé en fond */
-    background: linear-gradient(135deg, #000510 0%, #07081a 50%, #000000 100%);
+    background: linear-gradient(135deg, #080808 0%, #0f0f10 50%, #000000 100%);
     background-size: 300% 300%;
     animation: heroGradientMobile 10s ease infinite;
   }
