@@ -1520,7 +1520,9 @@ img { display: block; max-width: 100%; }
     flex-direction: column;
     justify-content: flex-end;
     align-items: stretch;
-    background: #0a0a0a;
+    background:
+      radial-gradient(ellipse 120% 80% at 60% 40%, #141416 0%, #000000 60%),
+      linear-gradient(160deg, #111112 0%, #050505 100%);
     animation: none;
   }
 
