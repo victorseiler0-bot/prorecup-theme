@@ -59,7 +59,7 @@
         </div>
         <a href="{{ pro_url }}" class="sp-btn">Voir le produit →</a>
       </div>
-      <div class="sp-visual" id="sp-img-2"></div>
+      <div class="sp-visual" id="sp-img-2" data-src="{{ 'hero-mini.png' | asset_url }}"></div>
     </div>
 
     <!-- Barre fixe mobile — toujours visible, change selon le contexte -->
@@ -615,17 +615,25 @@
       if (p > 0.44 && p < 1.0 && r1Cache && TR2) {
         // Créer le clone une fois
         if (!p12clone && srcImg) {
+          const img2src = img2 ? (img2.getAttribute('data-src') || '') : '';
           p12clone = document.createElement('div');
           p12clone.style.cssText = 'position:fixed;pointer-events:none;z-index:500;';
-          const ci = document.createElement('img');
-          ci.src = srcImg.src;
-          ci.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 50px rgba(190,188,185,0.14));';
-          p12clone.appendChild(ci);
+          // Image Panel 1 (Mini) — s'efface en arrivant
+          const ci1 = document.createElement('img');
+          ci1.src = srcImg.src;
+          ci1.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 50px rgba(190,188,185,0.14));';
+          // Image Panel 2 (Pro) — apparaît en arrivant
+          const ci2 = document.createElement('img');
+          ci2.src = img2src;
+          ci2.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 50px rgba(190,188,185,0.14));opacity:0;';
+          p12clone.appendChild(ci1);
+          p12clone.appendChild(ci2);
+          p12clone._ci1 = ci1;
+          p12clone._ci2 = ci2;
           document.body.appendChild(p12clone);
         }
 
         if (p12clone) {
-          // Phase vol (0.44→0.68)
           const tFly  = ease(prog(p, 0.44, 0.68));
           const left  = r1Cache.left   + (TR2.left   - r1Cache.left)   * tFly;
           const top   = r1Cache.top    + (TR2.top    - r1Cache.top)    * tFly;
@@ -637,7 +645,12 @@
           p12clone.style.width  = w    + 'px';
           p12clone.style.height = h    + 'px';
 
-          // Opacité : suit panel2 pendant la phase stable + sortie
+          // Crossfade Mini → Pro au milieu du vol (tFly 0.45 → 0.80)
+          const cf = ease(prog(tFly, 0.45, 0.80));
+          if (p12clone._ci1) p12clone._ci1.style.opacity = String(1 - cf);
+          if (p12clone._ci2) p12clone._ci2.style.opacity = String(cf);
+
+          // Opacité globale : suit panel2 pendant la phase stable + sortie
           const cloneOpacity = p < 0.68 ? 1 : ease(p2);
           p12clone.style.opacity = String(cloneOpacity);
 
@@ -758,10 +771,14 @@
         return;
       }
 
-      // Cache position réelle de l'image quand Panel 1 est bien en place (p > 0.15)
-      if (!cachedTarget && pScene > 0.15) {
+      // Cache position réelle de l'image Panel 1 quand elle est stable (p > 0.20)
+      if (!cachedTarget && pScene > 0.20) {
         const actualImg = img1El.querySelector('img') || img1El;
-        cachedTarget = actualImg.getBoundingClientRect();
+        const r = actualImg.getBoundingClientRect();
+        // On ne retient que si l'image est bien dans le viewport
+        if (r.width > 10 && r.top > -100 && r.top < window.innerHeight) {
+          cachedTarget = r;
+        }
       }
 
       const vw = window.innerWidth;
