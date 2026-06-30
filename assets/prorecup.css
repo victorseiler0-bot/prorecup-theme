@@ -2097,6 +2097,69 @@ img { display: block; max-width: 100%; }
   border-radius: 100px;
 }
 
+/* Description produit */
+.pp-desc {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+/* Specs techniques */
+.pp-specs {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.pp-specs li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.82rem;
+}
+.pp-specs li span:first-child {
+  color: rgba(255,255,255,0.38);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+.pp-specs li span:last-child {
+  color: rgba(255,255,255,0.78);
+  text-align: right;
+}
+
+/* Cas d'usage */
+.pp-use-cases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.pp-use-cases span {
+  font-size: 0.75rem;
+  padding: 6px 14px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.6);
+  white-space: nowrap;
+}
+
+/* Tagline catalog */
+.catalog-tagline {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
 .pp-form {
   display: flex;
   flex-direction: column;

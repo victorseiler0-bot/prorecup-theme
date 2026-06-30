@@ -66,6 +66,38 @@
           {% endif %}
         </div>
 
+        {% if image_set == 'mini' %}
+        <p class="pp-desc">Le ProRecup Mini est fait pour ceux qui bougent. Léger (320 g), silencieux et compact, il glisse dans un sac de sport ou un sac à dos de voyage. Parfait pour dénouer les tensions après une séance de running, une journée de bureau ou un vol long-courrier.</p>
+        <ul class="pp-specs">
+          <li><span>Poids</span><span>320 g</span></li>
+          <li><span>Dimensions</span><span>17 × 8 × 4 cm</span></li>
+          <li><span>Vitesses</span><span>6 niveaux</span></li>
+          <li><span>Embouts inclus</span><span>8 têtes interchangeables</span></li>
+          <li><span>Autonomie</span><span>4h par charge</span></li>
+          <li><span>Charge</span><span>USB-C universel</span></li>
+          <li><span>Niveau sonore</span><span>&lt; 45 dB (très silencieux)</span></li>
+          <li><span>Pour qui</span><span>Débutants, voyageurs, sportifs du quotidien</span></li>
+        </ul>
+        <div class="pp-use-cases">
+          <span>🏃 Running</span><span>🧘 Yoga</span><span>💼 Bureau</span><span>✈️ Voyage</span>
+        </div>
+        {% else %}
+        <p class="pp-desc">Le ProRecup Pro est conçu pour les performances sérieuses. Avec 30 niveaux d'intensité, un écran LCD intégré et une amplitude de 12 mm, il cible en profondeur chaque groupe musculaire. C'est l'outil des athlètes, des coachs et des kinés.</p>
+        <ul class="pp-specs">
+          <li><span>Poids</span><span>680 g</span></li>
+          <li><span>Dimensions</span><span>22 × 14 × 6 cm</span></li>
+          <li><span>Vitesses</span><span>30 niveaux réglables</span></li>
+          <li><span>Amplitude</span><span>12 mm (pénétration profonde)</span></li>
+          <li><span>Embouts inclus</span><span>8 têtes interchangeables</span></li>
+          <li><span>Autonomie</span><span>6h par charge</span></li>
+          <li><span>Écran</span><span>LCD tactile intégré</span></li>
+          <li><span>Pour qui</span><span>Athlètes, sportifs intensifs, kinésithérapeutes</span></li>
+        </ul>
+        <div class="pp-use-cases">
+          <span>🏋️ Musculation</span><span>⚡ Crossfit</span><span>🏊 Natation</span><span>🩺 Kiné</span>
+        </div>
+        {% endif %}
+
         {% form 'product', product, class: 'pp-form' %}
           <input type="hidden" name="id" value="{{ variant.id }}">
           <input type="hidden" name="quantity" value="1">
