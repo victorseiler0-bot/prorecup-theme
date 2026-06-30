@@ -518,7 +518,8 @@
   function prog(v, a, b)  { return clamp((v - a) / (b - a), 0, 1); }
   function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
 
-  function applyPanel(panel, imgEl, infoEl, active, dirImg, dirInfo, fromTop) {
+  // entrance: 'top' = descend du haut | 'bottom' = monte+scale | 'side' = côté
+  function applyPanel(panel, imgEl, infoEl, active, dirImg, dirInfo, entrance) {
     const a    = ease(active);
     const aImg = ease(clamp(active * 1.15, 0, 1));
 
@@ -527,10 +528,17 @@
 
     if (imgEl) {
       const blur = (1 - aImg) * 18;
-      // Panel 1 entre depuis le haut (liaison avec hero Mini)
-      const tx = fromTop ? 0                        : (1 - aImg) * dirImg * 90;
-      const ty = fromTop ? (1 - aImg) * -80 : 0;
-      const sc = 0.82 + aImg * 0.18;
+      let tx = 0, ty = 0, sc;
+      if (entrance === 'top') {
+        ty = (1 - aImg) * -80;
+        sc = 0.82 + aImg * 0.18;
+      } else if (entrance === 'bottom') {
+        ty = (1 - aImg) * 70;
+        sc = 0.68 + aImg * 0.32;
+      } else {
+        tx = (1 - aImg) * dirImg * 90;
+        sc = 0.82 + aImg * 0.18;
+      }
       imgEl.style.transform = `translateX(${tx}px) translateY(${ty}px) scale(${sc})`;
       imgEl.style.filter    = `blur(${blur.toFixed(1)}px) drop-shadow(0 0 50px rgba(190,188,185,0.14))`;
     }
@@ -564,8 +572,8 @@
     const p2out = prog(p, 0.90, 1.0);
     const p2    = p2in * (1 - p2out);
 
-    applyPanel(panel1, img1, info1, p1, 1, -1, true);   // Panel 1 : image vient du haut (liaison hero)
-    applyPanel(panel2, img2, info2, p2, -1, 1, false);
+    applyPanel(panel1, img1, info1, p1,  1, -1, 'top');     // Mini : descend du haut (liaison hero)
+    applyPanel(panel2, img2, info2, p2, -1,  1, 'bottom');  // Pro  : monte depuis le bas (puissant)
 
     // Indicateur
     const inP2 = p >= 0.54;
@@ -672,9 +680,10 @@
         return;
       }
 
-      // Dès que la section est sticky, on mémorise la vraie position de l'image Panel 1
-      if (!cachedTarget && pScene > 0) {
-        cachedTarget = img1El.getBoundingClientRect();
+      // Cache position réelle de l'image quand Panel 1 est bien en place (p > 0.15)
+      if (!cachedTarget && pScene > 0.15) {
+        const actualImg = img1El.querySelector('img') || img1El;
+        cachedTarget = actualImg.getBoundingClientRect();
       }
 
       const vw = window.innerWidth;

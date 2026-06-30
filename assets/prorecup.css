@@ -489,14 +489,14 @@ img { display: block; max-width: 100%; }
     pointer-events: none;
     z-index: 10;
     /* Pro — haut gauche du container Pro */
-    top: 10%;
+    top: 5%;
     left: 8%;
     bottom: auto;
     right: auto;
   }
   .hd-tag-r {
-    /* Mini — légèrement remonté */
-    bottom: 16%;
+    /* Mini */
+    bottom: 26%;
     right: 2%;
     left: auto;
     top: auto;
