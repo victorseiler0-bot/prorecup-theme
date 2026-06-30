@@ -578,8 +578,28 @@
     const p2out = prog(p, 0.90, 1.0);
     const p2    = p2in * (1 - p2out);
 
-    applyPanel(panel1, img1,  info1, p1,  1, -1, 'top');
-    applyPanel(panel2, null,  info2, p2, -1,  1, 'bottom'); // img2 = clone géré séparément
+    applyPanel(panel1, null,  info1, p1,  1, -1, 'top');   // image gérée manuellement
+    applyPanel(panel2, null,  info2, p2, -1,  1, 'bottom');
+
+    // Gestion manuelle img1 : masqué pendant le clone hero (p<0.12), normal ensuite
+    if (img1) {
+      const rawImg1 = img1.querySelector('img');
+      if (rawImg1) {
+        if (p < 0.12) {
+          // Clone hero→Panel1 encore visible — on cache l'original
+          rawImg1.style.opacity = String(ease(prog(p, 0.09, 0.15)));
+          const blur1 = (1 - ease(clamp(p1 * 1.15, 0, 1))) * 18;
+          img1.style.transform = `translateY(${(1 - ease(clamp(p1*1.15,0,1))) * -80}px) scale(${0.82 + ease(clamp(p1*1.15,0,1)) * 0.18})`;
+          img1.style.filter = `blur(${blur1.toFixed(1)}px) drop-shadow(0 0 50px rgba(190,188,185,0.14))`;
+        } else if (p < 0.44) {
+          // Panel 1 stable — pleinement visible
+          rawImg1.style.opacity = '';
+          img1.style.transform  = 'translateY(0px) scale(1)';
+          img1.style.filter     = 'drop-shadow(0 0 50px rgba(190,188,185,0.14))';
+        }
+        // p > 0.44 : géré par p12clone (srcImg.style.opacity)
+      }
+    }
 
     // ── Clone P1 → P2 : une seule image qui vole ──
     if (window.innerWidth > 767) {
@@ -654,8 +674,8 @@
           const cloneOpacity = p < 0.68 ? 1 : ease(p2);
           p12clone.style.opacity = String(cloneOpacity);
 
-          // Efface l'image originale Panel 1 dès que le clone prend le relais
-          if (srcImg) srcImg.style.opacity = String(Math.max(0, 1 - prog(p, 0.44, 0.52)));
+          // Clone exactement à la même position → img1 invisible instantanément, pas de flash
+          if (srcImg) srcImg.style.opacity = '0';
         }
       } else {
         if (p12clone) { p12clone.style.opacity = '0'; }
