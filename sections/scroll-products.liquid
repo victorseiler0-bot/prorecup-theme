@@ -521,8 +521,6 @@
   function prog(v, a, b)  { return clamp((v - a) / (b - a), 0, 1); }
   function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
 
-  // Clone P1 → P2
-  let r1Cache = null, r2Cache = null, p12clone = null, r2Snapped = false;
 
   // entrance: 'top' = descend du haut | 'bottom' = monte+scale | 'side' = côté
   function applyPanel(panel, imgEl, infoEl, active, dirImg, dirInfo, entrance) {
@@ -578,113 +576,8 @@
     const p2out = prog(p, 0.90, 1.0);
     const p2    = p2in * (1 - p2out);
 
-    applyPanel(panel1, null,  info1, p1,  1, -1, 'top');   // image gérée manuellement
+    applyPanel(panel1, img1,  info1, p1,  1, -1, 'top');
     applyPanel(panel2, null,  info2, p2, -1,  1, 'bottom');
-
-    // Gestion manuelle img1 : masqué pendant le clone hero (p<0.12), normal ensuite
-    if (img1) {
-      const rawImg1 = img1.querySelector('img');
-      if (rawImg1) {
-        if (p < 0.12) {
-          // Clone hero→Panel1 encore visible — on cache l'original
-          rawImg1.style.opacity = String(ease(prog(p, 0.09, 0.15)));
-          const blur1 = (1 - ease(clamp(p1 * 1.15, 0, 1))) * 18;
-          img1.style.transform = `translateY(${(1 - ease(clamp(p1*1.15,0,1))) * -80}px) scale(${0.82 + ease(clamp(p1*1.15,0,1)) * 0.18})`;
-          img1.style.filter = `blur(${blur1.toFixed(1)}px) drop-shadow(0 0 50px rgba(190,188,185,0.14))`;
-        } else if (p < 0.44) {
-          // Panel 1 stable — pleinement visible
-          rawImg1.style.opacity = '';
-          img1.style.transform  = 'translateY(0px) scale(1)';
-          img1.style.filter     = 'drop-shadow(0 0 50px rgba(190,188,185,0.14))';
-        }
-        // p > 0.44 : géré par p12clone (srcImg.style.opacity)
-      }
-    }
-
-    // ── Clone P1 → P2 : une seule image qui vole ──
-    if (window.innerWidth > 767) {
-      const srcImg = img1 ? img1.querySelector('img') : null;
-
-      // Cache la position de Panel 1 image quand stable (avant sa sortie)
-      if (!r1Cache && p > 0.28 && p < 0.43 && srcImg) {
-        r1Cache = srcImg.getBoundingClientRect();
-      }
-
-      // Cache la position naturelle de img2 (transform=identity) pendant Panel 2 stable
-      if (!r2Snapped && p > 0.70 && img2) {
-        const prevT = img2.style.transform;
-        img2.style.transform = 'translateX(0) translateY(0) scale(1)';
-        void img2.offsetHeight; // force reflow
-        const b = img2.getBoundingClientRect();
-        img2.style.transform = prevT;
-        if (r1Cache) {
-          r2Cache = { left: b.left, top: b.top - r1Cache.height * 0.5 + (b.height || 0) * 0.5,
-                      width: r1Cache.width, height: r1Cache.height };
-        }
-        r2Snapped = true;
-      }
-
-      // Estimation rect2 si pas encore mesuré
-      const TR2 = r2Cache || (r1Cache ? {
-        left:   window.innerWidth * 0.06,
-        top:    r1Cache.top,
-        width:  r1Cache.width,
-        height: r1Cache.height
-      } : null);
-
-      if (p > 0.44 && p < 1.0 && r1Cache && TR2) {
-        // Créer le clone une fois
-        if (!p12clone && srcImg) {
-          const img2src = '{{ "hero-mini.png" | asset_url }}';
-          p12clone = document.createElement('div');
-          p12clone.style.cssText = 'position:fixed;pointer-events:none;z-index:500;';
-          // Image Panel 1 (Mini) — s'efface en arrivant
-          const ci1 = document.createElement('img');
-          ci1.src = srcImg.src;
-          ci1.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 50px rgba(190,188,185,0.14));';
-          // Image Panel 2 (Pro) — apparaît en arrivant
-          const ci2 = document.createElement('img');
-          ci2.src = img2src;
-          ci2.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 50px rgba(190,188,185,0.14));opacity:0;';
-          p12clone.appendChild(ci1);
-          p12clone.appendChild(ci2);
-          p12clone._ci1 = ci1;
-          p12clone._ci2 = ci2;
-          document.body.appendChild(p12clone);
-        }
-
-        if (p12clone) {
-          const tFly  = ease(prog(p, 0.44, 0.68));
-          const left  = r1Cache.left   + (TR2.left   - r1Cache.left)   * tFly;
-          const top   = r1Cache.top    + (TR2.top    - r1Cache.top)    * tFly;
-          const w     = r1Cache.width  + (TR2.width  - r1Cache.width)  * tFly;
-          const h     = r1Cache.height + (TR2.height - r1Cache.height) * tFly;
-
-          p12clone.style.left   = left + 'px';
-          p12clone.style.top    = top  + 'px';
-          p12clone.style.width  = w    + 'px';
-          p12clone.style.height = h    + 'px';
-
-          // Crossfade Mini → Pro au milieu du vol (tFly 0.45 → 0.80)
-          const cf = ease(prog(tFly, 0.45, 0.80));
-          if (p12clone._ci1) p12clone._ci1.style.opacity = String(1 - cf);
-          if (p12clone._ci2) p12clone._ci2.style.opacity = String(cf);
-
-          // Opacité globale : suit panel2 pendant la phase stable + sortie
-          const cloneOpacity = p < 0.68 ? 1 : ease(p2);
-          p12clone.style.opacity = String(cloneOpacity);
-
-          // Clone exactement à la même position → img1 invisible instantanément, pas de flash
-          if (srcImg) srcImg.style.opacity = '0';
-        }
-      } else {
-        if (p12clone) { p12clone.style.opacity = '0'; }
-        if (srcImg)   srcImg.style.opacity = '';
-        // Reset caches si on revient au début
-        if (p < 0.20) { r1Cache = null; r2Cache = null; r2Snapped = false;
-          if (p12clone) { p12clone.remove(); p12clone = null; } }
-      }
-    }
 
     // Indicateur
     const inP2 = p >= 0.54;
