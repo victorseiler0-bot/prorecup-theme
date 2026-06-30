@@ -465,12 +465,7 @@ img { display: block; max-width: 100%; }
     bottom: auto;
     z-index: 3;
     filter: drop-shadow(0 0 30px rgba(175,172,168,0.20));
-    animation: fmini 9s ease-in-out infinite;
-    animation-fill-mode: both;
-  }
-  @keyframes fmini {
-    0%,100% { transform: rotate(11deg) translateY(0px); }
-    50%      { transform: rotate(9deg) translateY(-16px); }
+    transform: rotate(11deg);
   }
 
   /* Tags glassmorphism */

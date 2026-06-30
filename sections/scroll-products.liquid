@@ -615,7 +615,7 @@
       if (p > 0.44 && p < 1.0 && r1Cache && TR2) {
         // Créer le clone une fois
         if (!p12clone && srcImg) {
-          const img2src = img2 ? (img2.getAttribute('data-src') || '') : '';
+          const img2src = '{{ "hero-mini.png" | asset_url }}';
           p12clone = document.createElement('div');
           p12clone.style.cssText = 'position:fixed;pointer-events:none;z-index:500;';
           // Image Panel 1 (Mini) — s'efface en arrivant
