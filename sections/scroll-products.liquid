@@ -59,7 +59,9 @@
         </div>
         <a href="{{ pro_url }}" class="sp-btn">Voir le produit →</a>
       </div>
-      <div class="sp-visual" id="sp-img-2" data-src="{{ 'hero-mini.png' | asset_url }}"></div>
+      <div class="sp-visual" id="sp-img-2">
+        <img src="{{ 'hero-mini.png' | asset_url }}" alt="ProRecup Pro">
+      </div>
     </div>
 
     <!-- Barre fixe mobile — toujours visible, change selon le contexte -->
@@ -576,8 +578,8 @@
     const p2out = prog(p, 0.90, 1.0);
     const p2    = p2in * (1 - p2out);
 
-    applyPanel(panel1, img1,  info1, p1,  1, -1, 'top');
-    applyPanel(panel2, null,  info2, p2, -1,  1, 'bottom');
+    applyPanel(panel1, null,  info1, p1,  1, -1, 'top');
+    applyPanel(panel2, img2,  info2, p2, -1,  1, 'bottom');
 
     // Indicateur
     const inP2 = p >= 0.54;
