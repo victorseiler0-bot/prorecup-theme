@@ -19,7 +19,7 @@
     <!-- Panel 1 — ProRecup Mini (le moins cher en premier) -->
     <div class="sp-panel" id="sp-panel-1">
       <div class="sp-visual" id="sp-img-1">
-        <img src="{{ 'hero-pro.png' | asset_url }}" alt="ProRecup Mini">
+        <img src="{{ 'hero-pro.png' | asset_url }}" alt="" aria-hidden="true" style="visibility:hidden">
       </div>
       <div class="sp-info" id="sp-info-1">
         <p class="sp-eyebrow">ProRecup Mini</p>
@@ -60,7 +60,7 @@
         <a href="{{ pro_url }}" class="sp-btn">Voir le produit →</a>
       </div>
       <div class="sp-visual" id="sp-img-2">
-        <img src="{{ 'hero-mini.png' | asset_url }}" alt="ProRecup Pro">
+        <img src="{{ 'hero-mini.png' | asset_url }}" alt="" aria-hidden="true" style="visibility:hidden">
       </div>
     </div>
 
@@ -578,8 +578,8 @@
     const p2out = prog(p, 0.90, 1.0);
     const p2    = p2in * (1 - p2out);
 
-    applyPanel(panel1, null,  info1, p1,  1, -1, 'top');
-    applyPanel(panel2, img2,  info2, p2, -1,  1, 'bottom');
+    applyPanel(panel1, null, info1, p1,  1, -1, 'top');
+    applyPanel(panel2, null, info2, p2, -1,  1, 'bottom');
 
     // Indicateur
     const inP2 = p >= 0.54;
@@ -644,6 +644,106 @@
 
   window.addEventListener('scroll', tick, { passive: true });
   tick();
+
+  // ── Clone unique : hero Mini → Panel 1 → Panel 2 (Pro) ──
+  (function() {
+    if (window.innerWidth <= 767) return;
+    const heroMini = document.querySelector('.hd-product-mini');
+    const heroSec  = document.querySelector('.hero');
+    if (!heroMini || !heroSec) return;
+
+    const SR = heroMini.getBoundingClientRect(); // position de départ dans le hero
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:fixed;pointer-events:none;z-index:9999;opacity:0;';
+
+    const ci1 = document.createElement('img'); // Mini (hero-pro.png)
+    ci1.src = heroMini.querySelector('img').src;
+    ci1.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 50px rgba(190,188,185,0.22));';
+
+    const ci2 = document.createElement('img'); // Pro (hero-mini.png)
+    ci2.src = '{{ "hero-mini.png" | asset_url }}';
+    ci2.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 50px rgba(190,188,185,0.22));opacity:0;';
+
+    wrap.appendChild(ci1);
+    wrap.appendChild(ci2);
+    document.body.appendChild(wrap);
+
+    let T1 = null, T2 = null, T2done = false;
+
+    function masterTick() {
+      const pHero = clamp(window.scrollY / heroSec.offsetHeight, 0, 1);
+      const travel = scene.offsetHeight - window.innerHeight;
+      const scRect = scene.getBoundingClientRect();
+      const p = travel > 0 ? clamp(-scRect.top / travel, 0, 1) : 0;
+
+      if (pHero <= 0) {
+        wrap.style.opacity = '0';
+        heroMini.style.opacity = '';
+        T1 = null; T2 = null; T2done = false;
+        return;
+      }
+
+      heroMini.style.opacity = '0';
+
+      // Mesure Panel 1 dès qu'on entre dans la scene (sp-img-1 ancre invisible)
+      if (!T1 && pHero >= 0.96) {
+        const r = (img1 ? img1 : document.getElementById('sp-img-1')).getBoundingClientRect();
+        if (r.width > 10) T1 = r;
+      }
+      // Mesure Panel 2 quand il est stable
+      if (!T2done && p > 0.70) {
+        const el = img2 ? img2 : document.getElementById('sp-img-2');
+        if (el) { const r = el.getBoundingClientRect(); if (r.width > 10) { T2 = r; T2done = true; } }
+      }
+
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const T1u = T1 || { left: vw*0.52, top: vh*0.12, width: vw*0.43, height: vh*0.72 };
+      const T2u = T2 || { left: vw*0.06, top: T1u.top, width: T1u.width, height: T1u.height };
+
+      let L, T, W, H, op = 1, cf = 0, rot = 0;
+
+      if (pHero < 1) {
+        // Phase 1 : quitte le hero vers Panel 1
+        const t = ease(pHero);
+        L = SR.left + (T1u.left - SR.left) * t;
+        T = SR.top  + (T1u.top  - SR.top)  * t;
+        W = SR.width  + (T1u.width  - SR.width)  * t;
+        H = SR.height + (T1u.height - SR.height) * t;
+        rot = 11 * (1 - ease(pHero));
+      } else if (p < 0.44) {
+        // Phase 2 : ancré Panel 1
+        L = T1u.left; T = T1u.top; W = T1u.width; H = T1u.height;
+      } else if (p < 0.68) {
+        // Phase 3 : vole vers Panel 2, crossfade Mini→Pro
+        const tF = ease(prog(p, 0.44, 0.68));
+        L = T1u.left + (T2u.left - T1u.left) * tF;
+        T = T1u.top  + (T2u.top  - T1u.top)  * tF;
+        W = T1u.width  + (T2u.width  - T1u.width)  * tF;
+        H = T1u.height + (T2u.height - T1u.height) * tF;
+        cf = ease(prog(tF, 0.25, 0.80));
+      } else if (p < 0.90) {
+        // Phase 4 : ancré Panel 2
+        L = T2u.left; T = T2u.top; W = T2u.width; H = T2u.height; cf = 1;
+      } else {
+        // Phase 5 : disparaît avec Panel 2
+        L = T2u.left; T = T2u.top; W = T2u.width; H = T2u.height; cf = 1;
+        op = ease(1 - prog(p, 0.90, 1.0));
+      }
+
+      wrap.style.left      = L + 'px';
+      wrap.style.top       = T + 'px';
+      wrap.style.width     = W + 'px';
+      wrap.style.height    = H + 'px';
+      wrap.style.opacity   = String(op);
+      wrap.style.transform = rot ? `rotate(${rot}deg)` : '';
+      ci1.style.opacity    = String(1 - cf);
+      ci2.style.opacity    = String(cf);
+    }
+
+    window.addEventListener('scroll', masterTick, { passive: true });
+    masterTick();
+  })();
 
 })();
 </script>
