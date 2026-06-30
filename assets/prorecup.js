@@ -504,8 +504,13 @@ function initStickyBar() {
   function update() {
     if (!hero) return;
     const heroBottom = hero.getBoundingClientRect().bottom;
-    const atBuy = buySection
-      ? buySection.getBoundingClientRect().top < window.innerHeight * 0.5
+    // FIX: utilise la position du bouton inline plutôt que le haut de #buy.
+    // Avant: la barre disparaissait dès que #buy entrait à 50% viewport,
+    // alors que le bouton .buy-cta est encore hors écran (gallery + titre + prix au-dessus).
+    // Maintenant: la barre reste jusqu'à ce que le bouton inline soit réellement visible.
+    const buyBtn = document.querySelector('#buy .buy-cta');
+    const atBuy = buyBtn
+      ? buyBtn.getBoundingClientRect().top < window.innerHeight - 20
       : false;
     const show = heroBottom < 0 && !atBuy;
     bar.classList.toggle('visible', show);
@@ -554,7 +559,56 @@ function initCursor() {
 function initNav() {
   const h = document.getElementById('site-header');
   if (!h) return;
-  window.addEventListener('scroll', () => h.classList.toggle('scrolled', window.scrollY > 60), { passive: true });
+
+  let lastScrollY = window.scrollY;
+  // locked = true pendant ~800ms après un clic de lien de nav, évite de cacher
+  // le header au scroll déclenché par le smooth-scroll vers la section cible.
+  let locked = false;
+
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    h.classList.toggle('scrolled', y > 60);
+
+    if (window.innerWidth <= 600 && !locked) {
+      if (y < 120) {
+        // Toujours visible près du haut
+        h.classList.remove('header-hidden');
+      } else if (y > lastScrollY) {
+        // Scroll vers le bas → cache le header
+        h.classList.add('header-hidden');
+      } else {
+        // Scroll vers le haut → réapparaît
+        h.classList.remove('header-hidden');
+      }
+    }
+    lastScrollY = y;
+  }, { passive: true });
+
+  // ── Hamburger ──
+  const hamburger = document.getElementById('nav-hamburger');
+  const mobileNav = document.getElementById('mobile-nav');
+  if (!hamburger || !mobileNav) return;
+
+  hamburger.addEventListener('click', () => {
+    const open = hamburger.getAttribute('aria-expanded') === 'true';
+    hamburger.setAttribute('aria-expanded', String(!open));
+    mobileNav.classList.toggle('open', !open);
+    mobileNav.setAttribute('aria-hidden', String(open));
+    // Quand le menu s'ouvre, le header doit rester visible
+    h.classList.remove('header-hidden');
+  });
+
+  mobileNav.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.setAttribute('aria-expanded', 'false');
+      mobileNav.classList.remove('open');
+      mobileNav.setAttribute('aria-hidden', 'true');
+      // Verrouille pendant le smooth-scroll vers la section cible
+      locked = true;
+      h.classList.remove('header-hidden');
+      setTimeout(() => { locked = false; }, 900);
+    });
+  });
 }
 
 /* ── Reveal ── */

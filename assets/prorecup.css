@@ -164,6 +164,8 @@ img { display: block; max-width: 100%; }
   align-items: center;
   justify-content: center;
   line-height: 1;
+  /* Assure le contraste sur n'importe quel fond (header transparent inclus) */
+  box-shadow: 0 0 0 1.5px rgba(0,0,0,0.75);
 }
 
 /* ============================================================
@@ -476,10 +478,10 @@ img { display: block; max-width: 100%; }
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-radius: 12px;
-    padding: 9px 16px;
+    padding: 12px 20px;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 4px;
     white-space: nowrap;
     pointer-events: none;
     z-index: 10;
@@ -491,7 +493,7 @@ img { display: block; max-width: 100%; }
   }
   .hd-tag-r {
     /* Mini */
-    bottom: 26%;
+    bottom: 36%;
     right: 2%;
     left: auto;
     top: auto;
@@ -542,18 +544,18 @@ img { display: block; max-width: 100%; }
   }
 
   .hd-tag-name {
-    font-size: 0.65rem;
+    font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: rgba(255,255,255,0.7);
   }
   .hd-tag-price {
-    font-size: 0.85rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--white);
   }
-  .hd-tag-price s { color: var(--grey); font-size: 0.72rem; margin-left: 5px; font-weight: 400; }
+  .hd-tag-price s { color: var(--grey); font-size: 0.82rem; margin-left: 5px; font-weight: 400; }
 }
 
 .hero-eyebrow {
@@ -1418,6 +1420,10 @@ img { display: block; max-width: 100%; }
 
 .sticky-buy-bar { display: none; }
 
+/* Hamburger et mobile-nav : cachés partout sauf mobile ≤600px */
+.nav-hamburger { display: none; }
+.mobile-nav    { display: none; }
+
 /* ── Cart toast ── */
 #cart-toast {
   position: fixed;
@@ -1494,6 +1500,89 @@ img { display: block; max-width: 100%; }
     letter-spacing: 0.03em;
   }
 
+  /* ── Q1 : Header auto-hide au scroll-down ──
+     Libère ~56px dès que l'utilisateur scrolle.
+     Réapparaît instantanément au scroll-up. */
+  .site-header {
+    transition: background 0.5s, backdrop-filter 0.5s,
+                transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .site-header.header-hidden {
+    transform: translateY(-100%);
+  }
+
+  /* ── Q2 : "Nos modèles" supprimé en mobile (sticky bar couvre l'achat) ── */
+  .nav-cta-desktop { display: none !important; }
+
+  /* ── Q2 : Hamburger ── */
+  .nav-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4.5px;
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+  .nav-hamburger span {
+    display: block;
+    width: 18px;
+    height: 1.5px;
+    background: rgba(245,245,247,0.75);
+    border-radius: 2px;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
+    transform-origin: center;
+  }
+  /* Animation ✕ quand ouvert */
+  .nav-hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+  /* ── Q2 : Mobile nav dropdown (sous le header) ── */
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    max-height: 0;
+    background: rgba(0,0,0,0.97);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+  .mobile-nav.open {
+    max-height: 130px;
+    pointer-events: auto;
+  }
+  .mobile-nav-link {
+    display: block;
+    padding: 15px 20px;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(245,245,247,0.65);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: color 0.15s, background 0.15s;
+  }
+  .mobile-nav-link:last-child { border-bottom: none; }
+  .mobile-nav-link:active { background: rgba(255,255,255,0.05); color: var(--white); }
+
+  /* ── Q3 : Cart badge — bleu accent, plus visible sur fond sombre ── */
+  .cart-badge {
+    background: var(--accent-blue);
+    color: var(--white);
+    width: 18px;
+    height: 18px;
+    font-size: 0.62rem;
+    box-shadow: 0 0 0 1.5px #000;
+  }
+
   /* ════════════════════════════════
      HERO MOBILE — fond animé, pas de photo
   ════════════════════════════════ */
@@ -1504,6 +1593,7 @@ img { display: block; max-width: 100%; }
     flex-direction: column;
     justify-content: flex-end;
     align-items: stretch;
+    overflow: hidden; /* FIX: remplace overflow-x:clip/overflow-y:visible — coupe les anneaux et orbs */
     background:
       radial-gradient(ellipse 120% 80% at 60% 40%, #141416 0%, #000000 60%),
       linear-gradient(160deg, #111112 0%, #050505 100%);
@@ -1514,7 +1604,7 @@ img { display: block; max-width: 100%; }
   .aurora-orb-1 {
     width: 320px; height: 320px;
     background: radial-gradient(circle, rgba(190,188,185,0.18) 0%, transparent 70%);
-    top: 5%; right: -60px;
+    top: 5%; right: -20px; /* FIX: was -60px → dépassait de 60px hors viewport */
     animation: auroraFloat1 14s ease-in-out infinite;
   }
   .aurora-orb-2 {
@@ -1531,6 +1621,14 @@ img { display: block; max-width: 100%; }
     top: auto;
     animation: auroraFloat3 11s ease-in-out infinite;
   }
+
+  /* FIX: Anneaux concentriques — taille plafonnée à 100vw pour éviter overflow horizontal.
+     Les anneaux desktop font 440/680/900px ; centrés sur left:50% ils dépassent
+     largement sur 390px. overflow:hidden sur .hero les coupe, mais on réduit aussi
+     pour alléger le rendu GPU mobile. */
+  .hero-ring-1 { width: min(440px, 90vw);  height: min(440px, 90vw); }
+  .hero-ring-2 { width: min(680px, 100vw); height: min(680px, 100vw); }
+  .hero-ring-3 { display: none; } /* 900px → inutile sur mobile, économise GPU */
 
   /* Cache la photo produit et le duo sur mobile */
   .hero-bg-img { display: none; }
@@ -1549,7 +1647,9 @@ img { display: block; max-width: 100%; }
 
 
   /* Contenu : centré verticalement, texte au centre */
-  .hero-content {
+  /* FIX: hero.liquid utilise .hero-left, pas .hero-content — les deux sélecteurs sont nécessaires */
+  .hero-content,
+  .hero-left {
     position: relative;
     z-index: 3;
     flex: 1;
@@ -1557,11 +1657,15 @@ img { display: block; max-width: 100%; }
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    padding: calc(var(--nav-h) + 80px) 24px 108px;
+    padding: calc(var(--nav-h) + 32px) 24px 108px;
     max-width: 100%;
     text-align: center;
-    gap: 18px;
+    gap: 14px;
   }
+
+  /* Éléments supprimés sur mobile : peu d'impact conversion, prennent de la place */
+  .hero-sub        { display: none; }
+  .hero-scroll-hint { display: none; }
 
   .hero-eyebrow {
     justify-content: center;
@@ -1664,14 +1768,22 @@ img { display: block; max-width: 100%; }
     border-right: 1px solid rgba(255,255,255,0.07);
     border-bottom: 1px solid rgba(255,255,255,0.07);
     gap: 6px;
+    min-width: 0; /* FIX: contient le texte dans la cellule grid (évite overflow de colonne) */
+    overflow: hidden;
   }
   .stat-block:nth-child(even)       { border-right: none; padding-right: 0; }
   .stat-block:nth-last-child(-n+2)  { border-bottom: none; }
   .stat-block:first-child           { padding-left: 0; }
 
   .stat-big {
-    font-size: clamp(2.8rem, 11vw, 4.2rem);
+    /* FIX: min abaissé de 2.8rem à 2rem — sur 320px, 11vw=35.2px < 2.8rem=44.8px
+       donc le clamp restait bloqué à 44.8px, trop large pour une cellule de ~124px.
+       Nouveau min 2rem=32px donne de la marge même sur iPhone SE. */
+    font-size: clamp(2rem, 9vw, 2.8rem);
     letter-spacing: -0.04em;
+    white-space: nowrap;     /* empêche le retour à la ligne du nombre */
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .stats-quote {
@@ -1775,7 +1887,7 @@ img { display: block; max-width: 100%; }
     transform: scale(1.5);
   }
 
-  .buy-info { gap: 20px; }
+  .buy-info { gap: 16px; }
   .buy-eyebrow { font-size: 0.66rem; letter-spacing: 0.14em; }
 
   .buy-title {
@@ -1784,7 +1896,7 @@ img { display: block; max-width: 100%; }
   }
 
   .buy-specs li {
-    padding: 11px 0;
+    padding: 9px 0;
     font-size: 0.81rem;
   }
 
@@ -1808,11 +1920,12 @@ img { display: block; max-width: 100%; }
 
   .buy-trust {
     flex-wrap: wrap;
-    gap: 6px 20px;
+    gap: 6px 12px; /* FIX: column-gap réduit 20px→12px — "Paiement sécurisé"+"Retour 30 jours"
+                      + gap 20px = ~274px sur 320px (trop serré) ; à 12px = ~266px ✓ */
     justify-content: center;
   }
 
-  .trust-item { font-size: 0.7rem; }
+  .trust-item { font-size: 0.65rem; }
 
   .buy-note {
     font-size: 0.7rem;
@@ -1833,8 +1946,10 @@ img { display: block; max-width: 100%; }
     backdrop-filter: blur(24px) saturate(200%);
     -webkit-backdrop-filter: blur(24px) saturate(200%);
     border-top: 1px solid rgba(255,255,255,0.09);
-    padding: 12px 20px;
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    /* Q4 : safe-area complète (bas + côtés en landscape notch/DynamicIsland)
+       viewport-fit=cover requis dans <meta viewport> — ajouté dans theme.liquid */
+    padding: 12px max(20px, env(safe-area-inset-right))
+             max(12px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
     transform: translateY(110%);
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
@@ -1924,12 +2039,26 @@ img { display: block; max-width: 100%; }
 @media (max-width: 374px) {
   .hero-title     { font-size: 2.4rem; }
   .buy-title      { font-size: 1.75rem; }
-  .stat-big       { font-size: 2.5rem; }
+  .stat-big       { font-size: 2rem; } /* FIX: était 2.5rem (40px) — trop grand pour cellule 108px sur SE */
   .section-title  { font-size: 1.8rem; }
   .hero-content,
   .buy-inner,
   .features-inner { padding-left: 16px; padding-right: 16px; }
   .nav-inner      { padding: 0 16px; }
+
+  /* FIX: Nav iPhone SE (320px) — espace disponible = 288px.
+     Logo ≈ 95px + gap 16px + CTA ≈ 88px + gap 16px + panier ≈ 28px = ~243px.
+     Avec un texte CTA long (> 10 chars), on peut dépasser. On serre. */
+  .nav-logo  { font-size: 1rem; letter-spacing: 0.03em; }
+  .nav-links { gap: 10px; }
+  .nav-cta   { padding: 7px 10px !important; font-size: 0.65rem !important; letter-spacing: 0.02em; }
+
+  /* FIX: trust items trop larges sur 320px — passe en colonne */
+  .buy-trust {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
 }
 
 /* ════════════════════════════════════════
@@ -2266,6 +2395,14 @@ body.intro-running #site-header { opacity: 0; pointer-events: none; }
 
 .catalog-card:hover {
   border-color: rgba(255,255,255,0.16);
+  transform: translateY(-6px);
+}
+
+.catalog-card.reveal.visible {
+  transform: translateY(0);
+}
+
+.catalog-card.reveal.visible:hover {
   transform: translateY(-6px);
 }
 

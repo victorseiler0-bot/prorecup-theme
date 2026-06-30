@@ -5,7 +5,10 @@
     </a>
     <div class="nav-links">
       <a href="#features">Fonctionnalités</a>
-      <a href="#catalog" class="nav-cta">Nos modèles</a>
+      <a href="#catalog" class="nav-cta nav-cta-desktop">Nos modèles</a>
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav">
+        <span></span><span></span><span></span>
+      </button>
       <a href="/cart" class="nav-cart" aria-label="Panier">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
@@ -18,6 +21,10 @@
       </a>
     </div>
   </nav>
+  <div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+    <a href="#features" class="mobile-nav-link">Fonctionnalités</a>
+    <a href="#catalog" class="mobile-nav-link">Nos modèles</a>
+  </div>
 </header>
 
 {% schema %}
