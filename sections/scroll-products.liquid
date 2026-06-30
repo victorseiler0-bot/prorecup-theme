@@ -348,8 +348,9 @@
 .sp-bar { display: none; }
 
 @media (max-width: 767px) {
-  /* sticky-buy-bar du theme = masqué sur homepage, sp-bar le remplace */
-  .sticky-buy-bar { display: none !important; }
+  /* Sur mobile : on supprime la scène scroll (600vh) — les produits
+     s'affichent directement dans la section catalog en dessous */
+  .sp-scene { display: none !important; }
 
   .sp-bar {
     position: fixed;
