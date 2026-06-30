@@ -24,11 +24,12 @@
       <div class="sp-info" id="sp-info-1">
         <p class="sp-eyebrow">ProRecup Mini</p>
         <h2 class="sp-title">Compact.<br><em>Redoutable.</em></h2>
+        <p class="sp-desc">Idéal pour les sportifs en déplacement, les débutants et ceux qui veulent récupérer partout — salle, bureau, voyage. Léger (320 g), discret, silencieux.</p>
         <ul class="sp-feats">
-          <li>Vitesse variable</li>
-          <li>4h d'autonomie</li>
-          <li>8 embouts inclus</li>
-          <li>Charge USB-C</li>
+          <li>Poids : 320 g — tient dans la paume</li>
+          <li>4h d'autonomie · charge USB-C</li>
+          <li>6 vitesses · 8 embouts inclus</li>
+          <li>Pour : running, yoga, bureau, voyage</li>
         </ul>
         <div class="sp-pricing">
           <span class="sp-price">44,99€</span>
@@ -44,11 +45,12 @@
       <div class="sp-info" id="sp-info-2">
         <p class="sp-eyebrow">ProRecup Pro</p>
         <h2 class="sp-title">Le pistolet<br>des <em>champions.</em></h2>
+        <p class="sp-desc">Conçu pour les athlètes exigeants et les pratiquants réguliers. Puissance professionnelle, écran LCD intégré, 30 niveaux d'intensité pour cibler chaque groupe musculaire.</p>
         <ul class="sp-feats">
-          <li>30 vitesses réglables</li>
-          <li>Écran LCD tactile</li>
-          <li>8 embouts inclus</li>
-          <li>Batterie longue durée</li>
+          <li>Poids : 680 g · amplitude 12 mm</li>
+          <li>30 vitesses · écran LCD tactile</li>
+          <li>6h d'autonomie · 8 embouts inclus</li>
+          <li>Pour : musculation, crossfit, kiné, sport intensif</li>
         </ul>
         <div class="sp-pricing">
           <span class="sp-price">89,99€</span>
@@ -189,6 +191,12 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+.sp-desc {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+  max-width: 420px;
 }
 .sp-feats {
   list-style: none;
@@ -623,28 +631,77 @@
   window.addEventListener('scroll', tick, { passive: true });
   tick();
 
-  // ── Liaison hero → scroll : parallax sur le produit Mini du hero ──
+  // ── FLIP: Mini hero → Panel 1 (même produit, clone fixe volant) ──
   (function() {
+    if (window.innerWidth <= 767) return;
     const heroMini = document.querySelector('.hd-product-mini');
-    const heroSection = document.querySelector('.hero');
-    if (!heroMini || !heroSection) return;
+    const heroSec  = document.querySelector('.hero');
+    const img1El   = document.getElementById('sp-img-1');
+    if (!heroMini || !heroSec || !img1El) return;
 
-    function heroParallax() {
-      const heroH  = heroSection.offsetHeight;
-      const scrollY = window.scrollY;
-      // progress de 0 (hero plein) à 1 (hero sorti)
-      const pHero = Math.max(0, Math.min(1, scrollY / heroH));
-      if (pHero > 0) {
-        // Le mini suit le scroll : monte et part légèrement vers la gauche
-        heroMini.style.transform = `rotate(11deg) translateY(${-pHero * 60}px) translateX(${-pHero * 30}px) scale(${1 - pHero * 0.08})`;
-        heroMini.style.opacity   = 1 - pHero * 1.8; // disparaît rapidement
-      } else {
-        heroMini.style.transform = '';
-        heroMini.style.opacity   = '';
+    // Position de départ capturée avant tout scroll
+    const SR = heroMini.getBoundingClientRect();
+
+    // Clone fixe — survole les sections pendant la transition
+    const clone = document.createElement('div');
+    clone.style.cssText = 'position:fixed;pointer-events:none;z-index:9999;opacity:0;';
+    const ci = document.createElement('img');
+    ci.src = heroMini.querySelector('img').src;
+    ci.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 40px rgba(175,172,168,0.30));';
+    clone.appendChild(ci);
+    document.body.appendChild(clone);
+
+    let cachedTarget = null;
+
+    function flipTick() {
+      const heroH = heroSec.offsetHeight;
+      const pHero = Math.max(0, Math.min(1, window.scrollY / heroH));
+
+      const sceneEl = document.querySelector('.sp-scene');
+      let pScene = 0;
+      if (sceneEl) {
+        const sr = sceneEl.getBoundingClientRect();
+        const travel = sceneEl.offsetHeight - window.innerHeight;
+        if (travel > 0) pScene = Math.max(0, Math.min(1, -sr.top / travel));
       }
+
+      if (pHero <= 0) {
+        clone.style.opacity  = '0';
+        heroMini.style.opacity = '';
+        cachedTarget = null;
+        return;
+      }
+
+      // Dès que la section est sticky, on mémorise la vraie position de l'image Panel 1
+      if (!cachedTarget && pScene > 0) {
+        cachedTarget = img1El.getBoundingClientRect();
+      }
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const TR = cachedTarget || {
+        left: vw * 0.50, top: vh * 0.10,
+        width: vw * 0.46, height: vh * 0.75
+      };
+
+      // t : hero exit 0→75%, puis Panel 1 entry 75→100%
+      const rawT = pHero < 1
+        ? pHero * 0.75
+        : 0.75 + Math.min(pScene / 0.12, 1) * 0.25;
+      const t = ease(Math.min(rawT, 1));
+
+      clone.style.left      = (SR.left   + (TR.left   - SR.left)   * t) + 'px';
+      clone.style.top       = (SR.top    + (TR.top    - SR.top)    * t) + 'px';
+      clone.style.width     = (SR.width  + (TR.width  - SR.width)  * t) + 'px';
+      clone.style.height    = (SR.height + (TR.height - SR.height) * t) + 'px';
+      clone.style.transform = `rotate(${11 * (1 - t)}deg)`;
+      clone.style.opacity   = String(Math.max(0, 1 - pScene / 0.10));
+
+      heroMini.style.opacity = '0';
     }
-    window.addEventListener('scroll', heroParallax, { passive: true });
-    heroParallax();
+
+    window.addEventListener('scroll', flipTick, { passive: true });
+    flipTick();
   })();
 })();
 </script>

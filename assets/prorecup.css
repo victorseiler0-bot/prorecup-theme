@@ -489,7 +489,7 @@ img { display: block; max-width: 100%; }
     pointer-events: none;
     z-index: 10;
     /* Pro — haut gauche du container Pro */
-    top: 12%;
+    top: 10%;
     left: 8%;
     bottom: auto;
     right: auto;
